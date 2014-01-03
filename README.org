@@ -1,0 +1,87 @@
+#+TITLE:     maline
+#+AUTHOR:    Marko Dimjašević
+#+EMAIL:     marko@cs.utah.edu
+#+DATE:      2014-01-02 Thu
+#+DESCRIPTION:
+#+KEYWORDS:
+#+LANGUAGE:  en
+#+OPTIONS:   H:3 num:t toc:t \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS:   TeX:t LaTeX:t skip:nil d:nil todo:t pri:nil tags:not-in-toc
+
+#+EXPORT_SELECT_TAGS: export
+#+EXPORT_EXCLUDE_TAGS: noexport
+#+LINK_UP:   
+#+LINK_HOME: 
+#+XSLT:
+
+# A comment
+
+* Introduction
+*maline* is an Android malware detection framework. If you are an Org-mode
+user, you might want to read the [[http://orgmode.org/worg/org-contrib/babel/intro.html][executable version]] of this readme (the
+README.org file in the root).
+
+* Installation
+*maline* was developed under Ubuntu 12.04 LTS. It is very likely it will work
+under other POSIX systems (GNU/Linux and Mac alike). The Android version we
+tested *maline* with is Android 4.4.2 (API version 19), which is assumed
+throughout the readme.
+
+*maline* is a collection of Bash and Python scripts, so no installation is
+needed. It suffices to obtain *maline*, e.g. from Github:
+
+#+BEGIN_SRC sh :exports code
+  mkdir ~/projects
+  cd ~/projects
+  git clone git@github.com:soarlab/maline.git
+#+END_SRC
+
+** Dependencies
+To use *maline*, you need the following:
+- [[https://developer.android.com/sdk/index.html][Android SDK]] - follow instructions for installation of the SDK.
+- [[https://code.google.com/p/android-apktool/][apktool]] - *maline* already ships with apktool.
+- expect - a command line tool that automates interactive applications
+
+* Configuration
+
+** Path to Executables
+*maline* needs to be in the PATH environment variable. In particular, the
+=bin/= directory should to be added to the variable, e.g.
+
+#+BEGIN_SRC sh :exports code
+  export MALINE=~/projects/maline/bin
+  PATH=$PATH:$MALINE
+#+END_SRC
+
+** Android Virtual Device
+*maline* executes Android apps in the Android Emulator, which comes within the
+Android SDK. The Emulator is a QEMU-based emulator that runs Android Virtual
+Devices (AVDs). By default, the ARM architecture is emulated, but that is very
+slow. Therefore, if one has an =x86= host machine, it is better to create an
+=x86= architecture-based virtual device image.  However, Intel has some nasty
+long license that you have to accept before installing the Intel x86 System
+Image.
+
+First make sure to have the Android API version 19 and the respective Intel
+x86 Atom System Image:
+
+#+BEGIN_SRC sh :exports code
+  android update sdk --no-ui
+  android update sdk --no-ui --all --filter sysimg-19
+#+END_SRC
+
+Now, go ahead and create the image:
+
+#+BEGIN_SRC sh :exports code
+  android create avd -f -a -c 512M -s WVGA800 -n maline-android-19_x86 -t android-19 --abi x86
+#+END_SRC
+
+We want snapshots so that each app can be executed in a clean environment
+(that's the =-a= parameter). We also create a 512 MB SD card and select the
+800x480 screen resolution.
+
+You can check that the device is created by executing:
+
+#+BEGIN_SRC sh :exports code
+  android list avd
+#+END_SRC
