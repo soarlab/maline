@@ -22,10 +22,10 @@ user, you might want to read the [[http://orgmode.org/worg/org-contrib/babel/int
 README.org file in the root).
 
 * Installation
-*maline* was developed under Ubuntu 12.04 LTS. It is very likely it will work
-under other POSIX systems (GNU/Linux and Mac alike). The Android version we
-tested *maline* with is Android 4.4.2 (API version 19), which is assumed
-throughout the readme.
+*maline* was developed under Ubuntu 12.04.3 LTS. It is very likely it will
+work under other POSIX systems too (GNU/Linux and Mac alike). The Android
+version we tested *maline* with is Android 4.4.2 (API version 19), which is
+assumed throughout the readme.
 
 *maline* is a collection of Bash and Python scripts, so no installation is
 needed. It suffices to obtain *maline*, e.g. from Github:
@@ -40,7 +40,10 @@ needed. It suffices to obtain *maline*, e.g. from Github:
 To use *maline*, you need the following:
 - [[https://developer.android.com/sdk/index.html][Android SDK]] - follow instructions for installation of the SDK.
 - [[https://code.google.com/p/android-apktool/][apktool]] - *maline* already ships with apktool.
-- expect - a command line tool that automates interactive applications
+- [[http://www.gnu.org/software/bash/][Bash]] - ships with Ubuntu.
+- [[http://www.python.org/][Python]] - we tested *maline* with Python 2.7.3, but it might work with more
+  recent versions too.
+- expect - a command line tool that automates interactive applications.
 
 * Configuration
 

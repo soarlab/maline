@@ -27,10 +27,10 @@ README.org file in the root).
 
 # Installation
 
-**maline** was developed under Ubuntu 12.04 LTS. It is very likely it will work
-under other POSIX systems (GNU/Linux and Mac alike). The Android version we
-tested **maline** with is Android 4.4.2 (API version 19), which is assumed
-throughout the readme.
+**maline** was developed under Ubuntu 12.04.3 LTS. It is very likely it will
+work under other POSIX systems too (GNU/Linux and Mac alike). The Android
+version we tested **maline** with is Android 4.4.2 (API version 19), which is
+assumed throughout the readme.
 
 **maline** is a collection of Bash and Python scripts, so no installation is
 needed. It suffices to obtain **maline**, e.g. from Github:
@@ -47,7 +47,12 @@ To use **maline**, you need the following:
 
 -   [apktool](https://code.google.com/p/android-apktool/) - **maline** already ships with apktool.
 
--   expect - a command line tool that automates interactive applications
+-   [Bash](http://www.gnu.org/software/bash/) - ships with Ubuntu.
+
+-   [Python](http://www.python.org/) - we tested **maline** with Python 2.7.3, but it might work with more
+    recent versions too.
+
+-   expect - a command line tool that automates interactive applications.
 
 # Configuration
 
