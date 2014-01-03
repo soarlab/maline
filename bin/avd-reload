@@ -1,0 +1,10 @@
+#!/usr/bin/expect -f
+set cport [lindex $argv 0]
+spawn telnet localhost $cport
+expect "OK"
+send "avd snapshot load jenkins\r"
+expect "OK"
+send "avd stop\r"
+expect "OK"
+send "avd start\r"
+expect "OK"

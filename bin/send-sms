@@ -1,0 +1,9 @@
+#!/usr/bin/expect -f
+set cport [lindex $argv 0]
+set number [lindex $argv 1]
+set message [lindex $argv 2]
+spawn telnet localhost $cport
+expect "OK"
+send -- "sms send $number $message\r"
+expect "OK"
+send "quit\r"

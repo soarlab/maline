@@ -1,0 +1,10 @@
+#!/usr/bin/expect -f
+set cport [lindex $argv 0]
+set lon [lindex $argv 1]
+set lat [lindex $argv 2]
+set alt [lindex $argv 3]
+spawn telnet localhost $cport
+expect "OK"
+send -- "geo fix $lon $lat $alt\r"
+expect "OK"
+send "quit\r"
