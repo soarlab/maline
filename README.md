@@ -45,14 +45,15 @@ To use **maline**, you need the following:
 
 -   [Android SDK](https://developer.android.com/sdk/index.html) - follow instructions for installation of the SDK.
 
--   [apktool](https://code.google.com/p/android-apktool/) - **maline** already ships with apktool.
+-   [apktool](https://code.google.com/p/android-apktool/) - **maline** already ships with apktool, which is licensed under
+    Apache License 2.0.
 
 -   [Bash](http://www.gnu.org/software/bash/) - ships with Ubuntu.
 
 -   [Python](http://www.python.org/) - we tested **maline** with Python 2.7.3, but it might work with more
     recent versions too.
 
--   expect - a command line tool that automates interactive applications.
+-   [expect](http://sourceforge.net/projects/expect/) - a command line tool that automates interactive applications.
 
 # Configuration
 
@@ -80,9 +81,13 @@ x86 Atom System Image:
     android update sdk --no-ui
     android update sdk --no-ui --all --filter sysimg-19
 
-Now, go ahead and create the image:
+Now, go ahead and create an AVD image:
 
     android create avd -f -a -c 512M -s WVGA800 -n maline-android-19_x86 -t android-19 --abi x86
+
+If you want to create an ARMv7-based AVD image instead, run:
+
+    android create avd -f -a -c 512M -s WVGA800 -n maline-android-19_armv7 -t android-19 --abi armeabi-v7a
 
 We want snapshots so that each app can be executed in a clean environment
 (that's the `-a` parameter). We also create a 512 MB SD card and select the
