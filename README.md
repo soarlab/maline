@@ -18,7 +18,6 @@
 </div>
 </div>
 
-
 # Introduction
 
 **maline** is an Android malware detection framework. If you are an Org-mode
@@ -75,23 +74,26 @@ slow. Therefore, if one has an `x86` host machine, it is better to create an
 long license that you have to accept before installing the Intel x86 System
 Image.
 
-First make sure to have the Android API version 19 and the respective Intel
-x86 Atom System Image:
+First make sure to have the Android API version 19:
 
     android update sdk --no-ui
+
+If you want to use an Intel x86 Atom System Image, then install the image
+through the SDK first:
+
     android update sdk --no-ui --all --filter sysimg-19
 
-Now, go ahead and create an AVD image:
+and then create an AVD device by executing:
 
-    android create avd -f -a -c 512M -s WVGA800 -n maline-android-19_x86 -t android-19 --abi x86
+    avd-create.sh -a x86 -i maline-android-19_x86
 
-If you want to create an ARMv7-based AVD image instead, run:
+Otherwise, if you want to base your AVD device on an ARM architecture, execute:
 
-    android create avd -f -a -c 512M -s WVGA800 -n maline-android-19_armv7 -t android-19 --abi armeabi-v7a
+    avd-create.sh -a armeabi-v7a -i maline-android-19_armv7
 
-We want snapshots so that each app can be executed in a clean environment
-(that's the `-a` parameter). We also create a 512 MB SD card and select the
-800x480 screen resolution.
+Now you have a clean environment where each app can be executed. That is so
+because the above executed `avd-create.sh` command creates an AVD device with
+a clean snapshot that will be reloaded every time a new app is analyzed.
 
 You can check that the device is created by executing:
 

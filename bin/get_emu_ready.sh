@@ -28,7 +28,7 @@ wait_for_emu()
 	adb -P $ADB_SERVER_PORT -e connect localhost:$ADB_PORT
 	
 	echo "Checking if the device has booted ..."
-	EMU_READY=`adb -P $ADB_SERVER_PORT -e -s localhost:$ADB_PORT shell getprop dev.bootcomplete 2>&1 & sleep 5; kill $!`
+	EMU_READY=`timeout 5 adb -P $ADB_SERVER_PORT -e -s localhost:$ADB_PORT shell getprop dev.bootcomplete 2>&1`
 	EMU_READY=${EMU_READY:0:1}
 	echo "EMU_READY: \"$EMU_READY\""
 	

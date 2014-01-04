@@ -17,6 +17,9 @@ TIMESTAMP="$4"
 
 CONSOLE_PORT="$5"
 
+# Constant snapshot name
+SNAPSHOT_NAME="maline"
+
 # Install the app. Make 3 attempts
 ATTEMPT=0
 ATTEMPT_LIMIT=3
@@ -42,7 +45,7 @@ while [ $ATTEMPT -lt $ATTEMPT_LIMIT ]; do
 
     # Reload a clean snapshot
     echo "Reloading a clean snapshot for the next attempt ..."
-    avd-reload $CONSOLE_PORT
+    avd-reload $CONSOLE_PORT $SNAPSHOT_NAME
 
     sleep 2s
 

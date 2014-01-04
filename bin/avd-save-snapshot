@@ -3,9 +3,7 @@ set cport [lindex $argv 0]
 set name [lindex $argv 1]
 spawn telnet localhost $cport
 expect "OK"
-send "avd snapshot load $name\r"
-expect "OK"
 send "avd stop\r"
 expect "OK"
-send "avd start\r"
+send "avd snapshot save $name\r"
 expect "OK"
