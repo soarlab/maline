@@ -14,6 +14,7 @@
 <li><a href="#sec-3-2">3.2. Android Virtual Device</a></li>
 </ul>
 </li>
+<li><a href="#sec-4">4. Usage</a></li>
 </ul>
 </div>
 </div>
@@ -61,8 +62,8 @@ To use **maline**, you need the following:
 **maline** needs to be in the PATH environment variable. In particular, the
 `bin/` directory should to be added to the variable, e.g.
 
-    export MALINE=~/projects/maline/bin
-    PATH=$PATH:$MALINE
+    export MALINE=~/projects/maline
+    PATH=$PATH:$MALINE/bin
 
 ## Android Virtual Device
 
@@ -85,11 +86,13 @@ through the SDK first:
 
 and then create an AVD device by executing:
 
-    avd-create.sh -a x86 -i maline-android-19_x86
+    avd-create.sh -a x86 -i maline-android-19
 
 Otherwise, if you want to base your AVD device on an ARM architecture, execute:
 
-    avd-create.sh -a armeabi-v7a -i maline-android-19_armv7
+    avd-create.sh -a armeabi-v7a -i maline-android-19
+
+The device creation process usually takes about 5 minutes.
 
 Now you have a clean environment where each app can be executed. That is so
 because the above executed `avd-create.sh` command creates an AVD device with
@@ -98,3 +101,23 @@ a clean snapshot that will be reloaded every time a new app is analyzed.
 You can check that the device is created by executing:
 
     android list avd
+
+You should see a device with a name `maline-android-19`.
+
+# Usage
+
+In order to execute Android apps in **maline**, one first needs to create a list
+of the apps. For example, let's assume that there are 6 apps in the `apps/`
+sub-directory within the root **maline** directory. Then their list can be
+stored to a file `apk-list-file` that has the following content:
+
+    ~/projects/maline/apps/com.nephoapp.anarxiv_1.apk
+    ~/projects/maline/apps/org.ale.scanner.zotero_2.apk
+    ~/projects/maline/apps/ed8a51225a3862e30817640ba7ec5b88ee04c98a.apk
+    ~/projects/maline/apps/vu.de.urpool.quickdroid_49.apk
+    ~/projects/maline/apps/to.networld.android.divedroid_1.apk
+    ~/projects/maline/apps/4147f7d801c4bc5241536886309d507c5124fe3b.apk
+
+To execute the 6 apps and get their execution logs, run the following:
+
+    maline.sh -c 55432 -b 55184 -s 13234 -f apk-list-file -e -i maline-android-19

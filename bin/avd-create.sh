@@ -50,7 +50,8 @@ if [ $ARCH != "x86" ] && [ $ARCH != "armeabi-v7a" ]; then
 fi
 
 # Create an Android Virtual Device
-android create avd --force -a --sdcard 512M --skin WVGA800 --name $IMAGE_NAME --target $ANDROID_API --abi $ARCH
+# Say no to a question about a custom hardware profile
+echo no | android create avd --force -a --sdcard 512M --skin WVGA800 --name $IMAGE_NAME --target $ANDROID_API --abi $ARCH
 
 # TODO: remove these hard-coded port values and write a script that
 # will randomly select such available ports
@@ -70,3 +71,5 @@ avd-save-snapshot $CONSOLE_PORT $SNAPSHOT_NAME
 
 # kill the emulator
 kill-emulator $CONSOLE_PORT
+
+echo ""

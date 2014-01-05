@@ -7,7 +7,7 @@
 # specified in a file given with the -f parameter. If -e is not
 # specified, the script will not start an emulator.
 #
-# Example usage: maline.sh -c 55432 -b 55184 -s 13234 -f apk-list-file -e
+# Example usage: maline.sh -c 55432 -b 55184 -s 13234 -f apk-list-file -e -i maline-android-19
 
 SCRIPTNAME=`basename $0`
 
@@ -17,26 +17,25 @@ SNAPSHOT_NAME="maline"
 # By default, don't start the emulator
 RUN_EMULATOR_DEFAULT=0
 
-while getopts "c:b:s:f:i:e" OPTION; do
+# By default, don't kill the emulator
+KILL_EMULATOR_DEFAULT=0
+
+while getopts "c:b:s:f:i:ek" OPTION; do
     case $OPTION in
 	c)
-	    CONSOLE_PORT="$OPTARG"
-	    ;;
+	    CONSOLE_PORT="$OPTARG";;
 	b)
-	    ADB_PORT="$OPTARG"
-	    ;;
+	    ADB_PORT="$OPTARG";;
 	s)
-	    ADB_SERVER_PORT="$OPTARG"
-	    ;;
+	    ADB_SERVER_PORT="$OPTARG";;
 	f)
-	    APK_LIST_FILE="$OPTARG"
-	    ;;
+	    APK_LIST_FILE="$OPTARG";;
 	i)
-	    AVD_IMAGE="$OPTARG"
-	    ;;
+	    IMAGE_NAME="$OPTARG";;
 	e)
-	    RUN_EMULATOR=1
-	    ;;
+	    RUN_EMULATOR=1;;
+	k)
+	    KILL_EMULATOR=1;;
     esac
 done
 
@@ -53,14 +52,15 @@ check_and_exit "-c" $CONSOLE_PORT
 check_and_exit "-b" $ADB_PORT
 check_and_exit "-s" $ADB_SERVER_PORT
 check_and_exit "-f" $APK_LIST_FILE
-check_and_exit "-i" $AVD_IMAGE
+check_and_exit "-i" $IMAGE_NAME
 
 : ${RUN_EMULATOR=$RUN_EMULATOR_DEFAULT}
+: ${KILL_EMULATOR=$KILL_EMULATOR_DEFAULT}
 
 # Start the emulator if -e is provided on the command line
 if [ $RUN_EMULATOR -eq 1 ]; then
     echo "$SCRIPTNAME: Starting emulator ..."
-    emulator -no-boot-anim -ports $CONSOLE_PORT,$ADB_PORT -prop persist.sys.language=en -prop persist.sys.country=US -avd hudson_en-US_240_WVGA_android-19_armeabi-v7a -snapshot jenkins -no-snapshot-save -wipe-data -netfast -no-window &
+    emulator -no-boot-anim -ports $CONSOLE_PORT,$ADB_PORT -prop persist.sys.language=en -prop persist.sys.country=US -avd $IMAGE_NAME -snapshot $SNAPSHOT_NAME -no-snapshot-save -wipe-data -netfast -no-window &
 fi
 
 # Get the current time
@@ -89,11 +89,16 @@ for APP_PATH in `cat $APK_LIST_FILE`; do
     
     # Reload a clean snapshot
     avd-reload $CONSOLE_PORT $SNAPSHOT_NAME
-
+    
     END_TIME=`date +"%s"`
     TOTAL_TIME=$((${END_TIME} - ${START_TIME}))
     echo "Total time for app `getAppPackageName.sh $APP_PATH`: $TOTAL_TIME s"
     echo ""
 done
+
+# Kill emulator if needed
+if [ $KILL_EMULATOR -eq 1 ]; then
+    kill-emulator $CONSOLE_PORT
+fi
 
 date
