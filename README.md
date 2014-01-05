@@ -45,8 +45,11 @@ To use **maline**, you need the following:
 
 -   [Android SDK](https://developer.android.com/sdk/index.html) - follow instructions for installation of the SDK.
 
--   [apktool](https://code.google.com/p/android-apktool/) - **maline** already ships with apktool, which is licensed under
+-   [apktool](https://code.google.com/p/android-apktool/) - **maline** already ships with apktool, which is licensed under the
     Apache License 2.0.
+
+-   [LIBSVM](http://www.csie.ntu.edu.tw/~cjlin/libsvm/) - **maline** already ships with LIBSVM, which is licensed under the
+    Modified BSD License.
 
 -   [Bash](http://www.gnu.org/software/bash/) - ships with Ubuntu.
 
@@ -118,6 +121,6 @@ stored to a file `apk-list-file` that has paths to the apps:
     ~/projects/maline/apps/to.networld.android.divedroid_1.apk
     ~/projects/maline/apps/4147f7d801c4bc5241536886309d507c5124fe3b.apk
 
-To execute the 6 apps and get their execution logs, run the following:
+To execute the apps and get their execution logs, run the following:
 
     maline.sh -c 55432 -b 55184 -s 13234 -f apk-list-file -e -i maline-android-19
