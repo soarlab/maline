@@ -48,15 +48,19 @@ To use **maline**, you need the following:
 -   [apktool](https://code.google.com/p/android-apktool/) - **maline** already ships with apktool, which is licensed under the
     Apache License 2.0.
 
+-   [GNU Octave](https://www.gnu.org/software/octave/) - a programming language for numerical computations. It is
+    available through a Ubuntu's default repository.
+
 -   [LIBSVM](http://www.csie.ntu.edu.tw/~cjlin/libsvm/) - **maline** already ships with LIBSVM, which is licensed under the
     Modified BSD License.
 
 -   [Bash](http://www.gnu.org/software/bash/) - ships with Ubuntu.
 
 -   [Python](http://www.python.org/) - we tested **maline** with Python 2.7.3, but it might work with more
-    recent versions too.
+    recent versions too. It is available through a Ubuntu's default repository.
 
--   [expect](http://sourceforge.net/projects/expect/) - a command line tool that automates interactive applications.
+-   [expect](http://sourceforge.net/projects/expect/) - a command line tool that automates interactive applications. It is
+    available through a Ubuntu's default repository.
 
 # Configuration
 
