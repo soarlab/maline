@@ -109,7 +109,7 @@ You should see a device with a name `maline-android-19`.
 In order to execute Android apps in **maline**, one first needs to create a list
 of the apps. For example, let's assume that there are 6 apps in the `apps/`
 sub-directory within the root **maline** directory. Then their list can be
-stored to a file `apk-list-file` that has the following content:
+stored to a file `apk-list-file` that has paths to the apps:
 
     ~/projects/maline/apps/com.nephoapp.anarxiv_1.apk
     ~/projects/maline/apps/org.ale.scanner.zotero_2.apk
