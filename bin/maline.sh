@@ -7,7 +7,7 @@
 # specified in a file given with the -f parameter. If -e is not
 # specified, the script will not start an emulator.
 #
-# Example usage: maline.sh -c 55432 -b 55184 -s 13234 -f apk-list-file -e -i maline-android-19
+# Example usage: maline.sh -c 55432 -b 55184 -s 13234 -f apk-list-file -e -d maline-android-19
 
 SCRIPTNAME=`basename $0`
 
@@ -20,7 +20,7 @@ RUN_EMULATOR_DEFAULT=0
 # By default, don't kill the emulator
 KILL_EMULATOR_DEFAULT=0
 
-while getopts "c:b:s:f:i:ek" OPTION; do
+while getopts "c:b:s:f:d:ek" OPTION; do
     case $OPTION in
 	c)
 	    CONSOLE_PORT="$OPTARG";;
@@ -30,8 +30,8 @@ while getopts "c:b:s:f:i:ek" OPTION; do
 	    ADB_SERVER_PORT="$OPTARG";;
 	f)
 	    APK_LIST_FILE="$OPTARG";;
-	i)
-	    IMAGE_NAME="$OPTARG";;
+	d)
+	    AVD_NAME="$OPTARG";;
 	e)
 	    RUN_EMULATOR=1;;
 	k)
@@ -52,7 +52,7 @@ check_and_exit "-c" $CONSOLE_PORT
 check_and_exit "-b" $ADB_PORT
 check_and_exit "-s" $ADB_SERVER_PORT
 check_and_exit "-f" $APK_LIST_FILE
-check_and_exit "-i" $IMAGE_NAME
+check_and_exit "-d" $AVD_NAME
 
 : ${RUN_EMULATOR=$RUN_EMULATOR_DEFAULT}
 : ${KILL_EMULATOR=$KILL_EMULATOR_DEFAULT}
@@ -60,7 +60,7 @@ check_and_exit "-i" $IMAGE_NAME
 # Start the emulator if -e is provided on the command line
 if [ $RUN_EMULATOR -eq 1 ]; then
     echo "$SCRIPTNAME: Starting emulator ..."
-    emulator -no-boot-anim -ports $CONSOLE_PORT,$ADB_PORT -prop persist.sys.language=en -prop persist.sys.country=US -avd $IMAGE_NAME -snapshot $SNAPSHOT_NAME -no-snapshot-save -wipe-data -netfast -no-window &
+    emulator -no-boot-anim -ports $CONSOLE_PORT,$ADB_PORT -prop persist.sys.language=en -prop persist.sys.country=US -avd $AVD_NAME -snapshot $SNAPSHOT_NAME -no-snapshot-save -wipe-data -netfast -no-window &
 fi
 
 # Get the current time

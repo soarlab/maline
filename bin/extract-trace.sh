@@ -45,11 +45,11 @@ echo "Testing the app ..."
 echo "There will be up to $ITERATIONS iterations, each sending $COUNT_PER_ITER random events to the app"
 
 echo "Also sending geo-location updates in parallel ..."
-LOCATIONS_FILE="../data/locations-list"
+LOCATIONS_FILE="$MALINE/data/locations-list"
 send-locations.sh $LOCATIONS_FILE 0 `cat $LOCATIONS_FILE | wc -l` $CONSOLE_PORT &
 
 echo "Spoofing SMS text messages in paralell too ..."
-MESSAGES_FILE="../data/sms-list"
+MESSAGES_FILE="$MALINE/data/sms-list"
 send-all-sms.sh $MESSAGES_FILE $CONSOLE_PORT &
 
 for (( i=0; i<$ITERATIONS; i++ )) do

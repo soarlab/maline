@@ -93,11 +93,11 @@ through the SDK first:
 
 and then create an AVD device by executing:
 
-    avd-create.sh -a x86 -i maline-android-19
+    avd-create.sh -a x86 -d maline-android-19
 
 Otherwise, if you want to base your AVD device on an ARM architecture, execute:
 
-    avd-create.sh -a armeabi-v7a -i maline-android-19
+    avd-create.sh -a armeabi-v7a -d maline-android-19
 
 The device creation process usually takes about 5 minutes.
 
@@ -127,4 +127,4 @@ stored to a file `apk-list-file` that has paths to the apps:
 
 To execute the apps and get their execution logs, run the following:
 
-    maline.sh -c 55432 -b 55184 -s 13234 -f apk-list-file -e -i maline-android-19
+    maline.sh -c 55432 -b 55184 -s 13234 -f apk-list-file -e -d maline-android-19
