@@ -4,8 +4,8 @@
 
 function loaddata()
   % Reading Input Files 
-  [gN gDataWeight gDataCount] = readFiles('./data/goodware');
-  [mN mDataWeight mDataCount] = readFiles('./data/malware');
+  [gN gDataWeight gDataCount] = readFiles('$MALINE/data/goodware');
+  [mN mDataWeight mDataCount] = readFiles('$MALINE/data/malware');
   printf('Creating Labels...\n');
   dataWeightLabels = zeros(length(gDataWeight(:, 1)), 1);
   dataCountLabels = zeros(length(gDataCount(:, 1)), 1);
@@ -23,7 +23,7 @@ function loaddata()
   data = [dataWeightFinal; dataCountFinal];
 
   printf('Creating data file...\n');
-  fid = fopen('data_new.dat', 'w+');
+  fid = fopen('$MALINE/data/features_data.dat', 'w+');
   fprintf(fid, '%d ', dim);
   fprintf(fid, '90 ');
   fprintf(fid, '1');

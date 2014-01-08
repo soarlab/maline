@@ -6,7 +6,7 @@ function classdroid()
   addpath(‘../lib/libsvm-3.17/matlab/');
 
   % Reading Input Files
-  [N dim ratio random dataWeight dataWeightLabels dataCount dataCountLabels] = readDataFile('data.dat');
+  [N dim ratio random dataWeight dataWeightLabels dataCount dataCountLabels] = readDataFile('$MALINE/data/features_data.dat');
 
   data = dataWeight;
   dataLabels = dataWeightLabels;
@@ -17,7 +17,7 @@ function classdroid()
 
   source('make_datasets.m');
 
-  results_file_name = 'results.txt';
+  results_file_name = '$MALINE/log/results.txt';
 
   # Erase previous content
   fid = fopen(results_file_name, 'w');
@@ -31,7 +31,7 @@ function classdroid()
       fprintf(fid, '%%Ratio: 50 - Random = 0\n');
       fclose(fid);
 
-      file = fopen('confusion.txt', 'a');
+      file = fopen('$MALINE/log/confusion.txt', 'a');
       fprintf(file, '%%Ratio: 50 -  Random = 0\n');
       fclose(file);
 
@@ -57,7 +57,7 @@ function classdroid()
 	  fprintf(fid, '%%Ratio: 90 -  Random: %d\n', random);
 	  fclose(fid);
 
-	  file = fopen('confusion.txt', 'a');
+	  file = fopen('$MALINE/log/confusion.txt', 'a');
 	  fprintf(file, '%%Ratio: 90 -  Random: %d\n', random);
 	  fclose(file);
 
@@ -120,7 +120,7 @@ function [accuracy, model, confusion] = svm(training_data, training_labels, test
   end
   [testing_labels predicted_labels];
   confusion;
-  file = fopen('confusion.txt', 'a');
+  file = fopen('$MALINE/log/confusion.txt', 'a');
   fprintf(file, '%f %f\n', confusion(1, :));
   fprintf(file, '%f %f\n', confusion(2, :));
   fclose(file);
