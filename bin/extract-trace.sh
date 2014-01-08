@@ -87,7 +87,7 @@ sleep 1s
 
 # Pull the logfile to the host machine
 mkdir -p log
-adb -P $ADB_SERVER_PORT pull /sdcard/$LOGFILE log/
+adb -P $ADB_SERVER_PORT pull /sdcard/$LOGFILE $MALINE/log/
 
 # Remove the logfile from the device
 RM_CMD="rm /sdcard/$LOGFILE"
