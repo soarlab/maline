@@ -3,10 +3,10 @@
 % authors: Simone Atzeni, Marko Dimjašević
 
 function classdroid()
-  addpath(‘../lib/libsvm-3.17/matlab/');
+  addpath(sprintf('%s%s', getenv('MALINE'), '/lib/libsvm-3.17/matlab/'));
 
   % Reading Input Files
-  [N dim ratio random dataWeight dataWeightLabels dataCount dataCountLabels] = readDataFile(sprintf('%s%s', getenv('MALINE'), '/data/features_data.dat'));
+  [N dim ratio random dataWeight dataWeightLabels dataCount dataCountLabels] = readDataFile(sprintf('%s%s', getenv('MALINE'), '/data/feature_data.dat'));
 
   data = dataWeight;
   dataLabels = dataWeightLabels;
