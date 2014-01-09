@@ -1,11 +1,11 @@
-% loadData
+% loaddata
 %
 % authors: Simone Atzeni, Marko Dimjašević
 
 function loaddata()
   % Reading Input Files 
-  [gN gDataWeight gDataCount] = readFiles('$MALINE/data/goodware');
-  [mN mDataWeight mDataCount] = readFiles('$MALINE/data/malware');
+  [gN gDataWeight gDataCount] = readFiles(sprintf('%s%s', getenv('MALINE'), '/data/goodware'));
+  [mN mDataWeight mDataCount] = readFiles(sprintf('%s%s', getenv('MALINE'), '/data/malware'));
   printf('Creating Labels...\n');
   dataWeightLabels = zeros(length(gDataWeight(:, 1)), 1);
   dataCountLabels = zeros(length(gDataCount(:, 1)), 1);
@@ -23,7 +23,7 @@ function loaddata()
   data = [dataWeightFinal; dataCountFinal];
 
   printf('Creating data file...\n');
-  fid = fopen('$MALINE/data/features_data.dat', 'w+');
+  fid = fopen(sprintf('%s%s', getenv('MALINE'), '/data/features_data.dat'), 'w+');
   fprintf(fid, '%d ', dim);
   fprintf(fid, '90 ');
   fprintf(fid, '1');
@@ -47,7 +47,7 @@ function [N dataWeight dataCount] = readFiles(foldername)
       continue;
     endif
     ## load your file
-    %printf('Filename: %s\n', filelist{ii});
+    printf('Filename: %s\n', filelist{ii});
     path = sprintf('%s/%s', foldername, filelist{ii});
     [localN, localDataWeight localDataCount] = readDataFile(path);
     dataWeight = [dataWeight; localDataWeight];
