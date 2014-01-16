@@ -24,7 +24,7 @@ if __name__ == "__main__":
     import_sys_call_list()
 
     for line in sys.stdin:
-        index = int(line[:-1])
+        index = int(line[:-1]) - 1
         s1 = index / num_of_sys_calls
         s2 = index % num_of_sys_calls
         print "%d = (%d, %d) = (%s, %s)" % (index, s1, s2, name(s1), name(s2))
