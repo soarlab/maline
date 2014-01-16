@@ -1,14 +1,30 @@
 % make_datasets.m - Splits data into training and testing
 % data sets
+
+% Copyright 2013,2014 Marko Dimjašević, Simone Atzeni, Ivo Ugrina, Zvonimir Rakamarić
 %
+% This file is part of maline.
+%
+% maline is free software: you can redistribute it and/or modify it
+% under the terms of the GNU Affero General Public License as
+% published by the Free Software Foundation, either version 3 of the
+% License, or (at your option) any later version.
+%
+% maline is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU Affero General Public License for more details.
+%
+% You should have received a copy of the GNU Affero General Public License
+% along with maline.  If not, see <http://www.gnu.org/licenses/>.
+
+
 % data - The data.
 % training_data - The data for training.
 % training_labels - The labels for each of the training samples.
 % testing_data - The data for testing.
 % testing_data - The labels for each of the testing samples.
-%
-% authors: Simone Atzeni, Marko Dimjašević
-%
+
 
 function [training_data, training_labels, testing_data, testing_labels] = make_datasets(data, ratio, random)
 
