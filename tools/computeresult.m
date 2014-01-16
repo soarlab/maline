@@ -4,7 +4,7 @@
 
 function computeresult()
   % Reading Input Files 
-  [data50, confusionData50, data90, confusionData90, data_rand, confusionData_rand] = readDataFile('final-results.txt', 'confusion.txt');
+  [data50, confusionData50, data90, confusionData90, data_rand, confusionData_rand] = readDataFile(sprintf('%s%s', getenv('MALINE'), '/log/final-results.txt'), sprintf('%s%s', getenv('MALINE'), '/log/confusion.txt'));
 
   labels = ['Linear'; 'Poly deg 1'; 'Poly deg 2'; 'Poly deg 3'; 'Poly deg 4'];
 
