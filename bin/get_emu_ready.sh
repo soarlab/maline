@@ -1,5 +1,23 @@
 #!/bin/bash
 
+# Copyright 2013,2014 Marko Dimjašević, Simone Atzeni, Ivo Ugrina, Zvonimir Rakamarić
+#
+# This file is part of maline.
+#
+# maline is free software: you can redistribute it and/or modify it
+# under the terms of the GNU Affero General Public License as
+# published by the Free Software Foundation, either version 3 of the
+# License, or (at your option) any later version.
+#
+# maline is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Affero General Public License for more details.
+#
+# You should have received a copy of the GNU Affero General Public License
+# along with maline.  If not, see <http://www.gnu.org/licenses/>.
+
+
 ADB_PORT="$1"
 ADB_SERVER_PORT="$2"
 
@@ -20,8 +38,11 @@ wait_for_emu()
 
 	    echo "Killing and starting the adb server ..."
 	    adb -P $ADB_SERVER_PORT kill-server
-	    killall adb 2>&1 > /dev/null
+	    # killall adb 2>&1 > /dev/null
+	    kill $ADB_PID 2>&1 > /dev/null
+
 	    adb -P $ADB_SERVER_PORT start-server
+	    ADB_PID=$!
 	fi
 	
 	echo "Connecting to the device ..."

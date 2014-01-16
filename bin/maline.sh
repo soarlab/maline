@@ -1,5 +1,23 @@
 #!/bin/bash
 
+# Copyright 2013,2014 Marko Dimjašević, Simone Atzeni, Ivo Ugrina, Zvonimir Rakamarić
+#
+# This file is part of maline.
+#
+# maline is free software: you can redistribute it and/or modify it
+# under the terms of the GNU Affero General Public License as
+# published by the Free Software Foundation, either version 3 of the
+# License, or (at your option) any later version.
+#
+# maline is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Affero General Public License for more details.
+#
+# You should have received a copy of the GNU Affero General Public License
+# along with maline.  If not, see <http://www.gnu.org/licenses/>.
+
+
 # This script boots a clean snapshot in a headless emulator with ports
 # specified by parameters -c and -b for the console and adb bridge,
 # respectively. An adb server uses port specified by the -s
@@ -61,6 +79,7 @@ check_and_exit "-d" $AVD_NAME
 if [ $RUN_EMULATOR -eq 1 ]; then
     echo "$SCRIPTNAME: Starting emulator ..."
     emulator -no-boot-anim -ports $CONSOLE_PORT,$ADB_PORT -prop persist.sys.language=en -prop persist.sys.country=US -avd $AVD_NAME -snapshot $SNAPSHOT_NAME -no-snapshot-save -wipe-data -netfast -no-window &
+    # emulator -no-boot-anim -ports $CONSOLE_PORT,$ADB_PORT -prop persist.sys.language=en -prop persist.sys.country=US -avd $AVD_NAME -snapshot $SNAPSHOT_NAME -no-snapshot-save -wipe-data -netfast &
 fi
 
 # Get the current time
