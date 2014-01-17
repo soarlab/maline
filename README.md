@@ -136,5 +136,8 @@ To execute the apps and get their execution logs, run the following:
 Affero General Public License, version 3 or (at your option) any later
 version. You can find the text of the license in COPYING.
 
+There are software dependencies for **maline**. All of them are free software
+too. Read their copyright notices for more information.
+
 To the extent possible under law, Marko Dimjašević has waived all copyright
 and related or neighboring rights to this README ([CC0](https://creativecommons.org/publicdomain/zero/1.0/)).
