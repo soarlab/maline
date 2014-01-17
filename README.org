@@ -15,11 +15,9 @@
 #+XSLT:
 
 * Introduction
-*maline* is an Android malware detection framework. It is a free software
-framework licensed under the terms of the GNU Affero General Public License,
-version 3 or (at your option) any later version. If you are an Org-mode user,
-you might want to read the [[http://orgmode.org/worg/org-contrib/babel/intro.html][executable version]] of this readme (the README.org
-file in the root).
+*maline* is a free software Android malware detection framework. If you are an
+Org-mode user, you might want to read the [[http://orgmode.org/worg/org-contrib/babel/intro.html][executable version]] of this readme
+(the README.org file in the root).
 
 * Installation
 *maline* was developed under Ubuntu 12.04.3 LTS. It is very likely it will
@@ -129,3 +127,10 @@ To execute the apps and get their execution logs, run the following:
 #+BEGIN_SRC sh :exports code
   maline.sh -c 55432 -b 55184 -s 13234 -f apk-list-file -e -d maline-android-19
 #+END_SRC
+* Copyright
+*maline* is a free software framework licensed under the terms of the GNU
+Affero General Public License, version 3 or (at your option) any later
+version. You can find the text of the license in COPYING.
+
+To the extent possible under law, Marko Dimjašević has waived all copyright
+and related or neighboring rights to this README ([[https://creativecommons.org/publicdomain/zero/1.0/][CC0]]).
