@@ -130,6 +130,15 @@ To execute the apps and get their execution logs, run the following:
 
     maline.sh -c 55432 -b 55184 -s 13234 -f apk-list-file -e -d maline-android-19
 
+Once parsed the logs and obtained the .graph files, to create the data
+file with all feature vectors run the following script:
+
+    createFeatureDataFile.sh
+
+Now, it is possible to classify the data running the following:
+
+    runClassDroid.sh
+
 # Copyright
 
 **maline** is a free software framework licensed under the terms of the GNU
