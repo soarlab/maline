@@ -23,6 +23,11 @@
 # emulator, waits for it to get ready, and then saves a snapshot by
 # running the following in telnet:
 
+set -e
+
+source $MALINE/lib/maline.lib
+CURR_PID=$$
+
 # before taking a snapshot, check how Jenkins makes sure the screen is
 # unlocked and that there is a SIM card in the device
 
@@ -73,14 +78,25 @@ echo no | android create avd --force -a --sdcard 512M --skin WVGA800 --name $AVD
 
 # TODO: remove these hard-coded port values and write a script that
 # will randomly select such available ports
-CONSOLE_PORT="55432"
-ADB_PORT="55184"
-ADB_SERVER_PORT="13234"
+available_port CONSOLE_PORT
+available_port ADB_PORT
+available_port ADB_SERVER_PORT
+
+rm -f $MALINE/.avd-create-$CURR_PID
+echo "Console port: ${CONSOLE_PORT}" >> $MALINE/.avd-create-$CURR_PID
+echo "ADB port: ${ADB_PORT}" >> $MALINE/.avd-create-$CURR_PID
+echo "ADB server port: ${ADB_SERVER_PORT}" >> $MALINE/.avd-create-$CURR_PID
+
+# CONSOLE_PORT="55432"
+# ADB_PORT="55184"
+# ADB_SERVER_PORT="13234"
 
 # Start emulator
 echo "$SCRIPTNAME: Starting emulator ..."
 BOOT_START=`date +"%s"`
 emulator -no-boot-anim -ports $CONSOLE_PORT,$ADB_PORT -prop persist.sys.language=en -prop persist.sys.country=US -avd $AVD_NAME -no-snapshot-load -no-snapshot-save -wipe-data -no-window &
+# emulator -no-boot-anim -ports $CONSOLE_PORT,$ADB_PORT -prop persist.sys.language=en -prop persist.sys.country=US -avd $AVD_NAME -no-snapshot-load -no-snapshot-save -wipe-data &
+EMULATOR_PID=$!
 
 # Wait for the emulator
 get_emu_ready.sh $ADB_PORT $ADB_SERVER_PORT
@@ -117,7 +133,7 @@ echo "Clearing the main log before creating a snapshot..."
 adb -P $ADB_SERVER_PORT -s localhost:$ADB_PORT logcat -c 2>&1 > /dev/null
 
 # Write into log that we're about to take a snapshot
-adb  -P $ADB_SERVER_PORT -s localhost:$ADB_PORT shell log -p v -t maline 'Creating snapshot...'
+adb -P $ADB_SERVER_PORT -s localhost:$ADB_PORT shell log -p v -t maline 'Creating snapshot...'
 
 # Wait for the emulator
 get_emu_ready.sh $ADB_PORT $ADB_SERVER_PORT
@@ -126,7 +142,14 @@ get_emu_ready.sh $ADB_PORT $ADB_SERVER_PORT
 avd-save-snapshot $CONSOLE_PORT $SNAPSHOT_NAME
 echo ""
 
+# kill the adb server
+adb -P $ADB_SERVER_PORT kill-server
+
 # kill the emulator
 kill-emulator $CONSOLE_PORT
+kill $EMULATOR_PID
+
+# Remove a temporary file with a list of ports used
+rm $MALINE/.avd-create-$CURR_PID
 
 echo ""

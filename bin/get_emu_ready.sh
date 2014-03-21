@@ -52,20 +52,24 @@ wait_for_emu()
 	EMU_READY=`timeout 5 adb -P $ADB_SERVER_PORT -e -s localhost:$ADB_PORT shell getprop dev.bootcomplete 2>&1`
 	EMU_READY=${EMU_READY:0:1}
 	echo "EMU_READY: \"$EMU_READY\""
-	
+
 	let COUNTER=COUNTER+1
     done
 }
 
-# Kill adb server(s)
+# Kill the adb server
 adb -P $ADB_SERVER_PORT kill-server
-killall adb 2>&1 > /dev/null
+ADB_PID=`ps -ef | grep "adb -P $ADB_SERVER_PORT" | head -1 | awk -F" " '{print $2}'`
+kill $ADB_PID 2>&1 > /dev/null
 
 # Start an adb server
 adb -P $ADB_SERVER_PORT start-server
+ADB_PID=$!
 
 # Wait for the device
 echo "Waiting for the device ..."
 wait_for_emu
 
 adb -P $ADB_SERVER_PORT -e connect localhost:$ADB_PORT
+
+exit 0

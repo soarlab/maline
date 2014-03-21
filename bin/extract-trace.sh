@@ -30,19 +30,15 @@ ADB_SERVER_PORT="$3"
 # Get the current time
 TIMESTAMP="$4"
 
+# Status file where send-sms.sh and send-locations.sh PID's should be
+# written to
+GPS_SMS_STATUS_FILE="$5"
+
 # Get apk file name
 APK_FILE_NAME=`basename $1 .apk`
 
 # Log file name
 LOGFILE="$APK_FILE_NAME-$APP_NAME-$TIMESTAMP.log"
-
-cleanup()
-{
-    # Stop the send-locations.sh script if it's still running
-    killall send-locations.sh
-    # Stop the send-sms.sh script if it's still running
-    killall send-sms.sh
-}
 
 # Send an event to the app to start it
 echo "Starting the app ..."
@@ -65,10 +61,14 @@ echo "There will be up to $ITERATIONS iterations, each sending $COUNT_PER_ITER r
 echo "Also sending geo-location updates in parallel ..."
 LOCATIONS_FILE="$MALINE/data/locations-list"
 send-locations.sh $LOCATIONS_FILE 0 `cat $LOCATIONS_FILE | wc -l` $CONSOLE_PORT &
+GEO_PID=$!
+echo -n "${GEO_PID} " > $GPS_SMS_STATUS_FILE
 
 echo "Spoofing SMS text messages in paralell too ..."
 MESSAGES_FILE="$MALINE/data/sms-list"
 send-all-sms.sh $MESSAGES_FILE $CONSOLE_PORT &
+SMS_PID=$!
+echo -n "${SMS_PID}" >> $GPS_SMS_STATUS_FILE
 
 for (( i=0; i<$ITERATIONS; i++ )) do
 
@@ -77,7 +77,6 @@ for (( i=0; i<$ITERATIONS; i++ )) do
     if [ -z "$ACTIVE" ]; then
 	echo "App not running any more ..."
 	echo "Stopping testing ..."
-	cleanup
 	break
     fi
 
@@ -111,5 +110,3 @@ adb -P $ADB_SERVER_PORT pull /sdcard/$LOGFILE $MALINE/log/
 RM_CMD="rm /sdcard/$LOGFILE"
 
 adb -P $ADB_SERVER_PORT shell "$RM_CMD" 
-
-cleanup

@@ -38,16 +38,25 @@ CONSOLE_PORT="$5"
 # Constant snapshot name
 SNAPSHOT_NAME="maline"
 
+# Current process ID
+CURR_PID=$$
+
+# Temporary status files
+APP_STATUS_FILE=$MALINE/.app_status-$CURR_PID
+GPS_SMS_STATUS_FILE=$MALINE/.inst-run-rm-$CURR_PID
+rm -f $GPS_SMS_STATUS_FILE
+
 # Install the app. Make 3 attempts
 ATTEMPT=0
 ATTEMPT_LIMIT=3
+
 while [ $ATTEMPT -lt $ATTEMPT_LIMIT ]; do
     echo "Installing the app ..."
     echo "  Attempt $ATTEMPT ..."
-    timeout 15 adb -P $ADB_SERVER_PORT install $APP_PATH 2>&1 > .app_status
+    timeout 25 adb -P $ADB_SERVER_PORT install $APP_PATH 2>&1 > $APP_STATUS_FILE
 
-    cat .app_status
-    RES=`tail -n 1 .app_status`
+    cat .app_status-$CURR_PID
+    RES=`tail -n 1 $APP_STATUS_FILE`
     RES=${RES:0:7}
 
     if [ "$RES" = "Success" ]; then
@@ -55,7 +64,7 @@ while [ $ATTEMPT -lt $ATTEMPT_LIMIT ]; do
     fi
 
     let ATTEMPT=ATTEMPT+1
-    if [ $ATTEMPT -eq 3 ]; then
+    if [ $ATTEMPT -eq $ATTEMPT_LIMIT ]; then
 	break
     fi
 
@@ -72,6 +81,8 @@ while [ $ATTEMPT -lt $ATTEMPT_LIMIT ]; do
 
 done
 
+rm -f $APP_STATUS_FILE
+
 # Abort if the app is not installed
 if [ $ATTEMPT -eq $ATTEMPT_LIMIT ]; then
     echo "Failed to install the app in $ATTEMPT_LIMIT attempts"
@@ -83,8 +94,12 @@ fi
 sleep 2s
 
 # Extract trace from the app
-extract-trace.sh $APP_PATH $CONSOLE_PORT $ADB_SERVER_PORT $TIMESTAMP
+extract-trace.sh $APP_PATH $CONSOLE_PORT $ADB_SERVER_PORT $TIMESTAMP $GPS_SMS_STATUS_FILE
 echo "Done"
+
+# Clean up after extract-trace.sh
+kill `cat $GPS_SMS_STATUS_FILE`
+rm -f $GPS_SMS_STATUS_FILE
 
 sleep 1s
 

@@ -17,10 +17,10 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with maline.  If not, see <http://www.gnu.org/licenses/>.
 
-
-$MALINE/lib/apktool/apktool d $1 1>/dev/null 2>/dev/null
-filepath=$(basename $1 .apk)
-filename=./$filepath/AndroidManifest.xml
+CURR_PID=$$
+TMP_DIR=$MALINE/.getAppPackageName-$CURR_PID
+$MALINE/lib/apktool/apktool d $1 $TMP_DIR 1>/dev/null 2>/dev/null
+filename=$TMP_DIR/AndroidManifest.xml
 package=$(grep -e "package" $filename | grep -o -P '(?<=package=").*(?=\")')
-rm -rf $filepath
+rm -rf $TMP_DIR
 echo $package

@@ -1,0 +1,14 @@
+function available_port()
+{
+    local __port=`expr 10000 + $RANDOM`
+    while [ -n "`netstat -an | grep :${__port}`" ]
+    do
+	__port=`expr 10000 + $RANDOM`
+    done
+
+    if [[ "$1" ]]; then
+    	eval "$1=$__port"
+    else
+    	echo "$__port"
+    fi
+}

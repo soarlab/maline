@@ -21,11 +21,17 @@
 # This script boots a clean snapshot in a headless emulator with ports
 # specified by parameters -c and -b for the console and adb bridge,
 # respectively. An adb server uses port specified by the -s
-# parameter. List of paths to Android apps - one path per line - is
-# specified in a file given with the -f parameter. If -e is not
-# specified, the script will not start an emulator.
+# parameter. All the port parameters are optional. A list of paths to
+# Android apps - one path per line - is specified in a file given with
+# the -f parameter. If -e is not specified, the script will not start
+# an emulator.
 #
 # Example usage: maline.sh -c 55432 -b 55184 -s 13234 -f apk-list-file -e -d maline-android-19
+
+set -e
+
+source $MALINE/lib/maline.lib
+CURR_PID=$$
 
 SCRIPTNAME=`basename $0`
 
@@ -66,11 +72,19 @@ check_and_exit() {
 }
 
 # Check if all parameters are provided
-check_and_exit "-c" $CONSOLE_PORT
-check_and_exit "-b" $ADB_PORT
-check_and_exit "-s" $ADB_SERVER_PORT
 check_and_exit "-f" $APK_LIST_FILE
 check_and_exit "-d" $AVD_NAME
+# If a port is not provided, take an available port
+if [ -z "$CONSOLE_PORT" ]; then
+    available_port CONSOLE_PORT
+fi
+if [ -z "$ADB_PORT" ]; then
+    available_port ADB_PORT
+fi
+
+rm -f $MALINE/.maline-$CURR_PID
+echo "Console port: ${CONSOLE_PORT}" >> $MALINE/.maline-$CURR_PID
+echo "ADB port: ${ADB_PORT}" >> $MALINE/.maline-$CURR_PID
 
 : ${RUN_EMULATOR=$RUN_EMULATOR_DEFAULT}
 : ${KILL_EMULATOR=$KILL_EMULATOR_DEFAULT}
@@ -92,6 +106,16 @@ TIMEOUT=600
 # app, test it with Monkey, trace system calls with strace, fetch the
 # strace log, and load a clean Android snapshot for the next app
 
+FAILED_APPS_FILE="$MALINE/apk-list-file-$TIMESTAMP-maline-$CURR_PID"
+
+# If a port for adb server was not provided, reserve one only now that
+# the emulator is up so as to minimize chances of someone else getting
+# the port in the meantime
+if [ -z "$ADB_SERVER_PORT" ]; then
+    available_port ADB_SERVER_PORT
+fi
+echo "ADB server port: ${ADB_SERVER_PORT}" >> $MALINE/.maline-$CURR_PID
+
 for APP_PATH in `cat $APK_LIST_FILE`; do
 
     date
@@ -103,9 +127,22 @@ for APP_PATH in `cat $APK_LIST_FILE`; do
     # Get the Emulator ready
     get_emu_ready.sh $ADB_PORT $ADB_SERVER_PORT
 
+    # Check if a log file for this app already exists
+    APK_FILE_NAME=`basename $APP_PATH .apk`
+    APP_NAME=`getAppPackageName.sh $APP_PATH`
+    LOGFILE="$MALINE/log/$APK_FILE_NAME-$APP_NAME-$TIMESTAMP.log"
+    rm -f $LOGFILE
+
     # Install, test, and remove the app
+    set +e
     timeout $TIMEOUT inst-run-rm.sh $APP_PATH $ADB_PORT $ADB_SERVER_PORT $TIMESTAMP $CONSOLE_PORT
-    
+    set -e
+    # If there is no log file of the app, it means something has went
+    # wrong and the app hasn't been analyzed
+    if [ ! -f $LOGFILE ]; then
+	echo $APP_PATH >> $FAILED_APPS_FILE
+    fi
+
     # Reload a clean snapshot
     avd-reload $CONSOLE_PORT $SNAPSHOT_NAME
     
@@ -119,5 +156,8 @@ done
 if [ $KILL_EMULATOR -eq 1 ]; then
     kill-emulator $CONSOLE_PORT
 fi
+
+# Remove a temporary file with a list of ports used
+rm $MALINE/.maline-$CURR_PID
 
 date
