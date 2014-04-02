@@ -20,7 +20,7 @@
 
 # This script boots a clean snapshot in a headless emulator with ports
 # specified by parameters -c and -b for the console and adb bridge,
-# respectively. An adb server uses port specified by the -s
+# respectively. An adb server uses a port specified by the -s
 # parameter. All the port parameters are optional. A list of paths to
 # Android apps - one path per line - is specified in a file given with
 # the -f parameter. If -e is not specified, the script will not start
@@ -32,6 +32,8 @@ set -e
 
 source $MALINE/lib/maline.lib
 CURR_PID=$$
+
+MALINE_START_TIME=`date +"%s"`
 
 SCRIPTNAME=`basename $0`
 
@@ -160,4 +162,15 @@ fi
 # Remove a temporary file with a list of ports used
 rm $MALINE/.maline-$CURR_PID
 
+MALINE_END_TIME=`date +"%s"`
+MALINE_TOTAL_TIME=$((${MALINE_END_TIME} - ${MALINE_START_TIME}))
+
+NUM_OF_APPS=`cat $APK_LIST_FILE | wc -l`
+if [ ! -z "$NUM_OF_APPS" ]; then
+    PER_APP_TIME=`echo "scale=3; $MALINE_TOTAL_TIME / $NUM_OF_APPS" | bc`
+    echo "Per app time: $PER_APP_TIME s"
+fi
+
+echo
 date
+echo "Total tool time: $MALINE_TOTAL_TIME s"
