@@ -76,8 +76,6 @@ fi
 # Say no to a question about a custom hardware profile
 echo no | android create avd --force -a --sdcard 512M --skin WVGA800 --name $AVD_NAME --target $ANDROID_API --abi $ARCH
 
-# TODO: remove these hard-coded port values and write a script that
-# will randomly select such available ports
 available_port CONSOLE_PORT
 available_port ADB_PORT
 available_port ADB_SERVER_PORT
@@ -86,10 +84,6 @@ rm -f $MALINE/.avd-create-$CURR_PID
 echo "Console port: ${CONSOLE_PORT}" >> $MALINE/.avd-create-$CURR_PID
 echo "ADB port: ${ADB_PORT}" >> $MALINE/.avd-create-$CURR_PID
 echo "ADB server port: ${ADB_SERVER_PORT}" >> $MALINE/.avd-create-$CURR_PID
-
-# CONSOLE_PORT="55432"
-# ADB_PORT="55184"
-# ADB_SERVER_PORT="13234"
 
 # Start emulator
 echo "$SCRIPTNAME: Starting emulator ..."
@@ -138,6 +132,9 @@ adb -P $ADB_SERVER_PORT -s localhost:$ADB_PORT shell log -p v -t maline 'Creatin
 # Wait for the emulator
 get_emu_ready.sh $ADB_PORT $ADB_SERVER_PORT
 
+# Kill adb; otherwise the image won't be usable
+adb -P $ADB_SERVER_PORT kill-server
+
 # Pause the AVD and take a snapshot
 avd-save-snapshot $CONSOLE_PORT $SNAPSHOT_NAME
 echo ""
@@ -153,3 +150,4 @@ kill $EMULATOR_PID
 rm $MALINE/.avd-create-$CURR_PID
 
 echo ""
+echo "Android virtual device ${AVD_NAME} created successfully"
