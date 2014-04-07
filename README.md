@@ -128,7 +128,7 @@ stored to a file `apk-list-file` that has paths to the apps:
 
 To execute the apps and get their execution logs, run the following:
 
-    maline.sh -c 55432 -b 55184 -s 13234 -f apk-list-file -e -d maline-android-19
+    maline.sh -f apk-list-file -d maline-android-19
 
 Once parsed the logs and obtained the .graph files, to create the data
 file with all feature vectors run the following script:

@@ -26,7 +26,7 @@
 # the -f parameter. If -e is not specified, the script will not start
 # an emulator.
 #
-# Example usage: maline.sh -c 55432 -b 55184 -s 13234 -f apk-list-file -e -d maline-android-19
+# Example usage: maline.sh -f apk-list-file -d maline-android-19
 
 set -e
 
@@ -40,12 +40,6 @@ SCRIPTNAME=`basename $0`
 # Constant snapshot name
 SNAPSHOT_NAME="maline"
 
-# By default, don't start the emulator
-RUN_EMULATOR_DEFAULT=0
-
-# By default, don't kill the emulator
-KILL_EMULATOR_DEFAULT=0
-
 while getopts "c:b:s:f:d:ek" OPTION; do
     case $OPTION in
 	c)
@@ -58,10 +52,6 @@ while getopts "c:b:s:f:d:ek" OPTION; do
 	    APK_LIST_FILE="$OPTARG";;
 	d)
 	    AVD_NAME="$OPTARG";;
-	e)
-	    RUN_EMULATOR=1;;
-	k)
-	    KILL_EMULATOR=1;;
     esac
 done
 
@@ -88,15 +78,10 @@ rm -f $MALINE/.maline-$CURR_PID
 echo "Console port: ${CONSOLE_PORT}" >> $MALINE/.maline-$CURR_PID
 echo "ADB port: ${ADB_PORT}" >> $MALINE/.maline-$CURR_PID
 
-: ${RUN_EMULATOR=$RUN_EMULATOR_DEFAULT}
-: ${KILL_EMULATOR=$KILL_EMULATOR_DEFAULT}
-
-# Start the emulator if -e is provided on the command line
-if [ $RUN_EMULATOR -eq 1 ]; then
-    echo "$SCRIPTNAME: Starting emulator ..."
-    emulator -no-boot-anim -ports $CONSOLE_PORT,$ADB_PORT -prop persist.sys.language=en -prop persist.sys.country=US -avd $AVD_NAME -snapshot $SNAPSHOT_NAME -no-snapshot-save -wipe-data -netfast -no-window &
+# Start the emulator
+echo "$SCRIPTNAME: Starting emulator ..."
+emulator -no-boot-anim -ports $CONSOLE_PORT,$ADB_PORT -prop persist.sys.language=en -prop persist.sys.country=US -avd $AVD_NAME -snapshot $SNAPSHOT_NAME -no-snapshot-save -wipe-data -netfast -no-window &
     # emulator -no-boot-anim -ports $CONSOLE_PORT,$ADB_PORT -prop persist.sys.language=en -prop persist.sys.country=US -avd $AVD_NAME -snapshot $SNAPSHOT_NAME -no-snapshot-save -wipe-data -netfast &
-fi
 
 # Get the current time
 TIMESTAMP=`date +"%Y-%m-%d-%H-%M-%S"`
@@ -154,10 +139,11 @@ for APP_PATH in `cat $APK_LIST_FILE`; do
     echo ""
 done
 
-# Kill emulator if needed
-if [ $KILL_EMULATOR -eq 1 ]; then
-    kill-emulator $CONSOLE_PORT
-fi
+# Kill the emulator
+kill-emulator $CONSOLE_PORT
+
+# Kill the log parsing process
+kill $PARSE_PID
 
 # Remove a temporary file with a list of ports used
 rm $MALINE/.maline-$CURR_PID
@@ -168,6 +154,7 @@ MALINE_TOTAL_TIME=$((${MALINE_END_TIME} - ${MALINE_START_TIME}))
 NUM_OF_APPS=`cat $APK_LIST_FILE | wc -l`
 if [ ! -z "$NUM_OF_APPS" ]; then
     PER_APP_TIME=`echo "scale=3; $MALINE_TOTAL_TIME / $NUM_OF_APPS" | bc`
+    echo ""
     echo "Per app time: $PER_APP_TIME s"
 fi
 
