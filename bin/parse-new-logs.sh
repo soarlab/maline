@@ -21,7 +21,18 @@
 # If providing an optional parameter (path to a log directory), make
 # sure not to include the ending slash
 
-LOG_DIR_DEFAULT="log"
+# Check if there is another instance of this script and exist if it
+# does
+LOCK_FILE="$MALINE/.parse-new-logs.lock"
+
+if [ -e "$LOCK_FILE" ]; then
+    # echo "Another instance of $0 already running! Exiting ..."
+    exit 0
+else
+    echo $$ > $LOCK_FILE
+fi
+
+LOG_DIR_DEFAULT="$MALINE/log"
 
 if [ ! -z "$1" ]; then
     LOG_DIR="$1"
@@ -29,24 +40,51 @@ fi
 
 : ${LOG_DIR=$LOG_DIR_DEFAULT}
 
-date
-echo "Number of log files: `ls -1 $LOG_DIR/*log | wc -l`"
-echo ""
-
-COMMAND="python parse-strace-log.py"
-
-if [ -e "parse-strace-log.pyc" ]; then
-    COMMAND="./parse-strace-log.pyc"
+LOG_FILES_COUNT=`ls -1 $LOG_DIR/*log 2>&1 | wc -l`
+GRAPH_FILES_COUNT=`ls -1 $LOG_DIR/*graph 2>&1 | wc -l`
+if [ $LOG_FILES_COUNT != $GRAPH_FILES_COUNT ]; then
+    date
+    echo "Total number of log files: $LOG_FILES_COUNT"
+    echo ""
 fi
+
+# Set the strace parsing command name and use a compiled version when
+# possible
+STRACE_PY_SRC="$MALINE/bin/parse-strace-log.py"
+COMMAND="python $STRACE_PY_SRC"
+COMMAND_COMPILED="$MALINE/bin/parse-strace-log.pyc"
+
+if hash pycompile 2>/dev/null && [ ! -e "$COMMAND_COMPILED" ]; then
+    cd $MALINE/bin
+    pycompile $COMMAND
+    chmod +x $COMMAND_COMPILED
+    cd -
+fi
+
+# if [ -e "$COMMAND_COMPILED" ]; then
+#     COMMAND="$COMMAND_COMPILED"
+# fi
+
+COUNTER=0
 
 for LOG in `ls -1 $LOG_DIR/*log`; do
     base_name=$(basename $LOG .log)
 
     if [ -e "$LOG_DIR/$base_name.graph" ]; then
-	echo "Skipping $LOG because it was already parsed ..."
+	# Skipping $LOG because it was already parsed ...
+	# echo "Skipping $LOG because it was already parsed ..."
 	continue
     fi
 
     echo "Parsing $LOG ..."
     $COMMAND $LOG
+    let COUNTER++
 done
+
+if [ $COUNTER -gt 0 ]; then
+    echo ""
+    date
+    echo "Parsed $COUNTER new log files"
+fi
+
+rm $LOCK_FILE

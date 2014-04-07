@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
 # Copyright 2013,2014 Marko Dimjašević, Simone Atzeni, Ivo Ugrina, Zvonimir Rakamarić
 #
@@ -35,11 +36,21 @@ class strace_log_parser:
         self.import_sys_call_list()
 
     def import_sys_call_list(self):
+        import os
+
         count = 0
         # This system call list was obtained from:
         # https://code.google.com/p/android-source-browsing/source/browse/libc/SYSCALLS.TXT?spec=svn.platform--bionic.70b1668a76d3b719ae690903ea790fda964a5458&repo=platform--bionic&r=70b1668a76d3b719ae690903ea790fda964a5458
         # It was also manually edited to fit logs obtained with strace
-        with open("../data/syscalls-list", 'r') as f:
+
+        try:
+            maline_path = os.getenv('MALINE')
+            assert maline_path != 'None'
+        except:
+            print "Variable MALINE not set! Exiting ..."
+            sys.exit(1)
+
+        with open(os.path.join(maline_path, "data/syscalls-list"), 'r') as f:
             for line in f:
                 self.sys_call_dict[line[:-1]] = count
                 count += 1

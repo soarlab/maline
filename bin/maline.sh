@@ -74,6 +74,10 @@ if [ -z "$ADB_PORT" ]; then
     available_port ADB_PORT
 fi
 
+# Start a log parsing process
+loop-parse-new-logs.sh &
+PARSE_PID=$!
+
 rm -f $MALINE/.maline-$CURR_PID
 echo "Console port: ${CONSOLE_PORT}" >> $MALINE/.maline-$CURR_PID
 echo "ADB port: ${ADB_PORT}" >> $MALINE/.maline-$CURR_PID
