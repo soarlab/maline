@@ -19,9 +19,8 @@
 
 
 # This script takes an AVD name and architecture and as a result
-# creates an image in such architecture, loads the respective
-# emulator, waits for it to get ready, and then saves a snapshot by
-# running the following in telnet:
+# creates an image in the given architecture, loads the respective
+# emulator, waits for it to get ready, and then saves a snapshot.
 
 set -e
 
@@ -151,3 +150,5 @@ rm $MALINE/.avd-create-$CURR_PID
 
 echo ""
 echo "Android virtual device ${AVD_NAME} created successfully"
+
+exit 0

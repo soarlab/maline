@@ -37,8 +37,9 @@ GPS_SMS_STATUS_FILE="$5"
 # Get apk file name
 APK_FILE_NAME=`basename $1 .apk`
 
-# Log file name
+# Log file names
 LOGFILE="$APK_FILE_NAME-$APP_NAME-$TIMESTAMP.log"
+LOGCATFILE="$APK_FILE_NAME-$APP_NAME-$TIMESTAMP.logcat"
 
 # Send an event to the app to start it
 echo "Starting the app ..."
@@ -110,3 +111,9 @@ adb -P $ADB_SERVER_PORT pull /sdcard/$LOGFILE $MALINE/log/
 RM_CMD="rm /sdcard/$LOGFILE"
 
 adb -P $ADB_SERVER_PORT shell "$RM_CMD" 
+
+# Fetch logcat log and remove it from the phone
+adb -P $ADB_SERVER_PORT shell "logcat -d > /sdcard/$LOGCATFILE"
+adb -P $ADB_SERVER_PORT pull /sdcard/$LOGCATFILE $MALINE/log/
+RM_CAT_CMD="rm /sdcard/$LOGCATFILE"
+adb -P $ADB_SERVER_PORT shell "$RM_CAT_CMD"
