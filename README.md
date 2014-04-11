@@ -68,8 +68,9 @@ To use **maline**, you need the following:
 
 ## Path to Executables
 
-**maline** needs to be in the PATH environment variable. In particular, the
-`bin/` directory should to be added to the variable, e.g.
+**maline** needs an environment variable named `$MALINE`, which should point to
+the tool root directory. In addition, it's `bin/` directory should be in the
+PATH variable. For example,
 
     export MALINE=~/projects/maline
     PATH=$PATH:$MALINE/bin
