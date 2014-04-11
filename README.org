@@ -141,6 +141,11 @@ Now, it is possible to classify the data running the following:
   runClassDroid.sh
 #+END_SRC
 
+* Emulab
+In the development of *maline*, we have been using [[http://www.emulab.net][Emulab]] extensively. Emulab
+is a network testbed developed by [[http://www.flux.utah.edu/][The Flux Research Group]] from the University
+of Utah. We are thankful to the group for providing us with such an amazing
+computing infrastructure!
 * Copyright
 *maline* is a free software framework licensed under the terms of the GNU
 Affero General Public License, version 3 or (at your option) any later

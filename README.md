@@ -15,7 +15,8 @@
 </ul>
 </li>
 <li><a href="#sec-4">4. Usage</a></li>
-<li><a href="#sec-5">5. Copyright</a></li>
+<li><a href="#sec-5">5. Emulab</a></li>
+<li><a href="#sec-6">6. Copyright</a></li>
 </ul>
 </div>
 </div>
@@ -138,6 +139,13 @@ file with all feature vectors run the following script:
 Now, it is possible to classify the data running the following:
 
     runClassDroid.sh
+
+# Emulab
+
+In the development of **maline**, we have been using [Emulab](http://www.emulab.net) extensively. Emulab
+is a network testbed developed by [The Flux Research Group](http://www.flux.utah.edu/) from the University
+of Utah. We are thankful to the group for providing us with such an amazing
+computing infrastructure!
 
 # Copyright
 
