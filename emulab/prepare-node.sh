@@ -1,0 +1,30 @@
+#!/bin/bash
+
+# Script copied from Raimondas Sasnauskas
+
+function die() {
+    echo $@ 2>&1
+    exit 1
+}
+[ $(id -u) == 0 ] || die "Use must be root or use sudo"
+
+# this is for Ubuntu 12.04 for x86-64
+echo 'linux-firmware hold' | dpkg --set-selections
+echo 'grub-common hold' | dpkg --set-selections
+echo 'grub-pc hold' | dpkg --set-selections
+echo 'grub-pc-bin hold' | dpkg --set-selections
+echo 'grub2-common hold' | dpkg --set-selections
+echo 'linux-headers-2.6.38.7-1.0emulab hold' | dpkg --set-selections
+echo 'linux-image-2.6.38.7-1.0emulab hold' | dpkg --set-selections
+
+apt-get update
+apt-get upgrade -y
+apt-get install -y bison ca-certificates-java curl expect gawk htop iotop java-common lib32gcc1 lib32ncurses5 lib32stdc++6 lib32tinfo5 libgl1-mesa-dev libasyncns0 libatk-wrapper-java libatk-wrapper-java-jni libbison-dev libc6-i386 libcurl3 libdbi1 libffi-dev libflac8 libgdbm-dev libjffi-jni libjs-mochikit libjson0 liblcms2-2 libncurses5-dev libnspr4 libnss3 libnss3-1d libogg0 libpcsclite1 libprotobuf7 libpulse0 libreadline6-dev librrd4 libsigsegv2 libsndfile1 libsqlite3-dev libtinfo-dev libvorbis0a libvorbisenc2 libyaml-0-2 libyaml-dev openjdk-6-jre openjdk-6-jre-headless openjdk-6-jre-lib pkg-config python-mako python-markupsafe python-protobuf quota screen sqlite3 tzdata-java unzip kvm tree
+apt-get autoremove -y
+
+# Extend the default RAM disk size to 69000000 KB ~ 65 GB
+sudo sed -i '/^GRUB_CMDLINE_LINUX\=/c \GRUB_CMDLINE_LINUX=\"console=tty0 console=ttyS0,115200 ramdisk_size=69000000\"' /etc/default/grub
+
+sudo update-grub
+
+reboot
