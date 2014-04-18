@@ -266,6 +266,16 @@ The Android source is located in a Git repository hosted by Google.
     
         make -j4
 
+4.  Build the Linux and MacOS SDK
+
+    Now you are ready to build. While you could just type "make", this is
+    where our SDK build instructions diverge a bit from the default build.
+    
+    In a bash shell, run these commands:
+    
+        lunch sdk-eng
+        make sdk
+
 # Configuration
 
 ## Path to Executables

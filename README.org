@@ -196,6 +196,18 @@ being used for the build.
   make -j4
 #+END_SRC
 
+**** Build the Linux and MacOS SDK
+
+Now you are ready to build. While you could just type "make", this is
+where our SDK build instructions diverge a bit from the default build.
+
+In a bash shell, run these commands:
+
+#+BEGIN_SRC sh :exports code
+  lunch sdk-eng
+  make sdk
+#+END_SRC
+
 * Configuration
 
 ** Path to Executables
