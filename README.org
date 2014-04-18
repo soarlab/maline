@@ -185,6 +185,11 @@ x86 Architecture and English Language
   lunch aosp_x86-eng
 #+END_SRC
 
+Android Linux and MacOS SDK
+#+BEGIN_SRC sh :exports code
+  lunch sdk-eng
+#+END_SRC
+
 **** Build the Code
 
 Build everything with /make/. GNU make can handle parallel tasks with a
@@ -198,13 +203,7 @@ being used for the build.
 
 **** Build the Linux and MacOS SDK
 
-Now you are ready to build. While you could just type "make", this is
-where our SDK build instructions diverge a bit from the default build.
-
-In a bash shell, run these commands:
-
 #+BEGIN_SRC sh :exports code
-  lunch sdk-eng
   make sdk
 #+END_SRC
 

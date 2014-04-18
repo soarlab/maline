@@ -256,6 +256,10 @@ The Android source is located in a Git repository hosted by Google.
     x86 Architecture and English Language
     
         lunch aosp_x86-eng
+    
+    Android Linux and MacOS SDK
+    
+        lunch sdk-eng
 
 3.  Build the Code
 
@@ -268,12 +272,6 @@ The Android source is located in a Git repository hosted by Google.
 
 4.  Build the Linux and MacOS SDK
 
-    Now you are ready to build. While you could just type "make", this is
-    where our SDK build instructions diverge a bit from the default build.
-    
-    In a bash shell, run these commands:
-    
-        lunch sdk-eng
         make sdk
 
 # Configuration
