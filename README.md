@@ -103,6 +103,12 @@ The Android source is located in a Git repository hosted by Google.
     
         repo init -u https://android.googlesource.com/platform/manifest
     
+    1.  When prompted, configure Repo with your real name and email
+        address. You will need an email address that is connected with a
+        registered Google account.
+
+3.  Additional Information
+
     To check out a branch other than "master", specify it with -b:
     
         repo init -u https://android.googlesource.com/platform/manifest -b android-4.4.2_r2
@@ -214,16 +220,12 @@ The Android source is located in a Git repository hosted by Google.
     
         repo init -u ... -g all,-notdefault,-device,-mips,-x86,-darwin
     
-    1.  When prompted, configure Repo with your real name and email
-        address. You will need an email address that is connected with a
-        registered Google account.
-    
     A successful initialization will end with a message stating that Repo
     is initialized in your working directory. Your client directory should
     now contain a .repo directory where files such as the manifest will be
     kept.
 
-3.  Downloading the Android Source Tree
+4.  Downloading the Android Source Tree
 
     To pull down the Android source to your working directory from
     the repositories as specified in the default manifest, run

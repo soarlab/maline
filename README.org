@@ -89,6 +89,12 @@ To install Repo:
   repo init -u https://android.googlesource.com/platform/manifest
 #+END_SRC
 
+3. When prompted, configure Repo with your real name and email
+   address. You will need an email address that is connected with a
+   registered Google account.
+
+**** Additional Information
+
 To check out a branch other than "master", specify it with -b:
 
 #+BEGIN_SRC sh :exports code
@@ -136,10 +142,6 @@ emulator only from a linux workstation you can do:
 #+BEGIN_SRC sh :exports code
   repo init -u ... -g all,-notdefault,-device,-mips,-x86,-darwin
 #+END_SRC
-
-3. When prompted, configure Repo with your real name and email
-   address. You will need an email address that is connected with a
-   registered Google account.
 
 A successful initialization will end with a message stating that Repo
 is initialized in your working directory. Your client directory should
