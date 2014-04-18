@@ -49,6 +49,149 @@ To use *maline*, you need the following:
 - [[http://sourceforge.net/projects/expect/][expect]] - a command line tool that automates interactive applications. It is
   available through a Ubuntu's default repository.
 
+*** Downloading the Android Source
+The Android source is located in a Git repository hosted by Google.
+
+**** Installing Repo
+Repo is a tool to easily download the Android source code from the Git
+repository.
+
+To install Repo:
+
+1. Create a bin/ directory in your home directory and include it in
+   your path (you can add it in you ~/.bashrc file):
+
+#+BEGIN_SRC sh :exports code
+  mkdir ~/bin
+  PATH=~/bin:$PATH
+#+END_SRC
+
+2. Download the Repo tool and ensure that it is executable:
+
+#+BEGIN_SRC sh :exports code
+  curl http://commondatastorage.googleapis.com/git-repo-downloads/repo > ~/bin/repo
+  chmod a+x ~/bin/repo
+#+END_SRC
+
+**** Initializing a Repo client
+
+1. Create an empty directory to hold your working file:
+
+#+BEGIN_SRC sh :exports code
+  mkdir WORKING_DIRECTORY
+  cd WORKING_DIRECTORY
+#+END_SRC
+
+2. Run /repo init/ to download the latest version of Repo with all its
+   most recent bug fixes.
+
+#+BEGIN_SRC sh :exports code
+  repo init -u https://android.googlesource.com/platform/manifest
+#+END_SRC
+
+To check out a branch other than "master", specify it with -b:
+
+#+BEGIN_SRC sh :exports code
+  repo init -u https://android.googlesource.com/platform/manifest -b android-4.4.2_r2
+#+END_SRC
+
+The default repo init command will checkout a lot of items that you
+may not want. Here's a list of packages that have their own group
+name, allowing you to decide if you want them or not.
+
+|---------+--------------------------------------------------------------------------+------------|
+| tools   | Packages for dev tools that are not part of the default downloads        | notdefault |
+|---------+--------------------------------------------------------------------------+------------|
+| device  | Packages to build devices supported by AOSP (for instance Nexus devices) | default    |
+|---------+--------------------------------------------------------------------------+------------|
+| arm     | Packages to build ARM system images                                      | default    |
+|---------+--------------------------------------------------------------------------+------------|
+| mips    | Packages to build MIPS system images                                     | default    |
+|---------+--------------------------------------------------------------------------+------------|
+| x86     | Packages to build x86 system images                                      | default    |
+|---------+--------------------------------------------------------------------------+------------|
+| linux   | cross-compiler used on Linux host                                        | default    |
+|---------+--------------------------------------------------------------------------+------------|
+| darwin  | cross-compiler used on MacOS X host                                      | default    |
+|---------+--------------------------------------------------------------------------+------------|
+| eclipse | Packages used to build Eclipse                                           | notdefault |
+|---------+--------------------------------------------------------------------------+------------|
+| motodev | Motodev plugins                                                          | notdefault |
+|---------+--------------------------------------------------------------------------+------------|
+
+By default, only the default packages are downloaded. You can add
+optional (notdefault) packages, and you can also omit default packages
+that have their own.  This is done with the -g option. Omitting this
+option is the same as doing
+
+#+BEGIN_SRC sh :exports code
+  -g all,-notdefault
+#+END_SRC
+
+For instance, downloading the tree to work on ARM system image for the
+emulator only from a linux workstation you can do: 
+
+#+BEGIN_SRC sh :exports code
+  repo init -u ... -g all,-notdefault,-device,-mips,-x86,-darwin
+#+END_SRC
+
+3. When prompted, configure Repo with your real name and email
+   address. You will need an email address that is connected with a
+   registered Google account.
+
+A successful initialization will end with a message stating that Repo
+is initialized in your working directory. Your client directory should
+now contain a .repo directory where files such as the manifest will be
+kept.
+
+**** Downloading the Android Source Tree
+
+To pull down the Android source to your working directory from
+the repositories as specified in the default manifest, run
+
+#+BEGIN_SRC sh :exports code
+  repo sync
+#+END_SRC
+
+The Android source files will be located in your working directory
+under their project names. The initial sync operation will take an
+hour or more to complete. For more about repo sync and other Repo
+commands, see the [[http://source.android.com/source/developing.html][Developing]] section.
+
+*** Compiling Android Emulator
+
+**** Initialize
+
+Initialize the environment with the /envsetup.sh/ script.
+
+#+BEGIN_SRC sh :exports code
+  . build/envsetup.sh
+#+END_SRC
+
+**** Choose a Target
+Choose which target to build with lunch.
+
+ARM Architecture and English Language
+#+BEGIN_SRC sh :exports code
+  lunch aosp_arm-eng
+#+END_SRC
+
+x86 Architecture and English Language
+#+BEGIN_SRC sh :exports code
+  lunch aosp_x86-eng
+#+END_SRC
+
+**** Build the Code
+
+Build everything with /make/. GNU make can handle parallel tasks with a
+-jN argument, and it's common to use a number of tasks N that's
+between 1 and 2 times the number of hardware threads on the computer
+being used for the build.
+
+#+BEGIN_SRC sh :exports code
+  make -j4
+#+END_SRC
+
 * Configuration
 
 ** Path to Executables

@@ -5,7 +5,12 @@
 <li><a href="#sec-1">1. Introduction</a></li>
 <li><a href="#sec-2">2. Installation</a>
 <ul>
-<li><a href="#sec-2-1">2.1. Dependencies</a></li>
+<li><a href="#sec-2-1">2.1. Dependencies</a>
+<ul>
+<li><a href="#sec-2-1-1">2.1.1. Downloading the Android Source</a></li>
+<li><a href="#sec-2-1-2">2.1.2. Compiling Android Emulator</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li><a href="#sec-3">3. Configuration</a>
@@ -63,6 +68,193 @@ To use **maline**, you need the following:
 
 -   [expect](http://sourceforge.net/projects/expect/) - a command line tool that automates interactive applications. It is
     available through a Ubuntu's default repository.
+
+### Downloading the Android Source
+
+The Android source is located in a Git repository hosted by Google.
+
+1.  Installing Repo
+
+    Repo is a tool to easily download the Android source code from the Git
+    repository.
+    
+    To install Repo:
+    
+    1.  Create a bin/ directory in your home directory and include it in
+        your path (you can add it in you ~/.bashrc file):
+    
+        mkdir ~/bin
+        PATH=~/bin:$PATH
+    
+    1.  Download the Repo tool and ensure that it is executable:
+    
+        curl http://commondatastorage.googleapis.com/git-repo-downloads/repo > ~/bin/repo
+        chmod a+x ~/bin/repo
+
+2.  Initializing a Repo client
+
+    1.  Create an empty directory to hold your working file:
+    
+        mkdir WORKING_DIRECTORY
+        cd WORKING_DIRECTORY
+    
+    1.  Run *repo init* to download the latest version of Repo with all its
+        most recent bug fixes.
+    
+        repo init -u https://android.googlesource.com/platform/manifest
+    
+    To check out a branch other than "master", specify it with -b:
+    
+        repo init -u https://android.googlesource.com/platform/manifest -b android-4.4.2_r2
+    
+    The default repo init command will checkout a lot of items that you
+    may not want. Here's a list of packages that have their own group
+    name, allowing you to decide if you want them or not.
+    
+    <table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+    
+    
+    <colgroup>
+    <col  class="left" />
+    
+    <col  class="left" />
+    
+    <col  class="left" />
+    </colgroup>
+    <thead>
+    <tr>
+    <th scope="col" class="left">tools</th>
+    <th scope="col" class="left">Packages for dev tools that are not part of the default downloads</th>
+    <th scope="col" class="left">notdefault</th>
+    </tr>
+    </thead>
+    
+    <tbody>
+    <tr>
+    <td class="left">device</td>
+    <td class="left">Packages to build devices supported by AOSP (for instance Nexus devices)</td>
+    <td class="left">default</td>
+    </tr>
+    </tbody>
+    
+    <tbody>
+    <tr>
+    <td class="left">arm</td>
+    <td class="left">Packages to build ARM system images</td>
+    <td class="left">default</td>
+    </tr>
+    </tbody>
+    
+    <tbody>
+    <tr>
+    <td class="left">mips</td>
+    <td class="left">Packages to build MIPS system images</td>
+    <td class="left">default</td>
+    </tr>
+    </tbody>
+    
+    <tbody>
+    <tr>
+    <td class="left">x86</td>
+    <td class="left">Packages to build x86 system images</td>
+    <td class="left">default</td>
+    </tr>
+    </tbody>
+    
+    <tbody>
+    <tr>
+    <td class="left">linux</td>
+    <td class="left">cross-compiler used on Linux host</td>
+    <td class="left">default</td>
+    </tr>
+    </tbody>
+    
+    <tbody>
+    <tr>
+    <td class="left">darwin</td>
+    <td class="left">cross-compiler used on MacOS X host</td>
+    <td class="left">default</td>
+    </tr>
+    </tbody>
+    
+    <tbody>
+    <tr>
+    <td class="left">eclipse</td>
+    <td class="left">Packages used to build Eclipse</td>
+    <td class="left">notdefault</td>
+    </tr>
+    </tbody>
+    
+    <tbody>
+    <tr>
+    <td class="left">motodev</td>
+    <td class="left">Motodev plugins</td>
+    <td class="left">notdefault</td>
+    </tr>
+    </tbody>
+    </table>
+    
+    By default, only the default packages are downloaded. You can add
+    optional (notdefault) packages, and you can also omit default packages
+    that have their own.  This is done with the -g option. Omitting this
+    option is the same as doing
+    
+        -g all,-notdefault
+    
+    For instance, downloading the tree to work on ARM system image for the
+    emulator only from a linux workstation you can do: 
+    
+        repo init -u ... -g all,-notdefault,-device,-mips,-x86,-darwin
+    
+    1.  When prompted, configure Repo with your real name and email
+        address. You will need an email address that is connected with a
+        registered Google account.
+    
+    A successful initialization will end with a message stating that Repo
+    is initialized in your working directory. Your client directory should
+    now contain a .repo directory where files such as the manifest will be
+    kept.
+
+3.  Downloading the Android Source Tree
+
+    To pull down the Android source to your working directory from
+    the repositories as specified in the default manifest, run
+    
+        repo sync
+    
+    The Android source files will be located in your working directory
+    under their project names. The initial sync operation will take an
+    hour or more to complete. For more about repo sync and other Repo
+    commands, see the [Developing](http://source.android.com/source/developing.html) section.
+
+### Compiling Android Emulator
+
+1.  Initialize
+
+    Initialize the environment with the *envsetup.sh* script.
+    
+        . build/envsetup.sh
+
+2.  Choose a Target
+
+    Choose which target to build with lunch.
+    
+    ARM Architecture and English Language
+    
+        lunch aosp_arm-eng
+    
+    x86 Architecture and English Language
+    
+        lunch aosp_x86-eng
+
+3.  Build the Code
+
+    Build everything with *make*. GNU make can handle parallel tasks with a
+    -jN argument, and it's common to use a number of tasks N that's
+    between 1 and 2 times the number of hardware threads on the computer
+    being used for the build.
+    
+        make -j4
 
 # Configuration
 
