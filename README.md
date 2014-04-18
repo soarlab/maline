@@ -126,20 +126,11 @@ The Android source is located in a Git repository hosted by Google.
     <col  class="left" />
     
     <col  class="left" />
-    
-    <col  class="left" />
-    
-    <col  class="left" />
-    
-    <col  class="left" />
     </colgroup>
     <thead>
     <tr>
     <th scope="col" class="left">Package</th>
     <th scope="col" class="left">Description</th>
-    <th scope="col" class="left">&#xa0;</th>
-    <th scope="col" class="left">&#xa0;</th>
-    <th scope="col" class="left">&#xa0;</th>
     <th scope="col" class="left">&#xa0;</th>
     </tr>
     </thead>
@@ -149,9 +140,6 @@ The Android source is located in a Git repository hosted by Google.
     <td class="left">tools</td>
     <td class="left">Packages for dev tools that are not part of the default downloads</td>
     <td class="left">notdefault</td>
-    <td class="left">&#xa0;</td>
-    <td class="left">&#xa0;</td>
-    <td class="left">&#xa0;</td>
     </tr>
     </tbody>
     
@@ -160,9 +148,6 @@ The Android source is located in a Git repository hosted by Google.
     <td class="left">device</td>
     <td class="left">Packages to build devices supported by AOSP (for instance Nexus devices)</td>
     <td class="left">default</td>
-    <td class="left">&#xa0;</td>
-    <td class="left">&#xa0;</td>
-    <td class="left">&#xa0;</td>
     </tr>
     </tbody>
     
@@ -171,9 +156,6 @@ The Android source is located in a Git repository hosted by Google.
     <td class="left">arm</td>
     <td class="left">Packages to build ARM system images</td>
     <td class="left">default</td>
-    <td class="left">&#xa0;</td>
-    <td class="left">&#xa0;</td>
-    <td class="left">&#xa0;</td>
     </tr>
     </tbody>
     
@@ -182,9 +164,6 @@ The Android source is located in a Git repository hosted by Google.
     <td class="left">mips</td>
     <td class="left">Packages to build MIPS system images</td>
     <td class="left">default</td>
-    <td class="left">&#xa0;</td>
-    <td class="left">&#xa0;</td>
-    <td class="left">&#xa0;</td>
     </tr>
     </tbody>
     
@@ -193,9 +172,6 @@ The Android source is located in a Git repository hosted by Google.
     <td class="left">x86</td>
     <td class="left">Packages to build x86 system images</td>
     <td class="left">default</td>
-    <td class="left">&#xa0;</td>
-    <td class="left">&#xa0;</td>
-    <td class="left">&#xa0;</td>
     </tr>
     </tbody>
     
@@ -204,9 +180,6 @@ The Android source is located in a Git repository hosted by Google.
     <td class="left">linux</td>
     <td class="left">cross-compiler used on Linux host</td>
     <td class="left">default</td>
-    <td class="left">&#xa0;</td>
-    <td class="left">&#xa0;</td>
-    <td class="left">&#xa0;</td>
     </tr>
     </tbody>
     
@@ -215,9 +188,6 @@ The Android source is located in a Git repository hosted by Google.
     <td class="left">darwin</td>
     <td class="left">cross-compiler used on MacOS X host</td>
     <td class="left">default</td>
-    <td class="left">&#xa0;</td>
-    <td class="left">&#xa0;</td>
-    <td class="left">&#xa0;</td>
     </tr>
     </tbody>
     
@@ -226,9 +196,6 @@ The Android source is located in a Git repository hosted by Google.
     <td class="left">eclipse</td>
     <td class="left">Packages used to build Eclipse</td>
     <td class="left">notdefault</td>
-    <td class="left">&#xa0;</td>
-    <td class="left">&#xa0;</td>
-    <td class="left">&#xa0;</td>
     </tr>
     </tbody>
     
@@ -237,9 +204,6 @@ The Android source is located in a Git repository hosted by Google.
     <td class="left">motodev</td>
     <td class="left">Motodev plugins</td>
     <td class="left">notdefault</td>
-    <td class="left">&#xa0;</td>
-    <td class="left">&#xa0;</td>
-    <td class="left">&#xa0;</td>
     </tr>
     </tbody>
     </table>

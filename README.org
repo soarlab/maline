@@ -105,28 +105,27 @@ The default repo init command will checkout a lot of items that you
 may not want. Here's a list of packages that have their own group
 name, allowing you to decide if you want them or not.
 
-|---------+--------------------------------------------------------------------------+------------+---+---+---|
-| Package | Description                                                              |            |   |   |   |
-|---------+--------------------------------------------------------------------------+------------+---+---+---|
-|---------+--------------------------------------------------------------------------+------------+---+---+---|
-| tools   | Packages for dev tools that are not part of the default downloads        | notdefault |   |   |   |
-|---------+--------------------------------------------------------------------------+------------+---+---+---|
-| device  | Packages to build devices supported by AOSP (for instance Nexus devices) | default    |   |   |   |
-|---------+--------------------------------------------------------------------------+------------+---+---+---|
-| arm     | Packages to build ARM system images                                      | default    |   |   |   |
-|---------+--------------------------------------------------------------------------+------------+---+---+---|
-| mips    | Packages to build MIPS system images                                     | default    |   |   |   |
-|---------+--------------------------------------------------------------------------+------------+---+---+---|
-| x86     | Packages to build x86 system images                                      | default    |   |   |   |
-|---------+--------------------------------------------------------------------------+------------+---+---+---|
-| linux   | cross-compiler used on Linux host                                        | default    |   |   |   |
-|---------+--------------------------------------------------------------------------+------------+---+---+---|
-| darwin  | cross-compiler used on MacOS X host                                      | default    |   |   |   |
-|---------+--------------------------------------------------------------------------+------------+---+---+---|
-| eclipse | Packages used to build Eclipse                                           | notdefault |   |   |   |
-|---------+--------------------------------------------------------------------------+------------+---+---+---|
-| motodev | Motodev plugins                                                          | notdefault |   |   |   |
-|---------+--------------------------------------------------------------------------+------------+---+---+---|
+|---------+--------------------------------------------------------------------------+------------|
+| Package | Description                                                              |            |
+|---------+--------------------------------------------------------------------------+------------|
+| tools   | Packages for dev tools that are not part of the default downloads        | notdefault |
+|---------+--------------------------------------------------------------------------+------------|
+| device  | Packages to build devices supported by AOSP (for instance Nexus devices) | default    |
+|---------+--------------------------------------------------------------------------+------------|
+| arm     | Packages to build ARM system images                                      | default    |
+|---------+--------------------------------------------------------------------------+------------|
+| mips    | Packages to build MIPS system images                                     | default    |
+|---------+--------------------------------------------------------------------------+------------|
+| x86     | Packages to build x86 system images                                      | default    |
+|---------+--------------------------------------------------------------------------+------------|
+| linux   | cross-compiler used on Linux host                                        | default    |
+|---------+--------------------------------------------------------------------------+------------|
+| darwin  | cross-compiler used on MacOS X host                                      | default    |
+|---------+--------------------------------------------------------------------------+------------|
+| eclipse | Packages used to build Eclipse                                           | notdefault |
+|---------+--------------------------------------------------------------------------+------------|
+| motodev | Motodev plugins                                                          | notdefault |
+|---------+--------------------------------------------------------------------------+------------|
 
 By default, only the default packages are downloaded. You can add
 optional (notdefault) packages, and you can also omit default packages
