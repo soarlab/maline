@@ -100,6 +100,8 @@ may not want. Here's a list of packages that have their own group
 name, allowing you to decide if you want them or not.
 
 |---------+--------------------------------------------------------------------------+------------|
+| Package | Description                                                              |            |
+|---------+--------------------------------------------------------------------------+------------|
 | tools   | Packages for dev tools that are not part of the default downloads        | notdefault |
 |---------+--------------------------------------------------------------------------+------------|
 | device  | Packages to build devices supported by AOSP (for instance Nexus devices) | default    |

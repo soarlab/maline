@@ -123,11 +123,19 @@ The Android source is located in a Git repository hosted by Google.
     </colgroup>
     <thead>
     <tr>
-    <th scope="col" class="left">tools</th>
-    <th scope="col" class="left">Packages for dev tools that are not part of the default downloads</th>
-    <th scope="col" class="left">notdefault</th>
+    <th scope="col" class="left">Package</th>
+    <th scope="col" class="left">Description</th>
+    <th scope="col" class="left">&#xa0;</th>
     </tr>
     </thead>
+    
+    <tbody>
+    <tr>
+    <td class="left">tools</td>
+    <td class="left">Packages for dev tools that are not part of the default downloads</td>
+    <td class="left">notdefault</td>
+    </tr>
+    </tbody>
     
     <tbody>
     <tr>
