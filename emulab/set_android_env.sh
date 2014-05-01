@@ -3,6 +3,7 @@
 export MALINE=/mnt/storage/maline
 
 export LOCAL=/mnt/storage
+export SYSDIR=/mnt/storage/android-sdk/system-images/android-19/
 #export BINARY=$LOCAL/android-binary
 export BINARY=$LOCAL/android-binaries/linux-x86/bin
 export SAN=$LOCAL
