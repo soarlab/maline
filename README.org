@@ -1,7 +1,7 @@
 #+TITLE:     maline
-#+AUTHOR:    Marko Dimjašević
+#+AUTHOR:    Marko Dimjašević, Simone Atzeni
 #+EMAIL:     marko@cs.utah.edu
-#+DATE:      2014-01-02 Thu
+#+DATE:      2014-05-12 Mon
 #+DESCRIPTION:
 #+KEYWORDS:
 #+LANGUAGE:  en

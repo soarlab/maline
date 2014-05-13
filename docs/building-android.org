@@ -1,0 +1,86 @@
+#+TITLE:     maline
+#+AUTHOR:    Marko Dimjašević, Simone Atzeni
+#+EMAIL:     marko@cs.utah.edu
+#+DATE:      2014-05-12 Mon
+#+DESCRIPTION:
+#+KEYWORDS:
+#+LANGUAGE:  en
+#+OPTIONS:   H:3 num:t toc:t \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS:   TeX:t LaTeX:t skip:nil d:nil todo:t pri:nil tags:not-in-toc
+
+#+EXPORT_SELECT_TAGS: export
+#+EXPORT_EXCLUDE_TAGS: noexport
+#+LINK_UP:   
+#+LINK_HOME: 
+#+XSLT:
+
+The Android source is located in a Git repository hosted by Google. There are
+hundreds of other Git repositories that the project depends on, so there is
+the Repo tool to ease the process of fetching all of them.
+
+* Installing Repo
+Repo is a tool that makes it easier to work with Git in the context of
+Android.
+
+To install Repo:
+
+1. Create a =bin/= directory in your home directory and include it in your
+   path (you can add the =PATH= line to your =~/.bashrc= file):
+
+#+BEGIN_SRC sh :exports code
+  mkdir -p ~/bin
+  PATH=~/bin:$PATH
+#+END_SRC
+
+2. Download the Repo tool and ensure that it is executable:
+
+#+BEGIN_SRC sh :exports code
+  curl http://storage.googleapis.com/git-repo-downloads/repo > ~/bin/repo
+  chmod a+x ~/bin/repo
+#+END_SRC
+
+** Initializing a Repo client
+
+1. Create an empty directory to hold your working file:
+
+#+BEGIN_SRC sh :exports code
+  mkdir android-repo
+  cd android-repo
+#+END_SRC
+
+2. Run =repo init= to download the following groups of packages: developer
+   tools (=tools=), devices supported by the Android Open Source Project
+   (=device=), ARM system images (=arm=), x86 system images (=x86=), and a
+   cross-compiler used on a GNU/Linux host (=linux=):
+
+#+BEGIN_SRC sh :exports code
+  repo init --manifest-url=https://android.googlesource.com/platform/manifest --groups=tools,device,arm,x86,linux
+#+END_SRC
+
+In the end you should get a message similar to "repo has been initialized in
+/mnt/storage/android-repo".
+
+** Downloading the Android Source Tree
+
+1. To synchronize the Android source to your working directory, and to
+   download only branches specified in the manifest file so as to reduce the
+   download size, run the following, adjusting the number of jobs to your
+   machine (usually up to twice the number of hardware threads on your
+   processor):
+
+#+BEGIN_SRC sh :exports code
+  repo sync --jobs=96 --current-branch
+#+END_SRC
+
+   This operation might take long (one hour or more), depending on your
+   Internet connection speed and the number of jobs.
+
+2. All the projects in the repository evolve all the time, sometimes making it
+   incompatible with =maline= or even introducing a bug. Therefore, we need to
+   know the used versions of all the projects. For that purpose, take a
+   snapshot of the current manifest file (and in the final version of this
+   how-to, users will load a snapshot provided by us instead):
+
+#+BEGIN_SRC sh :exports code
+  repo manifest --output-file=snapshot.xml --revision-as-HEAD
+#+END_SRC
