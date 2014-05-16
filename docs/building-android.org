@@ -50,15 +50,18 @@ To install Repo:
 
 2. Run =repo init= to download the following groups of packages: developer
    tools (=tools=), devices supported by the Android Open Source Project
-   (=device=), ARM system images (=arm=), x86 system images (=x86=), and a
-   cross-compiler used on a GNU/Linux host (=linux=):
+   (ASOP) (=device=), ARM system images (=arm=), x86 system images (=x86=), a
+   cross-compiler used on a GNU/Linux host (=linux=), and the default packages
+   (=default=) excluding the MIPS system images (=-mips=) and a cross-compiler
+   used on an OS X host (=-darwin=):
 
 #+BEGIN_SRC sh :exports code
-  repo init --manifest-url=https://android.googlesource.com/platform/manifest --groups=tools,device,arm,x86,linux
+  repo init --manifest-url=https://android.googlesource.com/platform/manifest \
+      --groups=tools,device,arm,x86,linux,default,-mips,-darwin
 #+END_SRC
 
-In the end you should get a message similar to "repo has been initialized in
-/mnt/storage/android-repo".
+After the initialization completes, you should get a message similar to "repo
+has been initialized in /mnt/storage/android-repo".
 
 ** Downloading the Android Source Tree
 
@@ -82,5 +85,47 @@ In the end you should get a message similar to "repo has been initialized in
    how-to, users will load a snapshot provided by us instead):
 
 #+BEGIN_SRC sh :exports code
-  repo manifest --output-file=snapshot.xml --revision-as-HEAD
+  export TIMESTAMP=`date +"%Y-%m-%d"`
+  repo manifest --output-file=snapshot-$TIMESTAMP.xml --revision-as-HEAD
 #+END_SRC
+
+* Building the System
+** Initialize
+Initialize the environment with the =envsetup.sh= script:
+
+#+BEGIN_SRC sh :exports code
+  . build/envsetup.sh
+#+END_SRC
+
+** Selecting and building targets
+There are a few targets that have to be built. We build one target at a
+time. Let us first select AOSP for the ARM emulator:
+
+#+BEGIN_SRC sh :exports code
+  lunch aosp_arm-eng
+#+END_SRC
+
+and build it:
+
+#+BEGIN_SRC sh :exports code
+  make --jobs=96
+#+END_SRC
+
+Now we do the same for the x86 emulator:
+
+#+BEGIN_SRC sh :exports code
+  lunch aosp_x86-eng
+  make --jobs=96
+#+END_SRC
+
+We also need to build the Android SDK:
+
+#+BEGIN_SRC sh :exports code
+  lunch sdk-eng
+  make --jobs=96 sdk
+#+END_SRC
+
+All compiled code is in =out/=. An ARM system image is located at
+=out/target/product/generic/system.img=, while an x86 system image is at
+=out/target/product/generic_x86/system.img=. Binaries of the SDK can be found
+in =out/host/linux-x86/sdk=.
