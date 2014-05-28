@@ -36,7 +36,12 @@ needed. It suffices to obtain *maline*, e.g. from Github:
 
 ** Dependencies
 To use *maline*, you need the following:
-- [[https://developer.android.com/sdk/index.html][Android SDK]] - follow instructions for installation of the SDK.
+
+- Android SDK - please [[http://dimjasevic.net/razno/android-sdk.tar.xz][download and use our build]] of the SDK. It is a
+  stripped-down version with multiple bug fixes applied. Based on our
+  experience, it is very unlikely *maline* will work correctly with the
+  official version. The official version ships without the fixes for multiple
+  showstopping bugs.
 - [[https://code.google.com/p/android-apktool/][apktool]] - *maline* already ships with apktool, which is licensed under the
   Apache License 2.0.
 - [[https://www.gnu.org/software/octave/][GNU Octave]] - a programming language for numerical computations. It is
@@ -48,175 +53,26 @@ To use *maline*, you need the following:
   recent versions too. It is available through a Ubuntu's default repository.
 - [[http://sourceforge.net/projects/expect/][expect]] - a command line tool that automates interactive applications. It is
   available through a Ubuntu's default repository.
-
-*** Downloading the Android Source
-The Android source is located in a Git repository hosted by Google.
-
-**** Installing Repo
-Repo is a tool to easily download the Android source code from the Git
-repository.
-
-To install Repo:
-
-1. Create a bin/ directory in your home directory and include it in
-   your path (you can add it in you ~/.bashrc file):
-
-#+BEGIN_SRC sh :exports code
-  mkdir ~/bin
-  PATH=~/bin:$PATH
-#+END_SRC
-
-2. Download the Repo tool and ensure that it is executable:
-
-#+BEGIN_SRC sh :exports code
-  curl http://commondatastorage.googleapis.com/git-repo-downloads/repo > ~/bin/repo
-  chmod a+x ~/bin/repo
-#+END_SRC
-
-**** Initializing a Repo client
-
-1. Create an empty directory to hold your working file:
-
-#+BEGIN_SRC sh :exports code
-  mkdir WORKING_DIRECTORY
-  cd WORKING_DIRECTORY
-#+END_SRC
-
-2. Run /repo init/ to download the latest version of Repo with all its
-   most recent bug fixes.
-
-#+BEGIN_SRC sh :exports code
-  repo init -u https://android.googlesource.com/platform/manifest
-#+END_SRC
-
-3. When prompted, configure Repo with your real name and email
-   address. You will need an email address that is connected with a
-   registered Google account.
-
-**** Additional Information
-
-To check out a branch other than "master", specify it with -b:
-
-#+BEGIN_SRC sh :exports code
-  repo init -u https://android.googlesource.com/platform/manifest -b android-4.4.2_r2
-#+END_SRC
-
-The default repo init command will checkout a lot of items that you
-may not want. Here's a list of packages that have their own group
-name, allowing you to decide if you want them or not.
-
-|---------+--------------------------------------------------------------------------+------------|
-| Package | Description                                                              |            |
-|---------+--------------------------------------------------------------------------+------------|
-| tools   | Packages for dev tools that are not part of the default downloads        | notdefault |
-|---------+--------------------------------------------------------------------------+------------|
-| device  | Packages to build devices supported by AOSP (for instance Nexus devices) | default    |
-|---------+--------------------------------------------------------------------------+------------|
-| arm     | Packages to build ARM system images                                      | default    |
-|---------+--------------------------------------------------------------------------+------------|
-| mips    | Packages to build MIPS system images                                     | default    |
-|---------+--------------------------------------------------------------------------+------------|
-| x86     | Packages to build x86 system images                                      | default    |
-|---------+--------------------------------------------------------------------------+------------|
-| linux   | cross-compiler used on Linux host                                        | default    |
-|---------+--------------------------------------------------------------------------+------------|
-| darwin  | cross-compiler used on MacOS X host                                      | default    |
-|---------+--------------------------------------------------------------------------+------------|
-| eclipse | Packages used to build Eclipse                                           | notdefault |
-|---------+--------------------------------------------------------------------------+------------|
-| motodev | Motodev plugins                                                          | notdefault |
-|---------+--------------------------------------------------------------------------+------------|
-
-By default, only the default packages are downloaded. You can add
-optional (notdefault) packages, and you can also omit default packages
-that have their own.  This is done with the -g option. Omitting this
-option is the same as doing
-
-#+BEGIN_SRC sh :exports code
-  -g all,-notdefault
-#+END_SRC
-
-For instance, downloading the tree to work on ARM system image for the
-emulator only from a linux workstation you can do: 
-
-#+BEGIN_SRC sh :exports code
-  repo init -u ... -g all,-notdefault,-device,-mips,-x86,-darwin
-#+END_SRC
-
-A successful initialization will end with a message stating that Repo
-is initialized in your working directory. Your client directory should
-now contain a .repo directory where files such as the manifest will be
-kept.
-
-**** Downloading the Android Source Tree
-
-To pull down the Android source to your working directory from
-the repositories as specified in the default manifest, run
-
-#+BEGIN_SRC sh :exports code
-  repo sync
-#+END_SRC
-
-The Android source files will be located in your working directory
-under their project names. The initial sync operation will take an
-hour or more to complete. For more about repo sync and other Repo
-commands, see the [[http://source.android.com/source/developing.html][Developing]] section.
-
-*** Compiling Android Emulator
-
-**** Initialize
-
-Initialize the environment with the /envsetup.sh/ script.
-
-#+BEGIN_SRC sh :exports code
-  . build/envsetup.sh
-#+END_SRC
-
-**** Choose a Target
-Choose which target to build with lunch.
-
-ARM Architecture and English Language
-#+BEGIN_SRC sh :exports code
-  lunch aosp_arm-eng
-#+END_SRC
-
-x86 Architecture and English Language
-#+BEGIN_SRC sh :exports code
-  lunch aosp_x86-eng
-#+END_SRC
-
-Android Linux and MacOS SDK
-#+BEGIN_SRC sh :exports code
-  lunch sdk-eng
-#+END_SRC
-
-**** Build the Code
-
-Build everything with /make/. GNU make can handle parallel tasks with a
--jN argument, and it's common to use a number of tasks N that's
-between 1 and 2 times the number of hardware threads on the computer
-being used for the build.
-
-#+BEGIN_SRC sh :exports code
-  make -j4
-#+END_SRC
-
-**** Build the Linux and MacOS SDK
-
-#+BEGIN_SRC sh :exports code
-  make sdk
-#+END_SRC
      
 * Configuration
+
+** Unpacking the SDK
+Let's assume you have downloaded [[http://dimjasevic.net/razno/android-sdk.tar.xz][the custom SDK]] into your home directory. This
+is how you would unpack it:
+#+BEGIN_SRC sh :exports code
+  cd ~/
+  tar xf ~/custom-android-sdk.tar.xz
+#+END_SRC
 
 ** Path to Executables
 *maline* needs an environment variable named =$MALINE=, which should point to
 the tool root directory. In addition, it's =bin/= directory should be in the
-PATH variable. For example,
+PATH variable. A few tools provided with the SDK should be on the path as
+well. Therefore, execute the following commands:
 
 #+BEGIN_SRC sh :exports code
   export MALINE=~/projects/maline
-  PATH=$PATH:$MALINE/bin
+  PATH=$MALINE/bin:~/custom-android-sdk/tools:~/custom-android-sdk/platform-tools:$PATH
 #+END_SRC
 
 ** Android Virtual Device
@@ -224,23 +80,9 @@ PATH variable. For example,
 Android SDK. The Emulator is a QEMU-based emulator that runs Android Virtual
 Devices (AVDs). By default, the ARM architecture is emulated, but that is very
 slow. Therefore, if one has an =x86= host machine, it is better to create an
-=x86= architecture-based virtual device image.  However, Intel has some nasty
-long license that you have to accept before installing the Intel x86 System
-Image.
+=x86= architecture-based virtual device image.
 
-First make sure to have the Android API version 19:
-#+BEGIN_SRC sh :exports code
-  android update sdk --no-ui
-#+END_SRC
-
-If you want to use an Intel x86 Atom System Image, then install the image
-through the SDK first:
-
-#+BEGIN_SRC sh :exports code
-  android update sdk --no-ui --all --filter sysimg-19
-#+END_SRC
-
-and then create an AVD device by executing:
+To create an x86-based AVD device, run:
 
 #+BEGIN_SRC sh :exports code
   avd-create.sh -a x86 -d maline-android-19

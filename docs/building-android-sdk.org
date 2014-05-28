@@ -35,3 +35,9 @@
   8. copy dependency JAR archives from the prebuilts:
      : rsync -a /mnt/storage/android-repo/prebuilts/devtools/tools/lib/ tools/lib/
      : rsync -a /mnt/storage/android-repo/prebuilts/tools/linux-x86_64/swt/swt.jar tools/lib/x86_64/swt/
+* Creating an archive for the SDK
+  To create an archive, run the following:
+  1. Change directory:
+     : cd /mnt/storage
+  2. Create an archive in the xz file format:
+     : tar cf custom-android-sdk.tar.xz --xz custom-android-sdk
