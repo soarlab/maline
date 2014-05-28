@@ -25,13 +25,13 @@
      respectively:
      : rsync -a /mnt/storage/android-repo/prebuilts/devtools/tools/android tools/
      : rsync -a /mnt/storage/android-repo/out/host/linux-x86/sdk/android-sdk_eng.marko_linux-x86/platform-tools/adb platform-tools/
-  7. copy emulator tools and libraries from the prebuilts:
-     : rsync -a /mnt/storage/android-repo/prebuilts/android-emulator/linux-x86_64/emulator tools/
-     : rsync -a /mnt/storage/android-repo/prebuilts/android-emulator/linux-x86_64/emulator64-arm tools/
-     : rsync -a /mnt/storage/android-repo/prebuilts/android-emulator/linux-x86_64/emulator64-x86 tools/
-     : rsync -a /mnt/storage/android-repo/prebuilts/android-emulator/linux-x86_64/lib tools/
-  8. copy pc-bios stuff:
-     : rsync -a /mnt/storage/android-repo/out/host/linux-x86/usr/share/pc-bios tools/lib/
-  9. copy dependency JAR archives from the prebuilts:
+  7. build emulator tools and libraries and copy them:
+     : /mnt/storage/android-repo/external/qemu/android-rebuild.sh
+     : rsync -a /mnt/storage/android-repo/external/qemu/objs/emulator tools/
+     : rsync -a /mnt/storage/android-repo/external/qemu/objs/emulator64-arm tools/
+     : rsync -a /mnt/storage/android-repo/external/qemu/objs/emulator64-x86 tools/
+     : rsync -a /mnt/storage/android-repo/external/qemu/objs/lib/ tools/lib/
+     : rsync -a /mnt/storage/android-repo/external/qemu/objs/libs tools/
+  8. copy dependency JAR archives from the prebuilts:
      : rsync -a /mnt/storage/android-repo/prebuilts/devtools/tools/lib/ tools/lib/
      : rsync -a /mnt/storage/android-repo/prebuilts/tools/linux-x86_64/swt/swt.jar tools/lib/x86_64/swt/
