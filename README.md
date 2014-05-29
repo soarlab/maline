@@ -6,9 +6,9 @@ Org-mode user, you might want to read the [executable version](http://orgmode.or
 
 # Installation
 
-**maline** was developed under Ubuntu 12.04.3 LTS. It is very likely it will
-work under other POSIX systems too (GNU/Linux and Mac alike). The Android
-version we tested **maline** with is Android 4.4.2 (API version 19), which is
+**maline** has been developed under Ubuntu 12.04.3 LTS. It is very likely it
+will work under other POSIX systems too (GNU/Linux and Mac alike). The Android
+version we tested **maline** with is Android 4.4.3 (API version 19), which is
 assumed throughout the readme.
 
 **maline** is a collection of Bash and Python scripts, so no installation is
@@ -21,11 +21,11 @@ needed. It suffices to obtain **maline**, e.g. from Github:
 ## Dependencies
 
 To use **maline**, you need the following:
--   Android SDK - please [download and use our build](http://dimjasevic.net/razno/android-sdk.tar.xz) of the SDK. It is a
+-   Android SDK - please [download and use our build](http://www.cs.utah.edu/formal_verification/downloads/custom-android-sdk.tar.xz) of the SDK. It is a
     stripped-down version with multiple bug fixes applied. Based on our
     experience, it is very unlikely **maline** will work correctly with the
-    official version. The official version ships without the fixes for multiple
-    showstopping bugs.
+    official version provided by Google. The official version ships without the
+    fixes for multiple showstopping bugs.
 -   [apktool](https://code.google.com/p/android-apktool/) - **maline** already ships with apktool, which is licensed under the
     Apache License 2.0.
 -   [GNU Octave](https://www.gnu.org/software/octave/) - a programming language for numerical computations. It is
@@ -42,7 +42,7 @@ To use **maline**, you need the following:
 
 ## Unpacking the SDK
 
-Let's assume you have downloaded [the custom SDK](http://dimjasevic.net/razno/android-sdk.tar.xz) into your home directory. This
+Let's assume you have downloaded [the custom SDK](http://www.cs.utah.edu/formal_verification/downloads/custom-android-sdk.tar.xz) into your home directory. This
 is how you would unpack it:
 
     cd ~/
