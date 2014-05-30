@@ -40,25 +40,21 @@ SCRIPTNAME=`basename $0`
 # Constant snapshot name
 SNAPSHOT_NAME="maline"
 
-while getopts "c:b:s:f:d:ek" OPTION; do
+while getopts "f:d:" OPTION; do
     case $OPTION in
-	c)
-	    CONSOLE_PORT="$OPTARG";;
-	b)
-	    ADB_PORT="$OPTARG";;
-	s)
-	    ADB_SERVER_PORT="$OPTARG";;
 	f)
 	    APK_LIST_FILE="$OPTARG";;
 	d)
 	    AVD_NAME="$OPTARG";;
+	\?)
+	    echo "Invalid option: -$OPTARG" >&2;;
     esac
 done
 
 check_and_exit() {
     if [ -z "$2" ]; then
 	echo "$SCRIPTNAME: Parameter \"$1\" is missing"
-	echo "Exiting ..."
+	echo "Aborting ..."
 	exit 1
     fi
 }
@@ -66,13 +62,9 @@ check_and_exit() {
 # Check if all parameters are provided
 check_and_exit "-f" $APK_LIST_FILE
 check_and_exit "-d" $AVD_NAME
-# If a port is not provided, take an available port
-if [ -z "$CONSOLE_PORT" ]; then
-    available_port CONSOLE_PORT
-fi
-if [ -z "$ADB_PORT" ]; then
-    available_port ADB_PORT
-fi
+
+available_port CONSOLE_PORT
+available_port ADB_PORT
 
 # Start a log parsing process
 loop-parse-new-logs.sh &
@@ -99,12 +91,9 @@ TIMEOUT=600
 
 FAILED_APPS_FILE="$MALINE/apk-list-file-$TIMESTAMP-maline-$CURR_PID"
 
-# If a port for adb server was not provided, reserve one only now that
-# the emulator is up so as to minimize chances of someone else getting
-# the port in the meantime
-if [ -z "$ADB_SERVER_PORT" ]; then
-    available_port ADB_SERVER_PORT
-fi
+# Reserve an adb server port only now that the emulator is up so as to
+# minimize chances of someone else getting the port in the meantime
+available_port ADB_SERVER_PORT
 echo "ADB server port: ${ADB_SERVER_PORT}" >> $MALINE/.maline-$CURR_PID
 
 for APP_PATH in `cat $APK_LIST_FILE`; do

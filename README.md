@@ -45,8 +45,7 @@ To use **maline**, you need the following:
 Let's assume you have downloaded [the custom SDK](http://www.cs.utah.edu/formal_verification/downloads/custom-android-sdk.tar.xz) into your home directory. This
 is how you would unpack it:
 
-    cd ~/
-    tar xf ~/custom-android-sdk.tar.xz
+    tar -C ~/projects/ -xf ~/custom-android-sdk.tar.xz
 
 ## Path to Executables
 
@@ -56,7 +55,7 @@ PATH variable. A few tools provided with the SDK should be on the path as
 well. Therefore, execute the following commands:
 
     export MALINE=~/projects/maline
-    PATH=$MALINE/bin:~/custom-android-sdk/tools:~/custom-android-sdk/platform-tools:$PATH
+    PATH=$MALINE/bin:~/projects/custom-android-sdk/tools:~/projects/custom-android-sdk/platform-tools:$PATH
 
 ## Android Virtual Device
 
@@ -68,11 +67,11 @@ slow. Therefore, if one has an `x86` host machine, it is better to create an
 
 To create an x86-based AVD device, run:
 
-    avd-create.sh -a x86 -d maline-android-19
+    avd-create.sh -a x86 -d maline-avd
 
 Otherwise, if you want to base your AVD device on an ARM architecture, execute:
 
-    avd-create.sh -a armeabi-v7a -d maline-android-19
+    avd-create.sh -a armeabi-v7a -d maline-avd
 
 The device creation process usually takes about 5 minutes.
 
@@ -84,7 +83,7 @@ You can check that the device is created by executing:
 
     android list avd
 
-You should see a device with a name `maline-android-19`.
+You should see a device with a name `maline-avd`.
 
 # Usage
 
@@ -102,14 +101,15 @@ stored to a file `apk-list-file` that has paths to the apps:
 
 To execute the apps and get their execution logs, run the following:
 
-    maline.sh -f apk-list-file -d maline-android-19
+    maline.sh -f apk-list-file -d maline-avd
 
-Once parsed the logs and obtained the .graph files, to create the data
-file with all feature vectors run the following script:
+As **maline** is executing, obtained `.log` files are parsed and as a result one
+`.graph` file per `.log` file is generated. From the `.graph` files we
+generate a feature vector for every analyzed app:
 
     createFeatureDataFile.sh
 
-Now, it is possible to classify the data running the following:
+Now it is possible to classify the data by running the following:
 
     runClassDroid.sh
 

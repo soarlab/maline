@@ -18,9 +18,17 @@ The Android source is located in a Git repository hosted by Google. There are
 hundreds of other Git repositories that the project depends on, so there is
 the Repo tool to ease the process of fetching all of them.
 
-* Installing Repo
+* Setting up Repo
+** Installing Repo
 Repo is a tool that makes it easier to work with Git in the context of
 Android.
+
+Before anything else, set up a caching system:
+
+#+BEGIN_SRC sh :exports code
+  export USE_CCACHE=1
+  export CCACHE_DIR=/mnt/storage/.ccache
+#+END_SRC
 
 To install Repo:
 
@@ -39,7 +47,7 @@ To install Repo:
   chmod a+x ~/bin/repo
 #+END_SRC
 
-** Initializing a Repo client
+*** Initializing a Repo client
 
 1. Create an empty directory to hold your working file:
 
@@ -47,6 +55,9 @@ To install Repo:
   mkdir android-repo
   cd android-repo
 #+END_SRC
+
+If you have not set up Repo before, continue reading. Otherwise skip to
+[[*Restoring%20a%20Snapshot][Restoring a Snapshot]].
 
 2. Run =repo init= to download the following groups of packages: developer
    tools (=tools=), devices supported by the Android Open Source Project
@@ -56,14 +67,13 @@ To install Repo:
    used on an OS X host (=-darwin=):
 
 #+BEGIN_SRC sh :exports code
-  repo init --manifest-url=https://android.googlesource.com/platform/manifest \
-      --groups=tools,device,arm,x86,linux,default,-mips,-darwin
+  repo init --manifest-url=https://android.googlesource.com/platform/manifest --groups=tools,device,arm,x86,linux,default,-mips,-darwin
 #+END_SRC
 
 After the initialization completes, you should get a message similar to "repo
 has been initialized in /mnt/storage/android-repo".
 
-** Downloading the Android Source Tree
+*** Downloading the Android Source Tree
 
 1. To synchronize the Android source to your working directory, and to
    download only branches specified in the manifest file so as to reduce the
@@ -72,7 +82,8 @@ has been initialized in /mnt/storage/android-repo".
    processor):
 
 #+BEGIN_SRC sh :exports code
-  repo sync --jobs=96 --current-branch
+  # repo sync --jobs=96 --current-branch
+  repo sync --jobs=4
 #+END_SRC
 
    This operation might take long (one hour or more), depending on your
@@ -86,7 +97,37 @@ has been initialized in /mnt/storage/android-repo".
 
 #+BEGIN_SRC sh :exports code
   export TIMESTAMP=`date +"%Y-%m-%d"`
-  repo manifest --output-file=snapshot-$TIMESTAMP.xml --revision-as-HEAD
+  repo manifest --output-file=repo-snapshot-$TIMESTAMP.xml --revision-as-HEAD
+#+END_SRC
+
+Please skip the Restoring a Snapshot section and continue with Applying the
+Monkey patch if you followed the current Installing Repo section.
+
+** Restoring a Snapshot
+If you would like to restore a snapshot of the state of Repo, you can do that
+by using a previously saved state. For example, if you have saved your state
+into =repo-snapshot-2014-05-22.xml=, you can restore it by running the
+following:
+
+#+BEGIN_SRC sh :exports code
+  cd android-repo
+  cp $MALINE/misc/repo-snapshot-2014-05-22.xml .repo/manifests/
+  repo init --manifest-name=repo-snapshot-2014-05-22.xml
+  repo sync --detach
+#+END_SRC
+
+* Applying the Monkey patch
+By default, Monkey, a tool for testing Android apps that *maline* uses, does
+not wait for events it inserts into the Android system to finish executing. It
+just keeps on sending new events. This is an undesirable behavior because
+Android starts dropping events if there are too many events in its queue and
+that is what easily happens with the default version of Monkey. To avoid this
+issue, apply the following patch before moving on to building Android:
+
+#+BEGIN_SRC sh :exports code
+  cd development/
+  git apply $MALINE/misc/monkey-wait-for-finish.patch
+  cd -
 #+END_SRC
 
 * Building the System
@@ -98,34 +139,23 @@ Initialize the environment with the =envsetup.sh= script:
 #+END_SRC
 
 ** Selecting and building targets
-There are a few targets that have to be built. We build one target at a
-time. Let us first select AOSP for the ARM emulator:
+Targets in Android are built one at a time. We will need only one target for
+the x86-based SDK. Now run:
 
 #+BEGIN_SRC sh :exports code
-  lunch aosp_arm-eng
+  lunch sdk_x86-eng
+  make --jobs=4 sdk
 #+END_SRC
 
-and build it:
+All compiled code is in =out/=. The code is inconveniently scattered all
+around the =out/= directory, which makes it hard to use. To assemble a
+stripped-down version of the Android SDK that is easy to use with *maline*,
+execute:
 
 #+BEGIN_SRC sh :exports code
-  make --jobs=96
+  cd ..
+  assemble-sdk.sh -r android-repo -p ~/projects/
 #+END_SRC
 
-Now we do the same for the x86 emulator:
-
-#+BEGIN_SRC sh :exports code
-  lunch aosp_x86-eng
-  make --jobs=96
-#+END_SRC
-
-We also need to build the Android SDK:
-
-#+BEGIN_SRC sh :exports code
-  lunch sdk-eng
-  make --jobs=96 sdk
-#+END_SRC
-
-All compiled code is in =out/=. An ARM system image is located at
-=out/target/product/generic/system.img=, while an x86 system image is at
-=out/target/product/generic_x86/system.img=. Binaries of the SDK can be found
-in =out/host/linux-x86/sdk=.
+This will create a directory =~/projects/custom-android-sdk= with all needed
+SDK files.
