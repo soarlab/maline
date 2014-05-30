@@ -87,8 +87,7 @@ echo "ADB server port: ${ADB_SERVER_PORT}" >> $MALINE/.avd-create-$CURR_PID
 # Start emulator
 echo "$SCRIPTNAME: Starting emulator ..."
 BOOT_START=`date +"%s"`
-emulator -no-boot-anim -ports $CONSOLE_PORT,$ADB_PORT -prop persist.sys.language=en -prop persist.sys.country=US -avd $AVD_NAME -no-snapshot-load -no-snapshot-save -wipe-data -no-window &
-# emulator -no-boot-anim -ports $CONSOLE_PORT,$ADB_PORT -prop persist.sys.language=en -prop persist.sys.country=US -avd $AVD_NAME -no-snapshot-load -no-snapshot-save -wipe-data &
+emulator -no-boot-anim -ports $CONSOLE_PORT,$ADB_PORT -prop persist.sys.dalvik.vm.lib.1=libdvm.so -prop persist.sys.language=en -prop persist.sys.country=US -avd $AVD_NAME -no-snapshot-load -no-snapshot-save -wipe-data -no-window &
 EMULATOR_PID=$!
 
 # Wait for the emulator

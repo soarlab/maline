@@ -1,0 +1,26 @@
+diff --git a/cmds/monkey/src/com/android/commands/monkey/MonkeyKeyEvent.java b/cmds/monkey/src/com/android/commands/monkey/MonkeyKeyEvent.java
+index a732968..20a6919 100644
+--- a/cmds/monkey/src/com/android/commands/monkey/MonkeyKeyEvent.java
++++ b/cmds/monkey/src/com/android/commands/monkey/MonkeyKeyEvent.java
+@@ -131,7 +131,7 @@ public class MonkeyKeyEvent extends MonkeyEvent {
+                     KeyEvent.FLAG_FROM_SYSTEM, InputDevice.SOURCE_KEYBOARD);
+         }
+         if (!InputManager.getInstance().injectInputEvent(keyEvent,
+-                InputManager.INJECT_INPUT_EVENT_MODE_WAIT_FOR_RESULT)) {
++                InputManager.INJECT_INPUT_EVENT_MODE_WAIT_FOR_FINISH)) {
+             return MonkeyEvent.INJECT_FAIL;
+         }
+         return MonkeyEvent.INJECT_SUCCESS;
+diff --git a/cmds/monkey/src/com/android/commands/monkey/MonkeyMotionEvent.java b/cmds/monkey/src/com/android/commands/monkey/MonkeyMotionEvent.java
+index 4491cbd..a2d4a30 100644
+--- a/cmds/monkey/src/com/android/commands/monkey/MonkeyMotionEvent.java
++++ b/cmds/monkey/src/com/android/commands/monkey/MonkeyMotionEvent.java
+@@ -186,7 +186,7 @@ public abstract class MonkeyMotionEvent extends MonkeyEvent {
+         }
+         try {
+             if (!InputManager.getInstance().injectInputEvent(me,
+-                    InputManager.INJECT_INPUT_EVENT_MODE_WAIT_FOR_RESULT)) {
++                    InputManager.INJECT_INPUT_EVENT_MODE_WAIT_FOR_FINISH)) {
+                 return MonkeyEvent.INJECT_FAIL;
+             }
+         } finally {

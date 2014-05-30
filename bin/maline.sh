@@ -84,9 +84,8 @@ echo "ADB port: ${ADB_PORT}" >> $MALINE/.maline-$CURR_PID
 
 # Start the emulator
 echo "$SCRIPTNAME: Starting emulator ..."
-emulator -no-boot-anim -ports $CONSOLE_PORT,$ADB_PORT -prop persist.sys.language=en -prop persist.sys.country=US -avd $AVD_NAME -snapshot $SNAPSHOT_NAME -no-snapshot-save -wipe-data -netfast -no-window &
+emulator -verbose -no-boot-anim -ports $CONSOLE_PORT,$ADB_PORT -prop persist.sys.dalvik.vm.lib.1=libdvm.so -prop persist.sys.language=en -prop persist.sys.country=US -avd $AVD_NAME -snapshot $SNAPSHOT_NAME -no-snapshot-save -wipe-data -netfast -no-window &
 EMULATOR_PID=$!
-    # emulator -no-boot-anim -ports $CONSOLE_PORT,$ADB_PORT -prop persist.sys.language=en -prop persist.sys.country=US -avd $AVD_NAME -snapshot $SNAPSHOT_NAME -no-snapshot-save -wipe-data -netfast &
 
 # Get the current time
 TIMESTAMP=`date +"%Y-%m-%d-%H-%M-%S"`
