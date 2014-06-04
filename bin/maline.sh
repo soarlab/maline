@@ -51,6 +51,12 @@ while getopts "f:d:" OPTION; do
     esac
 done
 
+die()
+{
+    echo >&2 "$@"
+    exit 1
+}
+
 check_and_exit() {
     if [ -z "$2" ]; then
 	echo "$SCRIPTNAME: Parameter \"$1\" is missing"
@@ -76,7 +82,7 @@ echo "ADB port: ${ADB_PORT}" >> $MALINE/.maline-$CURR_PID
 
 # Start the emulator
 echo "$SCRIPTNAME: Starting emulator ..."
-emulator -verbose -no-boot-anim -ports $CONSOLE_PORT,$ADB_PORT -prop persist.sys.dalvik.vm.lib.1=libdvm.so -prop persist.sys.language=en -prop persist.sys.country=US -avd $AVD_NAME -snapshot $SNAPSHOT_NAME -no-snapshot-save -wipe-data -netfast -no-window &
+emulator -no-boot-anim -ports $CONSOLE_PORT,$ADB_PORT -prop persist.sys.dalvik.vm.lib.1=libdvm.so -prop persist.sys.language=en -prop persist.sys.country=US -avd $AVD_NAME -snapshot $SNAPSHOT_NAME -no-snapshot-save -wipe-data -netfast -no-window &
 EMULATOR_PID=$!
 
 # Get the current time
@@ -96,6 +102,9 @@ FAILED_APPS_FILE="$MALINE/apk-list-file-$TIMESTAMP-maline-$CURR_PID"
 available_port ADB_SERVER_PORT
 echo "ADB server port: ${ADB_SERVER_PORT}" >> $MALINE/.maline-$CURR_PID
 
+# Get the emulator ready
+get_emu_ready.sh $ADB_PORT $ADB_SERVER_PORT
+
 for APP_PATH in `cat $APK_LIST_FILE`; do
 
     date
@@ -104,7 +113,7 @@ for APP_PATH in `cat $APK_LIST_FILE`; do
 
     echo "$SCRIPTNAME: App under analysis: $APP_PATH"
 
-    # Get the Emulator ready
+    # Get the Emulator ready for the app
     get_emu_ready.sh $ADB_PORT $ADB_SERVER_PORT
 
     # Check if a log file for this app already exists

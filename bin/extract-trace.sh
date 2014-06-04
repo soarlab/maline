@@ -41,6 +41,8 @@ APK_FILE_NAME=`basename $1 .apk`
 LOGFILE="$APK_FILE_NAME-$APP_NAME-$TIMESTAMP.log"
 LOGCATFILE="$APK_FILE_NAME-$APP_NAME-$TIMESTAMP.logcat"
 
+MONKEY_SEED=42
+
 # Send an event to the app to start it
 echo "Starting the app ..."
 adb -P $ADB_SERVER_PORT shell monkey -p $APP_NAME 1
@@ -97,14 +99,14 @@ for (( i=0; i<$ITERATIONS; i++ )) do
     # a delay between consecutive events because the Android emulator
     # is slow, and kill strace once Monkey is done
     echo "Iteration $i, sending $COUNT_PER_ITER random events to the app ..."
-    timeout 45 adb -P $ADB_SERVER_PORT shell "monkey --throttle 100 -p $APP_NAME $COUNT_PER_ITER && $STRACE_KILL_CMD"
+    timeout 45 adb -P $ADB_SERVER_PORT shell "monkey --throttle 100 -p $APP_NAME -s $MONKEY_SEED $COUNT_PER_ITER && $STRACE_KILL_CMD"
 
 done
 
 sleep 1s
 
 # Pull the logfile to the host machine
-mkdir -p log
+mkdir -p $MALINE/log
 adb -P $ADB_SERVER_PORT pull /sdcard/$LOGFILE $MALINE/log/
 
 # Remove the logfile from the device

@@ -20,8 +20,8 @@
 # If you want to assemble a custom Android SDK in a root directory
 # other than the current directory, specify a path to it with the -p
 # parameter. To compress it into an archive, add the -a parameter. The
-# only mandatory parameter is -r which specifies a path to the root of
-# the Android repo structure.
+# only mandatory parameter is -r which specifies an absolute path to
+# the root of the Android repo structure.
 #
 # Example usage: assemble-sdk.sh -p /tmp/ -a -r /mnt/storage/android-repo
 
@@ -29,6 +29,11 @@ set -e
 
 CREATE_ARCHIVE=0
 ASSEMBLE_DIR=`pwd`/custom-android-sdk
+# Make sure to update the following variable to point to a directory
+# with functional image files
+DOWNLOADED_IMAGES=/mnt/storage/downloaded-working-android-system-images/
+
+
 SCRIPTNAME=`basename $0`
 
 while getopts "p:ar:" OPTION; do
@@ -65,13 +70,15 @@ cd $ASSEMBLE_DIR
 echo "Assembling the SDK..."
 
 # make needed sub-directories:
-mkdir -p platforms/android-19 platform-tools system-images/android-19 tools/lib/x86_64/swt/
+mkdir -p platforms/android-19 platform-tools system-images/android-19 tools/lib/x86_64/swt/ monkey/
 
 # copy platform target(s) from the build into the custom SDK
 rsync -a $REPO_DIR/out/host/linux-x86/sdk/android-sdk*/platforms/android-$ANDROID_VERSION/ platforms/android-19/
 
 # copy system images
-rsync -a $REPO_DIR/out/host/linux-x86/sdk/android-sdk*/system-images/android-$ANDROID_VERSION/ system-images/android-19/
+# Images in the repo as of May 22, 2014 are broken. Therefore, use
+# images that Google provided through their SDK on June 3, 2014.
+rsync -a $DOWNLOADED_IMAGES/x86 system-images/android-19/
 
 # copy the initial snapshot image and build the mksdcard tool
 mkdir -p tools/lib/emulator
@@ -96,6 +103,22 @@ rsync -a $REPO_DIR/external/qemu/objs/libs tools/
 # copy dependency JAR archives from the prebuilts
 rsync -a $REPO_DIR/prebuilts/devtools/tools/lib/ tools/lib/
 rsync -a $REPO_DIR/prebuilts/tools/linux-x86_64/swt/swt.jar tools/lib/x86_64/swt/
+
+# copy other needed libraries
+rsync -a $REPO_DIR/out/target/product/generic_x86/system/lib/ tools/lib/
+
+# Build Monkey with a patch that was already applied. Every time an
+# AVD is started, this patched version of Monkey needs to be pushed to
+# the AVD
+#
+# The lunch and mmm tools are on the path after sourcing $REPO_DIR/build/envsetup.sh
+cd $REPO_DIR
+. build/envsetup.sh
+lunch sdk_x86-eng
+mmm $REPO_DIR/development/cmds/monkey
+cd -
+rsync -a $REPO_DIR/out/target/product/generic_x86/system/framework/monkey.jar monkey/
+rsync -a $REPO_DIR/out/target/product/generic_x86/system/framework/x86/monkey.odex monkey/
 
 echo "Done assembling the SDK"
 

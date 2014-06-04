@@ -105,7 +105,7 @@ To execute the apps and get their execution logs, run the following:
 
 As **maline** is executing, obtained `.log` files are parsed and as a result one
 `.graph` file per `.log` file is generated. From the `.graph` files we
-generate a feature vector for every analyzed app:
+generate a feature vector for every analyzed app by executing:
 
     createFeatureDataFile.sh
 

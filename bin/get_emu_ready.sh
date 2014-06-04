@@ -70,6 +70,19 @@ ADB_PID=$!
 echo "Waiting for the device ..."
 wait_for_emu
 
+# Push the patched version of Monkey to the device. We need to do this
+# because we are using a prebuilt image of x86, which doesn't come
+# with the patched version of Monkey
+JAR="$ANDROID_SDK_ROOT/monkey/monkey.jar"
+ODEX="$ANDROID_SDK_ROOT/monkey/monkey.odex"
+[ -f $JAR ] || die "$JAR file does not exist. Use a custom build of Android SDK pointed to in the documentation."
+[ -f $ODEX ] || die "$ODEX file does not exist. Use a custom build of Android SDK pointed to in the documentation."
+adb -P $ADB_SERVER_PORT shell mount -o rw,remount /system
+sleep 1
+adb -P $ADB_SERVER_PORT push $JAR /system/framework
+adb -P $ADB_SERVER_PORT push $ODEX /system/framework
+adb -P $ADB_SERVER_PORT shell mount -o ro,remount /system
+
 adb -P $ADB_SERVER_PORT -e connect localhost:$ADB_PORT
 
 exit 0

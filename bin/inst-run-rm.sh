@@ -55,7 +55,7 @@ while [ $ATTEMPT -lt $ATTEMPT_LIMIT ]; do
     echo "  Attempt $ATTEMPT ..."
     timeout 25 adb -P $ADB_SERVER_PORT install $APP_PATH 2>&1 > $APP_STATUS_FILE
 
-    cat .app_status-$CURR_PID
+    cat $APP_STATUS_FILE
     RES=`tail -n 1 $APP_STATUS_FILE`
     RES=${RES:0:7}
 
