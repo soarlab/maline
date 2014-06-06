@@ -38,7 +38,8 @@ do
 
     PHONE_NUM=${A[0]}
 
-    send-sms $CONSOLE_PORT $PHONE_NUM "$MSG"
+    echo "Delivering a message from $PHONE_NUM: $MSG"
+    send-sms $CONSOLE_PORT $PHONE_NUM "$MSG" &>/dev/null
 
     sleep 7s
 done < $FILENAME

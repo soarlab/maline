@@ -54,6 +54,19 @@ usage() {
     echo "  -d <avd-name>      AVD name can be any string without spaces"
 }
 
+# Clean up upon exiting from the process
+function __sig_func {
+    # Kill the ADB server
+    adb -P $ADB_SERVER_PORT kill-server
+
+    # Kill the emulator
+    kill-emulator $CONSOLE_PORT
+    kill -9 $EMULATOR_PID 2>&1 > /dev/null
+
+    # Remove a temporary file with a list of ports used
+    rm -f $PROC_INFO_FILE
+}
+
 check_and_exit() {
     if [ -z "$2" ]; then
 	usage
@@ -65,6 +78,12 @@ check_and_exit() {
 check_and_exit "-a" $ARCH
 check_and_exit "-d" $AVD_NAME
 
+# Set traps
+trap __sig_func EXIT
+trap __sig_func INT
+trap __sig_func SIGQUIT
+trap __sig_func SIGTERM
+
 # Check if the -a parameter is valid
 if [ $ARCH != "x86" ] && [ $ARCH != "armeabi-v7a" ]; then
     usage
@@ -73,22 +92,27 @@ fi
 
 # Create an Android Virtual Device
 # Say no to a question about a custom hardware profile
-echo no | android create avd --force -a --sdcard 512M --skin WVGA800 --name $AVD_NAME --target $ANDROID_API --abi $ARCH
+echo no | android create avd --force --snapshot --sdcard 512M --skin WVGA800 --name $AVD_NAME --target $ANDROID_API --abi $ARCH
 
 available_port CONSOLE_PORT
 available_port ADB_PORT
-available_port ADB_SERVER_PORT
 
-rm -f $MALINE/.avd-create-$CURR_PID
-echo "Console port: ${CONSOLE_PORT}" >> $MALINE/.avd-create-$CURR_PID
-echo "ADB port: ${ADB_PORT}" >> $MALINE/.avd-create-$CURR_PID
-echo "ADB server port: ${ADB_SERVER_PORT}" >> $MALINE/.avd-create-$CURR_PID
+PROC_INFO_FILE=$MALINE/.avd-create-$CURR_PID
+rm -f $PROC_INFO_FILE
+
+echo "Console port: ${CONSOLE_PORT}" >> $PROC_INFO_FILE
+echo "ADB port: ${ADB_PORT}" >> $PROC_INFO_FILE
 
 # Start emulator
 echo "$SCRIPTNAME: Starting emulator ..."
 BOOT_START=`date +"%s"`
 emulator -no-boot-anim -ports $CONSOLE_PORT,$ADB_PORT -prop persist.sys.dalvik.vm.lib.1=libdvm.so -prop persist.sys.language=en -prop persist.sys.country=US -avd $AVD_NAME -no-snapshot-load -no-snapshot-save -wipe-data -no-window &
 EMULATOR_PID=$!
+
+# Reserve an adb server port only now that the emulator is up so as to
+# minimize chances of someone else getting the port in the meantime
+available_port ADB_SERVER_PORT
+echo "ADB server port: ${ADB_SERVER_PORT}" >> $PROC_INFO_FILE
 
 # Wait for the emulator
 get_emu_ready.sh $ADB_PORT $ADB_SERVER_PORT
@@ -137,17 +161,5 @@ adb -P $ADB_SERVER_PORT kill-server
 avd-save-snapshot $CONSOLE_PORT $SNAPSHOT_NAME
 echo ""
 
-# kill the adb server
-adb -P $ADB_SERVER_PORT kill-server
-
-# kill the emulator
-kill-emulator $CONSOLE_PORT
-kill $EMULATOR_PID
-
-# Remove a temporary file with a list of ports used
-rm $MALINE/.avd-create-$CURR_PID
-
 echo ""
 echo "Android virtual device ${AVD_NAME} created successfully"
-
-exit 0

@@ -18,6 +18,19 @@
 # along with maline.  If not, see <http://www.gnu.org/licenses/>.
 
 
+# Clean up upon exiting from the process
+function __sig_func {
+    kill $SMS_PID &>/dev/null
+    kill $GEO_PID &>/dev/null
+    exit 1
+}
+
+# Set traps
+trap __sig_func EXIT
+trap __sig_func SIGQUIT
+trap __sig_func SIGKILL
+trap __sig_func SIGTERM
+
 # App under test
 APP_NAME=`getAppPackageName.sh $1`
 
@@ -30,11 +43,7 @@ ADB_SERVER_PORT="$3"
 # Get the current time
 TIMESTAMP="$4"
 
-# Status file where send-sms.sh and send-locations.sh PID's should be
-# written to
-GPS_SMS_STATUS_FILE="$5"
-
-# Get apk file name
+# get apk file name
 APK_FILE_NAME=`basename $1 .apk`
 
 # Log file names
@@ -45,7 +54,7 @@ MONKEY_SEED=42
 
 # Send an event to the app to start it
 echo "Starting the app ..."
-adb -P $ADB_SERVER_PORT shell monkey -p $APP_NAME 1
+adb -P $ADB_SERVER_PORT shell monkey -p $APP_NAME 1 &>/dev/null || exit 1
 
 # Give some time to the app to start
 sleep 15s
@@ -65,13 +74,11 @@ echo "Also sending geo-location updates in parallel ..."
 LOCATIONS_FILE="$MALINE/data/locations-list"
 send-locations.sh $LOCATIONS_FILE 0 `cat $LOCATIONS_FILE | wc -l` $CONSOLE_PORT &
 GEO_PID=$!
-echo -n "${GEO_PID} " > $GPS_SMS_STATUS_FILE
 
 echo "Spoofing SMS text messages in paralell too ..."
 MESSAGES_FILE="$MALINE/data/sms-list"
 send-all-sms.sh $MESSAGES_FILE $CONSOLE_PORT &
 SMS_PID=$!
-echo -n "${SMS_PID}" >> $GPS_SMS_STATUS_FILE
 
 for (( i=0; i<$ITERATIONS; i++ )) do
 
@@ -119,3 +126,5 @@ adb -P $ADB_SERVER_PORT shell "logcat -d > /sdcard/$LOGCATFILE"
 adb -P $ADB_SERVER_PORT pull /sdcard/$LOGCATFILE $MALINE/log/
 RM_CAT_CMD="rm /sdcard/$LOGCATFILE"
 adb -P $ADB_SERVER_PORT shell "$RM_CAT_CMD"
+
+exit 0

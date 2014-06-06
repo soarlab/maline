@@ -18,6 +18,18 @@
 # along with maline.  If not, see <http://www.gnu.org/licenses/>.
 
 
+# Clean up upon exiting from the process
+function __sig_func {
+    rm -f $APP_STATUS_FILE
+    rm -f $GPS_SMS_STATUS_FILE
+    exit 1
+}
+
+# Set traps
+trap __sig_func SIGQUIT
+trap __sig_func SIGKILL
+trap __sig_func SIGTERM
+
 # Path to the app under test
 APP_PATH="$1"
 
@@ -53,14 +65,16 @@ ATTEMPT_LIMIT=3
 while [ $ATTEMPT -lt $ATTEMPT_LIMIT ]; do
     echo "Installing the app ..."
     echo "  Attempt $ATTEMPT ..."
-    timeout 25 adb -P $ADB_SERVER_PORT install $APP_PATH 2>&1 > $APP_STATUS_FILE
+    timeout 25 adb -P $ADB_SERVER_PORT install $APP_PATH &>$APP_STATUS_FILE || exit 1
 
-    cat $APP_STATUS_FILE
     RES=`tail -n 1 $APP_STATUS_FILE`
     RES=${RES:0:7}
 
     if [ "$RES" = "Success" ]; then
+	echo "Installed the app successfully"
 	break
+    else
+	echo "Failed to install the app"
     fi
 
     let ATTEMPT=ATTEMPT+1
@@ -71,14 +85,13 @@ while [ $ATTEMPT -lt $ATTEMPT_LIMIT ]; do
     echo ""
 
     # Reload a clean snapshot
-    echo "Reloading a clean snapshot for the next attempt ..."
-    avd-reload $CONSOLE_PORT $SNAPSHOT_NAME
+    echo -n "Reloading a clean snapshot for the next attempt... "
+    avd-reload $CONSOLE_PORT $SNAPSHOT_NAME &>/dev/null || exit 1
+    echo "done"
 
     sleep 2s
 
-    echo "Connecting to the emulator now ..."
-    get_emu_ready.sh $ADB_PORT $ADB_SERVER_PORT
-
+    get_emu_ready.sh $ADB_PORT $ADB_SERVER_PORT || exit 1
 done
 
 rm -f $APP_STATUS_FILE
@@ -88,22 +101,19 @@ if [ $ATTEMPT -eq $ATTEMPT_LIMIT ]; then
     echo "Failed to install the app in $ATTEMPT_LIMIT attempts"
     echo "Aborting ..."
     echo ""
-    exit 1
+    exit 0
 fi
 
 sleep 2s
 
 # Extract trace from the app
-extract-trace.sh $APP_PATH $CONSOLE_PORT $ADB_SERVER_PORT $TIMESTAMP $GPS_SMS_STATUS_FILE
-echo "Done"
-
-# Clean up after extract-trace.sh
-kill `cat $GPS_SMS_STATUS_FILE`
-rm -f $GPS_SMS_STATUS_FILE
+extract-trace.sh $APP_PATH $CONSOLE_PORT $ADB_SERVER_PORT $TIMESTAMP || exit 1
 
 sleep 1s
 
 # Uninstall the app from the device
 echo "Uninstalling the app ..."
-adb -P $ADB_SERVER_PORT uninstall $APP_NAME
+adb -P $ADB_SERVER_PORT uninstall $APP_NAME || exit 1
 echo "Done"
+
+exit 0

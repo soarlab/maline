@@ -29,8 +29,8 @@ fi
 
 : ${LOG_DIR=$LOG_DIR_DEFAULT}
 
-LOG_FILES_COUNT=`ls -1 $LOG_DIR/*log 2>&1 | wc -l`
-GRAPH_FILES_COUNT=`ls -1 $LOG_DIR/*graph 2>&1 | wc -l`
+LOG_FILES_COUNT=`ls -1 $LOG_DIR/*log 2>/dev/null | wc -l`
+GRAPH_FILES_COUNT=`ls -1 $LOG_DIR/*graph 2>/dev/null | wc -l`
 if [ $LOG_FILES_COUNT != $GRAPH_FILES_COUNT ]; then
     date
     echo "Total number of log files: $LOG_FILES_COUNT"
@@ -51,7 +51,7 @@ fi
 
 COUNTER=0
 
-for LOG in `ls -1 $LOG_DIR/*log`; do
+for LOG in `ls -1 $LOG_DIR/*log 2>/dev/null`; do
     parse-log-lock.sh $LOG_DIR $LOG
     RET_VAL=$?
 

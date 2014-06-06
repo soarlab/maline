@@ -43,7 +43,8 @@ do
 
     coordinate=( $line )
 
-    geo-fix $CONSOLE_PORT ${coordinate[0]} ${coordinate[1]} ${coordinate[2]}
+    echo "Delivering a location update"
+    geo-fix $CONSOLE_PORT ${coordinate[0]} ${coordinate[1]} ${coordinate[2]} &>/dev/null
 
     # Simulate a movement by waiting some time before the next update
     sleep 11s
