@@ -26,7 +26,6 @@ function __sig_func {
 }
 
 # Set traps
-trap __sig_func EXIT
 trap __sig_func SIGQUIT
 trap __sig_func SIGKILL
 trap __sig_func SIGTERM
@@ -54,7 +53,7 @@ MONKEY_SEED=42
 
 # Send an event to the app to start it
 echo "Starting the app ..."
-adb -P $ADB_SERVER_PORT shell monkey -p $APP_NAME 1 &>/dev/null || exit 1
+adb -P $ADB_SERVER_PORT shell monkey -p $APP_NAME 1 &>/dev/null
 
 # Give some time to the app to start
 sleep 15s

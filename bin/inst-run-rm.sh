@@ -113,7 +113,7 @@ sleep 1s
 
 # Uninstall the app from the device
 echo "Uninstalling the app ..."
-adb -P $ADB_SERVER_PORT uninstall $APP_NAME || exit 1
+adb -P $ADB_SERVER_PORT uninstall $APP_NAME
 echo "Done"
 
 exit 0
