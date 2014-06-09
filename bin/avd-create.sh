@@ -62,6 +62,7 @@ function __sig_func {
     adb -P $ADB_SERVER_PORT kill-server
 
     # Kill the emulator
+    kill-emulator $CONSOLE_PORT &>/dev/null
     kill $EMULATOR_PID &>/dev/null
     sleep 1s
     android delete avd -n $AVD_NAME
@@ -78,6 +79,7 @@ function __exit_func {
     adb -P $ADB_SERVER_PORT kill-server
 
     # Kill the emulator
+    kill-emulator $CONSOLE_PORT &>/dev/null
     kill $EMULATOR_PID &>/dev/null
     sleep 1s
     # Remove lock files

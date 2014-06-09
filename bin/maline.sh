@@ -54,6 +54,7 @@ function __sig_func {
     adb -P $ADB_SERVER_PORT kill-server
 
     # Kill the emulator
+    kill-emulator $CONSOLE_PORT &>/dev/null
     kill $EMULATOR_PID &>/dev/null
     sleep 1s
     # Remove lock files
@@ -109,6 +110,7 @@ get_emu_ready() {
 	# Check if the device is ready
 	if [ "`cat $STATUS_FILE 2>/dev/null`" != "1" ]; then
 	    set +e
+	    kill-emulator $CONSOLE_PORT &>/dev/null
 	    kill $EMULATOR_PID &>/dev/null
 	    set -e
 	    sleep 1s

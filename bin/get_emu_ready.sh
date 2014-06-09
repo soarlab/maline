@@ -26,7 +26,54 @@ STATUS_FILE=$MALINE/.emulator-$ADB_PORT
 # Clean up upon exiting from the process
 function __sig_func {
     kill $ADB_PID &>/dev/null
+    adb -P $ADB_SERVER_PORT kill-server &>/dev/null
     exit 1
+}
+
+function wait_for_emu {
+    COUNTER=0
+    COUNTER_LIMIT=2
+
+    EMU_READY=0
+    echo "0" > $STATUS_FILE
+
+    echo -n "Waiting for the device: "
+
+    CURR_TIME=$((`date +"%s"`))
+    TIME_TIMEOUT=$(($CURR_TIME + $EMU_TIMEOUT))
+
+    while [ "$EMU_READY" != "1" ] && [ "$CURR_TIME" -lt "$TIME_TIMEOUT" ]; do
+	echo -n "."
+	sleep 3s
+	
+	if [ $COUNTER -eq $COUNTER_LIMIT ]; then
+	    let COUNTER=0
+	    
+	    # echo "Disconnecting from the device ..."
+	    adb -P $ADB_SERVER_PORT -e disconnect localhost:$ADB_PORT &>/dev/null 
+	    
+	    # echo "Killing and starting the adb server ..."
+	    adb -P $ADB_SERVER_PORT kill-server &>/dev/null
+	    
+	    adb -P $ADB_SERVER_PORT start-server &>/dev/null &
+	    ADB_PID=$!
+	fi
+	
+	adb -P $ADB_SERVER_PORT -e connect localhost:$ADB_PORT &>/dev/null
+	
+	EMU_READY=`timeout 5 adb -P $ADB_SERVER_PORT -e -s localhost:$ADB_PORT shell getprop dev.bootcomplete 2>&1`
+	EMU_READY=${EMU_READY:0:1}
+	
+	let COUNTER=COUNTER+1
+	CURR_TIME=$((`date +"%s"`))
+    done
+
+    if [ "$EMU_READY" = "1" ]; then
+	echo " ready"
+	echo "1" > $STATUS_FILE
+    else
+	echo " failed"
+    fi
 }
 
 # Set traps
@@ -41,29 +88,15 @@ kill $ADB_PID &>/dev/null
 
 # Start an adb server
 adb -P $ADB_SERVER_PORT start-server &>/dev/null &
-export ADB_PID=$!
+ADB_PID=$!
 
 # TODO: Change this parameter if ARM is ever to be supported again or
 # if running on a slower machine
 EMU_TIMEOUT=180
 
 # Wait for the device
-timeout $EMU_TIMEOUT wait-for-emu.sh $ADB_PORT $ADB_SERVER_PORT
-EXIT_STATUS=$?
-# check if there was a timeout
-if [ $EXIT_STATUS -eq 124 ]; then
-    echo "There was a timeout for wait-for-emu.sh"
-    exit 0
-fi
-# check if the user interrupted the execution
-if [ $EXIT_STATUS -eq 1 ]; then
-    echo "User interrupted wait-for-emu.sh"
-    kill $ADB_PID &>/dev/null
-    exit 1
-fi
-# Exit if the device is not ready
+wait_for_emu
 if [ "`cat $STATUS_FILE 2>/dev/null`" != "1" ]; then
-    echo "wait-for-emu.sh terminated, but the device is not ready"
     exit 0
 fi
 
