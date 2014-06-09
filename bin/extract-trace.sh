@@ -107,14 +107,19 @@ for (( i=0; i<$ITERATIONS; i++ )) do
     # is slow, and kill strace once Monkey is done
     echo "Iteration $i, sending $COUNT_PER_ITER random events to the app ..."
     timeout 45 adb -P $ADB_SERVER_PORT shell "monkey --throttle 100 -p $APP_NAME -s $MONKEY_SEED $COUNT_PER_ITER && $STRACE_KILL_CMD"
-
+    # Increase the seed for the next round of events
+    let MONKEY_SEED=MONKEY_SEED+1
 done
+
+kill $SMS_PID $GEO_PID &>/dev/null
 
 sleep 1s
 
 # Pull the logfile to the host machine
+echo "Started pulling the app execution log file..."
 mkdir -p $MALINE/log
-adb -P $ADB_SERVER_PORT pull /sdcard/$LOGFILE $MALINE/log/
+adb -P $ADB_SERVER_PORT pull /sdcard/$LOGFILE $MALINE/log/ &>/dev/null
+echo "Done pulling the app execution log file"
 
 # Remove the logfile from the device
 RM_CMD="rm /sdcard/$LOGFILE"
@@ -122,9 +127,11 @@ RM_CMD="rm /sdcard/$LOGFILE"
 adb -P $ADB_SERVER_PORT shell "$RM_CMD" 
 
 # Fetch logcat log and remove it from the phone
+echo "Started pulling the app execution logcat file..."
 adb -P $ADB_SERVER_PORT shell "logcat -d > /sdcard/$LOGCATFILE"
-adb -P $ADB_SERVER_PORT pull /sdcard/$LOGCATFILE $MALINE/log/
+adb -P $ADB_SERVER_PORT pull /sdcard/$LOGCATFILE $MALINE/log/ &>/dev/null
 RM_CAT_CMD="rm /sdcard/$LOGCATFILE"
 adb -P $ADB_SERVER_PORT shell "$RM_CAT_CMD"
+echo "Done pulling the app execution logcat file"
 
 exit 0

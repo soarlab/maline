@@ -65,7 +65,7 @@ ATTEMPT_LIMIT=3
 while [ $ATTEMPT -lt $ATTEMPT_LIMIT ]; do
     echo "Installing the app ..."
     echo "  Attempt $ATTEMPT ..."
-    timeout 25 adb -P $ADB_SERVER_PORT install $APP_PATH &>$APP_STATUS_FILE || exit 1
+    timeout 25 adb -P $ADB_SERVER_PORT install $APP_PATH &>$APP_STATUS_FILE
 
     RES=`tail -n 1 $APP_STATUS_FILE`
     RES=${RES:0:7}
