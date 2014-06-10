@@ -107,7 +107,9 @@ fi
 sleep 2s
 
 # Extract trace from the app
-extract-trace.sh $APP_PATH $CONSOLE_PORT $ADB_SERVER_PORT $TIMESTAMP || exit 1
+extract-trace.sh $APP_PATH $CONSOLE_PORT $ADB_SERVER_PORT $ADB_PORT $TIMESTAMP || exit 1
+
+check-adb-status.sh $ADB_SERVER_PORT $ADB_PORT || __sig_func
 
 sleep 1s
 

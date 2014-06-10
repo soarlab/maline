@@ -111,13 +111,14 @@ get_emu_ready() {
 	if [ "`cat $STATUS_FILE 2>/dev/null`" != "1" ]; then
 	    set +e
 	    kill-emulator $CONSOLE_PORT &>/dev/null
+	    sleep 1s
 	    kill $EMULATOR_PID &>/dev/null
 	    set -e
 	    sleep 1s
 	    # Remove lock files
 	    find $AVDDIR/$AVD_NAME.avd/ -name "*lock" | xargs rm -f
 	    $EMULATOR_CMD &>/dev/null &
-	    EMULATOR_PID=$!
+	    export EMULATOR_PID=$!
 	fi
     done
 
@@ -155,9 +156,8 @@ echo "ADB port: ${ADB_PORT}" >> $PROC_INFO_FILE
 
 # Start the emulator
 EMULATOR_CMD="emulator -no-boot-anim -ports $CONSOLE_PORT,$ADB_PORT -prop persist.sys.dalvik.vm.lib.1=libdvm.so -prop persist.sys.language=en -prop persist.sys.country=US -avd $AVD_NAME -snapshot $SNAPSHOT_NAME -no-snapshot-save -wipe-data -netfast -no-window"
-echo "Starting emulator..."
 $EMULATOR_CMD &>/dev/null &
-EMULATOR_PID=$!
+export EMULATOR_PID=$!
 
 # Get the current time
 TIMESTAMP=`date +"%Y-%m-%d-%H-%M-%S"`

@@ -54,8 +54,11 @@ CONSOLE_PORT="$2"
 # ADB server port
 ADB_SERVER_PORT="$3"
 
+# ADB port
+ADB_PORT="$4"
+
 # Get the current time
-TIMESTAMP="$4"
+TIMESTAMP="$5"
 
 # get apk file name
 APK_FILE_NAME=`basename $1 .apk`
@@ -91,7 +94,9 @@ MESSAGES_FILE="$MALINE/data/sms-list"
 send-all-sms.sh $MESSAGES_FILE $CONSOLE_PORT &
 SMS_PID=$!
 
-for (( i=0; i<$ITERATIONS; i++ )) do
+for i in $(seq 1 $ITERATIONS); do
+    # Check if the user has interrupted the execution in the meantime
+    check-adb-status.sh $ADB_SERVER_PORT $ADB_PORT || __sig_func
 
     ACTIVE=`adb -P $ADB_SERVER_PORT shell "ps" | grep $APP_PID`
     # Check if the app is still running. If not, stop testing and stracing
@@ -99,6 +104,9 @@ for (( i=0; i<$ITERATIONS; i++ )) do
 	echo "App not running any more. Stopping testing... "
 	break
     fi
+    
+    # Check if the user has interrupted the execution in the meantime
+    check-adb-status.sh $ADB_SERVER_PORT $ADB_PORT || __sig_func
 
     # Start tracing system calls the app makes
     STRACE_CMD="strace -ff -F -tt -T -p $APP_PID &>> /sdcard/$LOGFILE"
@@ -112,16 +120,21 @@ for (( i=0; i<$ITERATIONS; i++ )) do
 
     STRACE_KILL_CMD="kill $STRACE_PID"
 
+    # Check if the user has interrupted the execution in the meantime
+    check-adb-status.sh $ADB_SERVER_PORT $ADB_PORT || __sig_func
+
     # Send $COUNT_PER_ITER random events to the app with Monkey, with
     # a delay between consecutive events because the Android emulator
     # is slow, and kill strace once Monkey is done
     echo "Iteration $i, sending $COUNT_PER_ITER random events to the app..."
     timeout 45 adb -P $ADB_SERVER_PORT shell "monkey --throttle 100 -p $APP_NAME -s $MONKEY_SEED $COUNT_PER_ITER && $STRACE_KILL_CMD"
-    # Increase the seed for the next round of events
+    # increase the seed for the next round of events
     let MONKEY_SEED=MONKEY_SEED+1
 done
 
 kill $SMS_PID $GEO_PID &>/dev/null
+
+check-adb-status.sh $ADB_SERVER_PORT $ADB_PORT || __sig_func
 
 sleep 1s
 
