@@ -27,7 +27,7 @@ function __sig_func {
 
 function get_app_pid {
     # This function will try to fetch app's PID for at most 15s
-    RETRY_COUNT=150
+    RETRY_COUNT=60
     __APP_PID=
     for i in $(seq 1 $RETRY_COUNT); do
 	# Fetch the app PID
@@ -35,7 +35,7 @@ function get_app_pid {
 	if [ ! -z "$APP_PID" ]; then
     	    break
 	fi
-	sleep 0.1s
+	sleep 0.25s
     done
     eval "$1=$__APP_PID"
 }
@@ -75,8 +75,6 @@ adb -P $ADB_SERVER_PORT shell monkey -p $APP_NAME 1 &>/dev/null
 
 # Fetch app's PID
 get_app_pid APP_PID
-
-echo "App's process ID: $APP_PID"
 
 COUNT_PER_ITER=100
 ITERATIONS=10

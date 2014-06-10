@@ -62,19 +62,19 @@ rm -f $GPS_SMS_STATUS_FILE
 ATTEMPT=0
 ATTEMPT_LIMIT=3
 
+echo "Installing the app... "
 while [ $ATTEMPT -lt $ATTEMPT_LIMIT ]; do
-    echo "Installing the app ..."
-    echo "  Attempt $ATTEMPT ..."
+    echo -n "  Attempt $ATTEMPT... "
     timeout 25 adb -P $ADB_SERVER_PORT install $APP_PATH &>$APP_STATUS_FILE
 
     RES=`tail -n 1 $APP_STATUS_FILE`
     RES=${RES:0:7}
 
     if [ "$RES" = "Success" ]; then
-	echo "Installed the app successfully"
+	echo "succeeded"
 	break
     else
-	echo "Failed to install the app"
+	echo "failed"
     fi
 
     let ATTEMPT=ATTEMPT+1
@@ -82,12 +82,8 @@ while [ $ATTEMPT -lt $ATTEMPT_LIMIT ]; do
 	break
     fi
 
-    echo ""
-
     # Reload a clean snapshot
-    echo -n "Reloading a clean snapshot for the next attempt... "
     avd-reload $CONSOLE_PORT $SNAPSHOT_NAME &>/dev/null || exit 1
-    echo "done"
 
     sleep 2s
 
@@ -99,7 +95,7 @@ rm -f $APP_STATUS_FILE
 # Abort if the app is not installed
 if [ $ATTEMPT -eq $ATTEMPT_LIMIT ]; then
     echo "Failed to install the app in $ATTEMPT_LIMIT attempts"
-    echo "Aborting ..."
+    echo "Aborting."
     echo ""
     exit 0
 fi
@@ -114,8 +110,7 @@ check-adb-status.sh $ADB_SERVER_PORT $ADB_PORT || __sig_func
 sleep 1s
 
 # Uninstall the app from the device
-echo "Uninstalling the app ..."
-adb -P $ADB_SERVER_PORT uninstall $APP_NAME
-echo "Done"
+echo "Uninstalling the app..."
+adb -P $ADB_SERVER_PORT uninstall $APP_NAME &>/dev/null
 
 exit 0

@@ -64,9 +64,7 @@ fi
     flock --exclusive --nonblock 42 || exit 1
     echo $CURR_PID > $LOCK_FILE
 
-    echo "Parsing:     $LOG ... "
     $COMMAND $LOG
-    [[ $? -eq 0 ]] && echo "Done parsing $LOG"
     
 ) 42> $LOCK_FILE
 

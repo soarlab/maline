@@ -29,13 +29,6 @@ fi
 
 : ${LOG_DIR=$LOG_DIR_DEFAULT}
 
-LOG_FILES_COUNT=`ls -1 $LOG_DIR/*log 2>/dev/null | wc -l`
-GRAPH_FILES_COUNT=`ls -1 $LOG_DIR/*graph 2>/dev/null | wc -l`
-if [ $LOG_FILES_COUNT != $GRAPH_FILES_COUNT ]; then
-    echo "Total number of log files: $LOG_FILES_COUNT"
-    echo ""
-fi
-
 # Set the strace parsing command name and use a compiled version when
 # possible
 STRACE_PY_SRC="$MALINE/bin/parse-strace-log.py"
@@ -58,9 +51,3 @@ for LOG in `ls -1 $LOG_DIR/*log 2>/dev/null`; do
 	let COUNTER++
     fi
 done
-
-if [ $COUNTER -gt 0 ]; then
-    echo ""
-    date
-    echo "Parsed $COUNTER new log file(s)"
-fi

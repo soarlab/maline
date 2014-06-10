@@ -55,6 +55,7 @@ function __sig_func {
 
     # Kill the emulator
     kill-emulator $CONSOLE_PORT &>/dev/null
+    sleep 1s
     kill $EMULATOR_PID &>/dev/null
     sleep 1s
     # Remove lock files
