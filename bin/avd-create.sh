@@ -57,7 +57,6 @@ usage() {
 # Clean up upon exiting from the process
 function __sig_func {
     set +e
-    echo "Exiting from $SCRIPTNAME..."
     # Kill the ADB server
     adb -P $ADB_SERVER_PORT kill-server
 
@@ -65,12 +64,14 @@ function __sig_func {
     kill-emulator $CONSOLE_PORT &>/dev/null
     kill $EMULATOR_PID &>/dev/null
     sleep 1s
+    kill $(jobs -p) &>/dev/null
     android delete avd -n $AVD_NAME
 
     # Remove a temporary file with a list of ports used
     rm -f $PROC_INFO_FILE
     # Remove emulator status file
     rm -f $STATUS_FILE
+    exit 1
 }
 
 function __exit_func {
@@ -82,8 +83,9 @@ function __exit_func {
     kill-emulator $CONSOLE_PORT &>/dev/null
     kill $EMULATOR_PID &>/dev/null
     sleep 1s
+    kill $(jobs -p) &>/dev/null
     # Remove lock files
-    find $AVDDIR/$AVD_NAME.avd/ -name "*lock" | xargs rm -f
+    find $AVDDIR/$AVD_NAME.avd/ -name "*lock" &>/dev/null | xargs rm -f
 
     # Remove a temporary file with a list of ports used
     rm -f $PROC_INFO_FILE
@@ -145,7 +147,7 @@ get_emu_ready.sh $ADB_PORT $ADB_SERVER_PORT || exit 1
 STATUS_FILE=$MALINE/.emulator-$ADB_PORT
 if [ "`cat $STATUS_FILE 2>/dev/null`" != "1" ]; then
     echo "Failed to boot the emualtor. Exiting..."
-    exit 1
+    __sig_func
 fi
 
 BOOT_END=`date +"%s"`

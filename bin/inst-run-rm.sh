@@ -62,9 +62,8 @@ rm -f $GPS_SMS_STATUS_FILE
 ATTEMPT=0
 ATTEMPT_LIMIT=3
 
-echo "Installing the app... "
 while [ $ATTEMPT -lt $ATTEMPT_LIMIT ]; do
-    echo -n "  Attempt $ATTEMPT... "
+    echo -n "Installing the app: attempt $ATTEMPT... "
     timeout 25 adb -P $ADB_SERVER_PORT install $APP_PATH &>$APP_STATUS_FILE
 
     RES=`tail -n 1 $APP_STATUS_FILE`
@@ -99,8 +98,6 @@ if [ $ATTEMPT -eq $ATTEMPT_LIMIT ]; then
     echo ""
     exit 0
 fi
-
-sleep 2s
 
 # Extract trace from the app
 extract-trace.sh $APP_PATH $CONSOLE_PORT $ADB_SERVER_PORT $ADB_PORT $TIMESTAMP || exit 1

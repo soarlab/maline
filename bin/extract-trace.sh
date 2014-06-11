@@ -137,10 +137,9 @@ check-adb-status.sh $ADB_SERVER_PORT $ADB_PORT || __sig_func
 sleep 1s
 
 # Pull the logfile to the host machine
-echo "Started pulling the app execution log file..."
+echo -n "Pulling the app system calls log file... "
 mkdir -p $MALINE/log
-adb -P $ADB_SERVER_PORT pull /sdcard/$LOGFILE $MALINE/log/ &>/dev/null
-echo "Done pulling the app execution log file"
+timeout 60 adb -P $ADB_SERVER_PORT pull /sdcard/$LOGFILE $MALINE/log/ &>/dev/null && echo "done" || echo "failed"
 
 # Remove the logfile from the device
 RM_CMD="rm /sdcard/$LOGFILE"
@@ -148,11 +147,10 @@ RM_CMD="rm /sdcard/$LOGFILE"
 adb -P $ADB_SERVER_PORT shell "$RM_CMD" 
 
 # Fetch logcat log and remove it from the phone
-echo "Started pulling the app execution logcat file..."
-adb -P $ADB_SERVER_PORT shell "logcat -d > /sdcard/$LOGCATFILE"
-adb -P $ADB_SERVER_PORT pull /sdcard/$LOGCATFILE $MALINE/log/ &>/dev/null
+echo -n "Pulling the app execution logcat file... "
+adb -P $ADB_SERVER_PORT shell "logcat -d > /sdcard/$LOGCATFILE" && \
+adb -P $ADB_SERVER_PORT pull /sdcard/$LOGCATFILE $MALINE/log/ &>/dev/null && echo "done" || echo "failed"
 RM_CAT_CMD="rm /sdcard/$LOGCATFILE"
 adb -P $ADB_SERVER_PORT shell "$RM_CAT_CMD"
-echo "Done pulling the app execution logcat file"
 
 exit 0

@@ -56,13 +56,15 @@ function __sig_func {
     # Kill the emulator
     kill-emulator $CONSOLE_PORT &>/dev/null
     sleep 1s
-    kill $EMULATOR_PID &>/dev/null
+    kill -9 $EMULATOR_PID &>/dev/null
     sleep 1s
     # Remove lock files
     find $AVDDIR/$AVD_NAME.avd/ -name "*lock" | xargs rm -f
     
     # Kill the log parsing process
     kill $PARSE_PID &>/dev/null
+
+    kill $(jobs -p) &>/dev/null
     
     MALINE_END_TIME=`date +"%s"`
     MALINE_TOTAL_TIME=$((${MALINE_END_TIME} - ${MALINE_START_TIME}))
@@ -111,15 +113,18 @@ get_emu_ready() {
 	# Check if the device is ready
 	if [ "`cat $STATUS_FILE 2>/dev/null`" != "1" ]; then
 	    set +e
+	    adb -P $ADB_SERVER_PORT kill-server
 	    kill-emulator $CONSOLE_PORT &>/dev/null
 	    sleep 1s
-	    kill $EMULATOR_PID &>/dev/null
+	    adb -P $ADB_SERVER_PORT kill-server
+	    kill -9 $EMULATOR_PID &>/dev/null
+	    kill $(jobs -p) &>/dev/null
 	    set -e
 	    sleep 1s
 	    # Remove lock files
 	    find $AVDDIR/$AVD_NAME.avd/ -name "*lock" | xargs rm -f
 	    $EMULATOR_CMD &>/dev/null &
-	    export EMULATOR_PID=$!
+	    EMULATOR_PID=$!
 	fi
     done
 
@@ -158,7 +163,7 @@ echo "ADB port: ${ADB_PORT}" >> $PROC_INFO_FILE
 # Start the emulator
 EMULATOR_CMD="emulator -no-boot-anim -ports $CONSOLE_PORT,$ADB_PORT -prop persist.sys.dalvik.vm.lib.1=libdvm.so -prop persist.sys.language=en -prop persist.sys.country=US -avd $AVD_NAME -snapshot $SNAPSHOT_NAME -no-snapshot-save -wipe-data -netfast -no-window"
 $EMULATOR_CMD &>/dev/null &
-export EMULATOR_PID=$!
+EMULATOR_PID=$!
 
 # Get the current time
 TIMESTAMP=`date +"%Y-%m-%d-%H-%M-%S"`
