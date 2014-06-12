@@ -22,8 +22,8 @@ apt-get upgrade -y
 apt-get install -y bison ca-certificates-java curl expect gawk htop iotop java-common lib32gcc1 lib32ncurses5 lib32stdc++6 lib32tinfo5 libgl1-mesa-dev libasyncns0 libatk-wrapper-java libatk-wrapper-java-jni libbison-dev libc6-i386 libcurl3 libdbi1 libffi-dev libflac8 libgdbm-dev libjffi-jni libjs-mochikit libjson0 liblcms2-2 libnspr4 libnss3 libnss3-1d libogg0 libpcsclite1 libprotobuf7 libpulse0 libreadline6-dev librrd4 libsigsegv2 libsndfile1 libsqlite3-dev libtinfo-dev libvorbis0a libvorbisenc2 libyaml-0-2 libyaml-dev openjdk-7-jre openjdk-7-jre-headless openjdk-7-jre-lib openjdk-7-jdk pkg-config python-mako python-markupsafe python-protobuf quota screen sqlite3 tzdata-java unzip kvm tree git gnupg flex gperf build-essential zip libc6-dev libncurses5-dev:i386 x11proto-core-dev libx11-dev:i386 libreadline6-dev:i386 libgl1-mesa-glx:i386 g++-multilib mingw32 tofrodos python-markdown libxml2-utils xsltproc zlib1g-dev:i386
 apt-get autoremove -y
 
-# Extend the default RAM disk size to 69000000 KB ~ 65 GB
-sudo sed -i '/^GRUB_CMDLINE_LINUX\=/c \GRUB_CMDLINE_LINUX=\"console=tty0 console=ttyS0,115200 ramdisk_size=69000000\"' /etc/default/grub
+# Extend the default RAM disk size to 110000000 KB ~ 100 GB
+sudo sed -i '/^GRUB_CMDLINE_LINUX\=/c \GRUB_CMDLINE_LINUX=\"console=tty0 console=ttyS0,115200 ramdisk_size=110000000\"' /etc/default/grub
 
 # To build Android, we need this
 sudo ln -s /usr/lib/i386-linux-gnu/mesa/libGL.so.1 /usr/lib/i386-linux-gnu/libGL.so

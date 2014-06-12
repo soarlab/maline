@@ -11,7 +11,7 @@ ANDROID_TMP_OLD=$LOCAL/.android
 RAMDISK=/mnt/ramdisk
 mkdir -p $RAMDISK
 
-# This will create a ram disk of the default size (~ 65 GB)
+# This will create a ram disk of the default size (~ 100 GB)
 RAM_DEV=/dev/ram0
 sudo mkfs -q $RAM_DEV
 
@@ -20,4 +20,4 @@ sudo mount $RAM_DEV $RAMDISK
 sudo chown $USER:$GROUP $RAMDISK
 sudo chmod 775 $RAMDISK
 mkdir -p $RAMDISK/.android/avd
-rsync -a --progress $ANDROID_TMP_OLD/avd/maline-x86* $RAMDISK/.android/avd/
+rsync -a --progress $ANDROID_TMP_OLD/avd/maline-* $RAMDISK/.android/avd/
