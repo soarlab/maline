@@ -139,7 +139,7 @@ sleep 1s
 # Pull the logfile to the host machine
 echo -n "Pulling the app system calls log file... "
 mkdir -p $MALINE/log
-timeout 60 adb -P $ADB_SERVER_PORT pull /sdcard/$LOGFILE $MALINE/log/ &>/dev/null && echo "done" || echo "failed"
+timeout 90 adb -P $ADB_SERVER_PORT pull /sdcard/$LOGFILE $MALINE/log/ &>/dev/null && echo "done" || echo "failed"
 
 # Remove the logfile from the device
 RM_CMD="rm /sdcard/$LOGFILE"

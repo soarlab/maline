@@ -64,7 +64,7 @@ fi
     flock --exclusive --nonblock 42 || exit 1
     echo $CURR_PID > $LOCK_FILE
 
-    $COMMAND $LOG
+    $COMMAND --file $LOG
     
 ) 42> $LOCK_FILE
 

@@ -169,7 +169,7 @@ EMULATOR_PID=$!
 TIMESTAMP=`date +"%Y-%m-%d-%H-%M-%S"`
 
 # A timeout in seconds for app testing
-TIMEOUT=600
+TIMEOUT=720
 
 # Emulator status file
 STATUS_FILE=$MALINE/.emulator-$ADB_PORT

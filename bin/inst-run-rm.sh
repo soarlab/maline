@@ -107,7 +107,7 @@ check-adb-status.sh $ADB_SERVER_PORT $ADB_PORT || __sig_func
 sleep 1s
 
 # Uninstall the app from the device
-echo "Uninstalling the app..."
-adb -P $ADB_SERVER_PORT uninstall $APP_NAME &>/dev/null
+echo -n "Uninstalling the app... "
+adb -P $ADB_SERVER_PORT uninstall $APP_NAME &>/dev/null && echo "done" || echo "failed"
 
 exit 0
