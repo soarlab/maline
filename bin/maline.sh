@@ -177,12 +177,6 @@ STATUS_FILE=$MALINE/.emulator-$ADB_PORT
 # Number of apps analyzed so far
 NUM_OF_APPS=0
 
-# For every app, wait for the emulator to be avaiable, install the
-# app, test it with Monkey, trace system calls with strace, fetch the
-# strace log, and load a clean Android snapshot for the next app
-
-FAILED_APPS_FILE="$MALINE/apk-list-file-$TIMESTAMP-maline-$CURR_PID"
-
 # Reserve an adb server port only now that the emulator is up so as to
 # minimize chances of someone else getting the port in the meantime
 available_port ADB_SERVER_PORT
@@ -191,6 +185,15 @@ echo "ADB server port: ${ADB_SERVER_PORT}" >> $PROC_INFO_FILE
 # Get the emulator ready
 get_emu_ready
 
+# Check if the input file exists
+[ -f $APK_LIST_FILE ] || die "Non-existing input file!"
+# Keep an ever-changing list of non-analyzed apps
+NON_ANALYZED_FILE="$APK_LIST_FILE-non-analyzed-$TIMESTAMP"
+cp $APK_LIST_FILE $NON_ANALYZED_FILE
+
+# For every app, wait for the emulator to be avaiable, install the
+# app, test it with Monkey, trace system calls with strace, fetch the
+# strace log, and load a clean Android snapshot for the next app
 for APP_PATH in `cat $APK_LIST_FILE`; do
 
     date
@@ -210,11 +213,14 @@ for APP_PATH in `cat $APK_LIST_FILE`; do
 
     timeout $TIMEOUT inst-run-rm.sh $APP_PATH $ADB_PORT $ADB_SERVER_PORT $TIMESTAMP $CONSOLE_PORT || exit 1
 
-    # If there is no log file of the app, it means something has went
-    # wrong and the app hasn't been analyzed
-    if [ ! -f $LOGFILE ]; then
-	echo $APP_PATH >> $FAILED_APPS_FILE
-    else
+    # If there is no log file of the app at this point, it means
+    # something has went wrong and the app hasn't been analyzed
+    if [ -f $LOGFILE ]; then
+	# Remove app from the list of non-analyzed apps
+	sed -i "s|$APP_PATH||g" $NON_ANALYZED_FILE
+	# Delete empty lines
+	sed -i '/^$/d' $NON_ANALYZED_FILE
+
 	let NUM_OF_APPS=NUM_OF_APPS+1
     fi
 
