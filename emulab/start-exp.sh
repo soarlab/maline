@@ -51,18 +51,18 @@ OLD_ANDROID_TMP=/mnt/storage/.android/avd
 split-file.sh $APP_FILE $COUNT &>/dev/null
 
 # Start a screen daemon in the detached mode
-screen -dmS $EXP_NAME -t "d/p: 0"
+screen -dmS "$EXP_NAME" -t "d/p: 0" -c $MALINE_ENV/.screenrc
 
 for i in $(seq 0 $(($COUNT-1))); do
     if [ $i -ne 0 ]; then
 	# Open a new window
-	screen -S $EXP_NAME -X screen -t "d/p: $i"
+	screen -S "$EXP_NAME" -X screen -t "d/p: $i"
     fi
     # Copy an AVD if needed
     copy_avd $i
 
     # Start a command in its own screen window
     CMD="maline.sh -f $APP_FILE.$(printf "%02d" $i) -d maline-$i"
-    echo -n "Starting instance #$i in a separate screen... "
-    screen -S $EXP_NAME -p $i -X stuff "$CMD$(printf \\r)" && echo "done" || echo "failed"
+    echo -n "Starting instance #$i in a detached screen... "
+    screen -S "$EXP_NAME" -p $i -X stuff "$CMD$(printf \\r)" && echo "done" || echo "failed"
 done

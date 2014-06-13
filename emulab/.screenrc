@@ -2,7 +2,8 @@ autodetach on
 startup_message off
 defscrollback 10000
 caption always "%{rw}%n%f %t %{wk} | %?%-Lw%?%{wb}[%n*%f %t]%?(%u)%?%{wk}%?%+Lw%? %{wk}"
-hardstatus alwayslastline "%{+b kr}host: %{kw}%H %{kg} | %c | %{ky}%d.%m.%Y. | %{kr}(load: %l)%-0=%{kw}"
+backtick 1 5 5 ramdisk-use.sh
+hardstatus alwayslastline "%{+b kr}host: %{kw}%H%{kb} | %{ky}RAM disk: %{kw}%1`%{kb} | %{kg}(load: %l)%-0=%{kb}"
 deflog on
-logfile screen-logs/%Y-%m-%d-%0c-%s.%n.log
+logfile screen-logs/%Y-%m-%d-%0c:%s.%n.log
 log on
