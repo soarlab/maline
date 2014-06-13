@@ -10,6 +10,9 @@ export ANDROID_SDK_ROOT=/mnt/storage/custom-android-sdk
 export ANDROID_TMP=$RAMDISK/.android
 export AVDDIR=$RAMDISK/.android/avd
 
+# Where results of an experiment are stored
+export EXP_ROOT=/mnt/storage/experiment-results
+
 export PATH=$ANDROID_SDK_ROOT/platform-tools:$ANDROID_SDK_ROOT/tools:$MALINE/bin:$MALINE_ENV:$PATH
 
 # Add all users to the kvm user group                                                            

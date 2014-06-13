@@ -5,6 +5,25 @@ function die() {
     exit 1
 }
 
+function perform_init_checks() {
+    # Check if needed variables have been set
+    [ ! -z $EXP_NAME ] || die "Experiment name not provided"
+    
+    [ ! -z $COUNT ] || die "Number of maline instances not provided"
+    [ $COUNT -le $COUNT_LIMIT ] || die "Too many instances! Set it up to $COUNT_LIMIT"
+    
+    [ ! -z $APP_FILE ] || die "A file with apps not provided"
+    [ -f $APP_FILE ] || die "Invalid file with a list of apps"
+    
+    [ ! -z $AVDDIR ] || die "Environment variable AVDDIR not set"
+    [ -d $AVDDIR ] || die "Non-existing directory $AVDDIR"
+    
+    [ -d $OLD_ANDROID_TMP ] || die "Non-existing directory $OLD_ANDROID_TMP"
+    [ ! -z $MALINE ] || die "Environment variable MALINE not set"
+
+    [ ! -z $EXP_ROOT ] || die "Environment variable EXP_ROOT not set"
+}
+
 function copy_avd() {
     EXISTING_AVD=maline-1
     echo -n "Making a copy for maline-$1... "
@@ -29,29 +48,35 @@ APP_FILE=$3
 # Location of pristine AVDs
 OLD_ANDROID_TMP=/mnt/storage/.android/avd
 
+perform_init_checks
+
 # "d/p" in window titles designates a virtual device and a piece of
 # the problem to be solved with the same number
 
-# Check if needed variables have been set
-[ ! -z $EXP_NAME ] || die "Experiment name not provided"
+# Create the experiment root directory and a few needed subdirectories
+THIS_EXP_ROOT=$EXP_ROOT/$EXP_NAME
+[ ! -d $THIS_EXP_ROOT ] || die "An experiment named $EXP_NAME at $THIS_EXP_ROOT already exists!"
+echo -n "Creating an experiment directory at $THIS_EXP_ROOT ... "
+mkdir -p $THIS_EXP_ROOT/screen-logs/ && echo "done" || die "failed. Aborting..."
+ANDROID_LOG_DIR=$THIS_EXP_ROOT/android-logs # This one will be created by maline.sh
 
-[ ! -z $COUNT ] || die "Number of maline instances not provided"
-[ $COUNT -le $COUNT_LIMIT ] || die "Too many instances! Set it up to $COUNT_LIMIT"
+# Split the input file. The output is in $APP_COPY_FILE.XX
+APP_COPY_FILE=$THIS_EXP_ROOT/$(basename $APP_FILE)
+cp $APP_FILE $APP_COPY_FILE
 
-[ ! -z $APP_FILE ] || die "A file with apps not provided"
-[ -f $APP_FILE ] || "Invalid file with a list of apps"
+split-file.sh $APP_COPY_FILE $COUNT &>/dev/null
 
-[ ! -z $AVDDIR ] || die "Environment variable AVDDIR not set"
-[ -d $AVDDIR ] || die "Non-existing directory $AVDDIR"
-
-[ -d $OLD_ANDROID_TMP ] || die "Non-existing directory $OLD_ANDROID_TMP"
-[ ! -z $MALINE ] || die "Environment variable $MALINE not set"
-
-# Split the input file. The output is in $APP_FILE.XX
-split-file.sh $APP_FILE $COUNT &>/dev/null
+# create a configuration file for screen
+TIMESTAMP=$(date +"%Y-%m-%d-%H-%M-%S")
+SCREENRC=$THIS_EXP_ROOT/screenrc
+cp $MALINE_ENV/screenrc $SCREENRC
+sed -i "s/name-goes-here/$EXP_NAME/g" $SCREENRC
+echo "deflog on" >> $SCREENRC
+echo "logfile $THIS_EXP_ROOT/screen-logs/$EXP_NAME-$TIMESTAMP-maline-%n.log" >> $SCREENRC
+echo "log on" >> $SCREENRC
 
 # Start a screen daemon in the detached mode
-screen -dmS "$EXP_NAME" -t "d/p: 0" -c $MALINE_ENV/.screenrc
+screen -dmS "$EXP_NAME" -t "d/p: 0" -c $SCREENRC
 
 for i in $(seq 0 $(($COUNT-1))); do
     if [ $i -ne 0 ]; then
@@ -62,7 +87,13 @@ for i in $(seq 0 $(($COUNT-1))); do
     copy_avd $i
 
     # Start a command in its own screen window
-    CMD="maline.sh -f $APP_FILE.$(printf "%02d" $i) -d maline-$i"
+    CMD="maline.sh -f $APP_COPY_FILE.$(printf "%02d" $i) -d maline-$i -l $ANDROID_LOG_DIR"
     echo -n "Starting instance #$i in a detached screen... "
+    # \\r is there to avoid a window being closed once the command
+    # finishes
     screen -S "$EXP_NAME" -p $i -X stuff "$CMD$(printf \\r)" && echo "done" || echo "failed"
 done
+
+echo ""
+echo "To watch the progress of the experiment, execute:"
+echo "  screen -r $EXP_NAME"
