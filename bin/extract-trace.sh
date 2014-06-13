@@ -60,6 +60,9 @@ ADB_PORT="$4"
 # Get the current time
 TIMESTAMP="$5"
 
+# Directory where Android log files should be stored
+LOG_DIR="$6"
+
 # get apk file name
 APK_FILE_NAME=`basename $1 .apk`
 
@@ -139,7 +142,7 @@ sleep 1s
 # Pull the logfile to the host machine
 echo -n "Pulling the app system calls log file... "
 mkdir -p $MALINE/log
-timeout 90 adb -P $ADB_SERVER_PORT pull /sdcard/$LOGFILE $MALINE/log/ &>/dev/null && echo "done" || echo "failed"
+timeout 90 adb -P $ADB_SERVER_PORT pull /sdcard/$LOGFILE $LOG_DIR &>/dev/null && echo "done" || echo "failed"
 
 # Remove the logfile from the device
 RM_CMD="rm /sdcard/$LOGFILE"
@@ -149,7 +152,7 @@ adb -P $ADB_SERVER_PORT shell "$RM_CMD"
 # Fetch logcat log and remove it from the phone
 echo -n "Pulling the app execution logcat file... "
 adb -P $ADB_SERVER_PORT shell "logcat -d > /sdcard/$LOGCATFILE" && \
-adb -P $ADB_SERVER_PORT pull /sdcard/$LOGCATFILE $MALINE/log/ &>/dev/null && echo "done" || echo "failed"
+adb -P $ADB_SERVER_PORT pull /sdcard/$LOGCATFILE $LOG_DIR &>/dev/null && echo "done" || echo "failed"
 RM_CAT_CMD="rm /sdcard/$LOGCATFILE"
 adb -P $ADB_SERVER_PORT shell "$RM_CAT_CMD"
 

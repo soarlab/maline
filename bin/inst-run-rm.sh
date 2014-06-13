@@ -47,6 +47,9 @@ TIMESTAMP="$4"
 
 CONSOLE_PORT="$5"
 
+# Directory where Android log files should be stored
+LOG_DIR="$6"
+
 # Constant snapshot name
 SNAPSHOT_NAME="maline"
 
@@ -100,7 +103,7 @@ if [ $ATTEMPT -eq $ATTEMPT_LIMIT ]; then
 fi
 
 # Extract trace from the app
-extract-trace.sh $APP_PATH $CONSOLE_PORT $ADB_SERVER_PORT $ADB_PORT $TIMESTAMP || exit 1
+extract-trace.sh $APP_PATH $CONSOLE_PORT $ADB_SERVER_PORT $ADB_PORT $TIMESTAMP $LOG_DIR || exit 1
 
 check-adb-status.sh $ADB_SERVER_PORT $ADB_PORT || __sig_func
 

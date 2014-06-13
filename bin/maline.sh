@@ -26,27 +26,6 @@
 
 set -e
 
-source $MALINE/lib/maline.lib
-CURR_PID=$$
-
-MALINE_START_TIME=`date +"%s"`
-
-SCRIPTNAME=`basename $0`
-
-# Constant snapshot name
-SNAPSHOT_NAME="maline"
-
-while getopts "f:d:" OPTION; do
-    case $OPTION in
-	f)
-	    APK_LIST_FILE="$OPTARG";;
-	d)
-	    AVD_NAME="$OPTARG";;
-	\?)
-	    echo "Invalid option: -$OPTARG" >&2;;
-    esac
-done
-
 # Clean up upon exiting from the process
 function __sig_func {
     set +e
@@ -131,6 +110,30 @@ get_emu_ready() {
     rm -f $STATUS_FILE
 }
 
+source $MALINE/lib/maline.lib
+CURR_PID=$$
+
+MALINE_START_TIME=`date +"%s"`
+
+SCRIPTNAME=`basename $0`
+
+# Constant snapshot name
+SNAPSHOT_NAME="maline"
+
+while getopts "f:d:l:" OPTION; do
+    case $OPTION in
+	f)
+	    APK_LIST_FILE="$OPTARG";;
+	d)
+	    AVD_NAME="$OPTARG";;
+	l)
+	    LOG_DIR="$OPTARG";;
+	\?)
+	    echo "Invalid option: -$OPTARG" >&2;;
+    esac
+done
+
+
 # Check if all parameters are provided
 check_and_exit "-f" $APK_LIST_FILE
 check_and_exit "-d" $AVD_NAME
@@ -139,6 +142,12 @@ check_and_exit "-d" $AVD_NAME
 [ ! -z "$ANDROID_SDK_HOME" ] || die "Environment variable ANDROID_SDK_HOME not set!"
 [ ! -z "$ANDROID_SDK_ROOT" ] || die "Environment variable ANDROID_SDK_ROOT not set!"
 [ ! -z "$AVDDIR" ] || die "Environment variable AVDDIR not set!"
+[ ! -z "$MALINE" ] || die "Environment variable MALINE not set!"
+
+if [ -z $LOG_DIR ]; then
+    LOG_DIR=$MALINE/log
+fi
+mkdir -p $LOG_DIR
 
 # Set traps
 trap __sig_func EXIT
@@ -151,7 +160,7 @@ available_port CONSOLE_PORT
 available_port ADB_PORT
 
 # Start a log parsing process
-loop-parse-new-logs.sh &
+loop-parse-new-logs.sh $LOG_DIR &
 PARSE_PID=$!
 
 PROC_INFO_FILE=$MALINE/.maline-$CURR_PID
@@ -188,7 +197,7 @@ get_emu_ready
 # Check if the input file exists
 [ -f $APK_LIST_FILE ] || die "Non-existing input file!"
 # Keep an ever-changing list of non-analyzed apps
-NON_ANALYZED_FILE="$APK_LIST_FILE-non-analyzed-$TIMESTAMP"
+NON_ANALYZED_FILE="$APK_LIST_FILE-non-analyzed"
 cp $APK_LIST_FILE $NON_ANALYZED_FILE
 
 # For every app, wait for the emulator to be avaiable, install the
@@ -208,10 +217,11 @@ for APP_PATH in `cat $APK_LIST_FILE`; do
     # Check if a log file for this app already exists
     APK_FILE_NAME=`basename $APP_PATH .apk`
     APP_NAME=`getAppPackageName.sh $APP_PATH`
-    LOGFILE="$MALINE/log/$APK_FILE_NAME-$APP_NAME-$TIMESTAMP.log"
+    
+    LOGFILE="$LOG_DIR/$APK_FILE_NAME-$APP_NAME-$TIMESTAMP.log"
     rm -f $LOGFILE
 
-    timeout $TIMEOUT inst-run-rm.sh $APP_PATH $ADB_PORT $ADB_SERVER_PORT $TIMESTAMP $CONSOLE_PORT || exit 1
+    timeout $TIMEOUT inst-run-rm.sh $APP_PATH $ADB_PORT $ADB_SERVER_PORT $TIMESTAMP $CONSOLE_PORT $LOG_DIR || exit 1
 
     # If there is no log file of the app at this point, it means
     # something has went wrong and the app hasn't been analyzed

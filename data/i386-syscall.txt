@@ -286,6 +286,7 @@ setuid
 setuid32
 setxattr
 sgetmask
+shutdown
 sigaction
 sigaltstack
 signal
