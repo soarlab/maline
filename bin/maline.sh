@@ -65,6 +65,10 @@ function __sig_func {
     # Remove a temporary file with a list of ports used
     rm -f $PROC_INFO_FILE
 
+    # Remove app testing files
+    rm -f $APP_STATUS_FILE
+    rm -f $GPS_SMS_STATUS_FILE
+
     echo "Exiting from $SCRIPTNAME..."
 }
 
@@ -108,6 +112,74 @@ get_emu_ready() {
     done
 
     rm -f $STATUS_FILE
+}
+
+# A function for installing an app, running it, and removing it from
+# the device
+inst_run_rm() {
+    set +e
+
+    # Temporary status files
+    APP_STATUS_FILE=$MALINE/.app_status-$CURR_PID
+    GPS_SMS_STATUS_FILE=$MALINE/.inst-run-rm-$CURR_PID
+    rm -f $GPS_SMS_STATUS_FILE
+
+    # Install the app. Make 3 attempts
+    ATTEMPT=0
+    ATTEMPT_LIMIT=3
+
+    while [ $ATTEMPT -lt $ATTEMPT_LIMIT ]; do
+	echo -n "Installing the app: attempt $ATTEMPT... "
+	rm -f $APP_STATUS_FILE
+	timeout 25 adb -P $ADB_SERVER_PORT install $APP_PATH &>$APP_STATUS_FILE
+
+	RES=`tail -n 1 $APP_STATUS_FILE`
+	RES=${RES:0:7}
+	
+	if [ "$RES" = "Success" ]; then
+	    echo "succeeded"
+	    break
+	else
+	    echo "failed"
+	fi
+	
+	let ATTEMPT=ATTEMPT+1
+	if [ $ATTEMPT -eq $ATTEMPT_LIMIT ]; then
+	    break
+	fi
+
+	# Reload a clean snapshot
+	avd-reload $CONSOLE_PORT $SNAPSHOT_NAME &>/dev/null || return 1
+	
+	sleep 1s
+	
+	get_emu_ready
+    done
+
+    rm -f $APP_STATUS_FILE
+
+    # Abort if the app is not installed
+    if [ $ATTEMPT -eq $ATTEMPT_LIMIT ]; then
+	echo "Failed to install the app in $ATTEMPT_LIMIT attempts"
+	echo "Aborting."
+	echo ""
+	return 0
+    fi
+
+    # Extract trace from the app
+    timeout $TIMEOUT extract-trace.sh $APP_PATH $CONSOLE_PORT $ADB_SERVER_PORT $ADB_PORT $TIMESTAMP $LOG_DIR || return 1
+    
+    check-adb-status.sh $ADB_SERVER_PORT $ADB_PORT || __sig_func
+    
+    sleep 1s
+    
+    # Uninstall the app from the device
+    echo -n "Uninstalling the app... "
+    timeout 60 adb -P $ADB_SERVER_PORT uninstall $APP_NAME &>/dev/null && echo "done" || echo "failed"
+    
+    set -e
+
+    return 0
 }
 
 source $MALINE/lib/maline.lib
@@ -200,6 +272,10 @@ get_emu_ready
 NON_ANALYZED_FILE="$APK_LIST_FILE-non-analyzed"
 cp $APK_LIST_FILE $NON_ANALYZED_FILE
 
+# Initialize app testing files
+APP_STATUS_FILE=
+GPS_SMS_STATUS_FILE=
+
 # For every app, wait for the emulator to be avaiable, install the
 # app, test it with Monkey, trace system calls with strace, fetch the
 # strace log, and load a clean Android snapshot for the next app
@@ -210,6 +286,10 @@ for APP_PATH in `cat $APK_LIST_FILE`; do
     START_TIME=`date +"%s"`
 
     echo "App under analysis: $APP_PATH"
+    if [ ! -f $APP_PATH ]; then
+	echo "$APP_PATH is not a regular file"
+	continue
+    fi
 
     # Get the Emulator ready for the app
     get_emu_ready
@@ -221,7 +301,9 @@ for APP_PATH in `cat $APK_LIST_FILE`; do
     LOGFILE="$LOG_DIR/$APK_FILE_NAME-$APP_NAME-$TIMESTAMP.log"
     rm -f $LOGFILE
 
-    timeout $TIMEOUT inst-run-rm.sh $APP_PATH $ADB_PORT $ADB_SERVER_PORT $TIMESTAMP $CONSOLE_PORT $LOG_DIR || exit 1
+    set +e
+    inst_run_rm
+    set -e
 
     # If there is no log file of the app at this point, it means
     # something has went wrong and the app hasn't been analyzed
