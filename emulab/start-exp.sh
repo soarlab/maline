@@ -59,10 +59,11 @@ THIS_EXP_ROOT=$EXP_ROOT/$EXP_NAME
 [ ! -d $THIS_EXP_ROOT ] || die "An experiment named $EXP_NAME at $THIS_EXP_ROOT already exists!"
 echo -n "Creating an experiment directory at $THIS_EXP_ROOT ... "
 mkdir -p $THIS_EXP_ROOT/screen-logs/ && echo "done" || die "failed. Aborting..."
+mkdir -p $THIS_EXP_ROOT/input-lists
 ANDROID_LOG_DIR=$THIS_EXP_ROOT/android-logs # This one will be created by maline.sh
 
 # Split the input file. The output is in $APP_COPY_FILE.XX
-APP_COPY_FILE=$THIS_EXP_ROOT/$(basename $APP_FILE)
+APP_COPY_FILE=$THIS_EXP_ROOT/input-lists/$(basename $APP_FILE)
 cp $APP_FILE $APP_COPY_FILE
 
 split-file.sh $APP_COPY_FILE $COUNT &>/dev/null
