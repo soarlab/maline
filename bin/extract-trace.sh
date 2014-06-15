@@ -87,7 +87,8 @@ echo "There will be up to $ITERATIONS iterations, each sending $COUNT_PER_ITER r
 
 echo "Also sending geo-location updates in parallel..."
 LOCATIONS_FILE="$MALINE/data/locations-list"
-send-locations.sh $LOCATIONS_FILE 0 `cat $LOCATIONS_FILE | wc -l` $CONSOLE_PORT &
+GEO_COUNT=$(cat $LOCATIONS_FILE | wc -l)
+send-locations.sh $LOCATIONS_FILE 0 $GEO_COUNT $CONSOLE_PORT &
 GEO_PID=$!
 
 echo "Spoofing SMS text messages in paralell too..."
@@ -142,7 +143,7 @@ sleep 1s
 
 # Pull the logfile to the host machine
 echo -n "Pulling the app system calls log file... "
-mkdir -p $MALINE/log
+mkdir -p $LOG_DIR
 timeout 180 adb -P $ADB_SERVER_PORT pull /sdcard/$LOGFILE $LOG_DIR &>/dev/null && echo "done" || echo "failed"
 
 # Remove the logfile from the device

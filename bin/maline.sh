@@ -190,8 +190,11 @@ inst_run_rm() {
 
 # finds a system NAND image file of the emulator
 find_emulator_nand_file() {
-    
+
+    sleep 1s
+
     while true; do
+	[ -f $EMULATOR_OUTPUT_FILE ] || (echo "Non-existing file $EMULATOR_OUTPUT_FILE" && __sig_func)
 	if [ "$(grep -c "emulator: mapping 'system'" $EMULATOR_OUTPUT_FILE)" -gt 0 ]; then
 	    EMULATOR_NAND_FILE=$(grep "emulator: mapping 'system'" $EMULATOR_OUTPUT_FILE | awk -F" " '{print $NF}')
 	    break
@@ -292,7 +295,13 @@ get_emu_ready
 # Check if the input file exists
 [ -f $APK_LIST_FILE ] || die "Non-existing input file!"
 # Keep an ever-changing list of non-analyzed apps
-NON_ANALYZED_FILE="$APK_LIST_FILE-non-analyzed"
+if [[ "$APK_LIST_FILE" = *non-analyzed* ]]; then
+    NUM=$((${APK_LIST_FILE##*.} + 1))
+    NON_ANALYZED_FILE="${APK_LIST_FILE%.*}.$NUM"
+else
+    NON_ANALYZED_FILE="$APK_LIST_FILE-non-analyzed.0"
+fi
+
 cp $APK_LIST_FILE $NON_ANALYZED_FILE
 
 # Initialize app testing files
