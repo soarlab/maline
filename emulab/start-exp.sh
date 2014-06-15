@@ -19,6 +19,7 @@ function perform_init_checks() {
     [ -d $AVDDIR ] || die "Non-existing directory $AVDDIR"
     
     [ -d $OLD_ANDROID_TMP ] || die "Non-existing directory $OLD_ANDROID_TMP"
+    [ -d $ANDROID_TMP ] || die "Non-existing directory $ANDROID_TMP"
     [ ! -z $MALINE ] || die "Environment variable MALINE not set"
 
     [ ! -z $EXP_ROOT ] || die "Environment variable EXP_ROOT not set"
@@ -40,7 +41,7 @@ EXP_NAME=$1
 # Number of maline instances to start
 COUNT=$2
 # Limit due to the memory size (each AVD needs about 5 GB)
-COUNT_LIMIT=20
+COUNT_LIMIT=30
 
 # A file with a list of apps to be analyzed
 APP_FILE=$3
@@ -75,8 +76,15 @@ echo "deflog on" >> $SCREENRC
 echo "logfile $THIS_EXP_ROOT/screen-logs/$EXP_NAME-$TIMESTAMP-maline-%n.log" >> $SCREENRC
 echo "log on" >> $SCREENRC
 
+# Clean-up leftover screen sessions
+screen -wipe &>/dev/null
 # Start a screen daemon in the detached mode
 screen -dmS "$EXP_NAME" -t "d/p: 0" -c $SCREENRC
+
+# Memory space is precious so delete any leftover system images and
+# modem files
+rm -f $ANDROID_TMP/emulator-* &>/dev/null
+rm -f $ANDROID_TMP/modem-nv-ram-* &>/dev/null
 
 for i in $(seq 0 $(($COUNT-1))); do
     if [ $i -ne 0 ]; then
