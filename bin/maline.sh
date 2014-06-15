@@ -48,8 +48,10 @@ function __sig_func {
     MALINE_END_TIME=`date +"%s"`
     MALINE_TOTAL_TIME=$((${MALINE_END_TIME} - ${MALINE_START_TIME}))
 
-    # Remove emulator status file
+    # Remove emulator-related files
     rm -f $STATUS_FILE
+    rm -f $EMULATOR_OUTPUT_FILE
+    rm -f $EMULATOR_NAND_FILE
 
     # NUM_OF_APPS=`cat $APK_LIST_FILE | wc -l`
     if [ $NUM_OF_APPS -ne 0 ]; then
@@ -102,12 +104,16 @@ get_emu_ready() {
 	    adb -P $ADB_SERVER_PORT kill-server
 	    kill -9 $EMULATOR_PID &>/dev/null
 	    kill $(jobs -p) &>/dev/null
+	    rm -f $EMULATOR_OUTPUT_FILE
+	    rm -f $EMULATOR_NAND_FILE
 	    set -e
 	    sleep 1s
 	    # Remove lock files
 	    find $AVDDIR/$AVD_NAME.avd/ -name "*lock" | xargs rm -f
-	    $EMULATOR_CMD &>/dev/null &
+	    EMULATOR_NAND_FILE=
+	    $EMULATOR_CMD &>$EMULATOR_OUTPUT_FILE &
 	    EMULATOR_PID=$!
+	    find_emulator_nand_file
 	fi
     done
 
@@ -182,6 +188,18 @@ inst_run_rm() {
     return 0
 }
 
+# finds a system NAND image file of the emulator
+find_emulator_nand_file() {
+    
+    while true; do
+	if [ "$(grep -c "emulator: mapping 'system'" $EMULATOR_OUTPUT_FILE)" -gt 0 ]; then
+	    EMULATOR_NAND_FILE=$(grep "emulator: mapping 'system'" $EMULATOR_OUTPUT_FILE | awk -F" " '{print $NF}')
+	    break
+	fi
+	sleep 0.25s
+    done
+}
+
 source $MALINE/lib/maline.lib
 CURR_PID=$$
 
@@ -242,15 +260,20 @@ echo "Console port: ${CONSOLE_PORT}" >> $PROC_INFO_FILE
 echo "ADB port: ${ADB_PORT}" >> $PROC_INFO_FILE
 
 # Start the emulator
-EMULATOR_CMD="emulator -no-boot-anim -ports $CONSOLE_PORT,$ADB_PORT -prop persist.sys.dalvik.vm.lib.1=libdvm.so -prop persist.sys.language=en -prop persist.sys.country=US -avd $AVD_NAME -snapshot $SNAPSHOT_NAME -no-snapshot-save -wipe-data -netfast -no-window"
-$EMULATOR_CMD &>/dev/null &
+EMULATOR_OUTPUT_FILE=$MALINE/.emulator-output-$CURR_PID
+rm -f $EMULATOR_OUTPUT_FILE
+EMULATOR_NAND_FILE=
+EMULATOR_CMD="emulator -verbose -no-boot-anim -ports $CONSOLE_PORT,$ADB_PORT -prop persist.sys.dalvik.vm.lib.1=libdvm.so -prop persist.sys.language=en -prop persist.sys.country=US -avd $AVD_NAME -snapshot $SNAPSHOT_NAME -no-snapshot-save -wipe-data -netfast -no-window"
+# $EMULATOR_CMD &>/dev/null &
+$EMULATOR_CMD &>$EMULATOR_OUTPUT_FILE &
 EMULATOR_PID=$!
+find_emulator_nand_file
 
 # Get the current time
 TIMESTAMP=`date +"%Y-%m-%d-%H-%M-%S"`
 
 # A timeout in seconds for app testing
-TIMEOUT=720
+TIMEOUT=840
 
 # Emulator status file
 STATUS_FILE=$MALINE/.emulator-$ADB_PORT
@@ -326,5 +349,8 @@ for APP_PATH in `cat $APK_LIST_FILE`; do
     echo "Total time for app `getAppPackageName.sh $APP_PATH`: $TOTAL_TIME s"
     echo ""
 done
+
+echo "Done analysing apps in $APK_LIST_FILE"
+echo ""
 
 exit 0

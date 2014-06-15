@@ -133,7 +133,8 @@ for i in $(seq 1 $ITERATIONS); do
     let MONKEY_SEED=MONKEY_SEED+1
 done
 
-kill $SMS_PID $GEO_PID &>/dev/null
+kill $SMS_PID &>/dev/null
+kill $GEO_PID &>/dev/null
 
 check-adb-status.sh $ADB_SERVER_PORT $ADB_PORT || __sig_func
 
@@ -142,7 +143,7 @@ sleep 1s
 # Pull the logfile to the host machine
 echo -n "Pulling the app system calls log file... "
 mkdir -p $MALINE/log
-timeout 90 adb -P $ADB_SERVER_PORT pull /sdcard/$LOGFILE $LOG_DIR &>/dev/null && echo "done" || echo "failed"
+timeout 180 adb -P $ADB_SERVER_PORT pull /sdcard/$LOGFILE $LOG_DIR &>/dev/null && echo "done" || echo "failed"
 
 # Remove the logfile from the device
 RM_CMD="rm /sdcard/$LOGFILE"
