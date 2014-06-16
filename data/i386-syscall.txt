@@ -90,6 +90,7 @@ getgid32
 getgroups
 getgroups32
 getitimer
+getpeername
 getpgid
 getpgrp
 getpid

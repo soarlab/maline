@@ -62,16 +62,12 @@ well. Therefore, execute the following commands:
 **maline** executes Android apps in the Android Emulator, which comes within the
 Android SDK. The Emulator is a QEMU-based emulator that runs Android Virtual
 Devices (AVDs). By default, the ARM architecture is emulated, but that is very
-slow. Therefore, if one has an `x86` host machine, it is better to create an
-`x86` architecture-based virtual device image.
+slow. Instead, on an `x86` host machine it is better to create an `x86`
+architecture-based virtual device image.
 
 To create an x86-based AVD device, run:
 
     avd-create.sh -a x86 -d maline-avd
-
-Otherwise, if you want to base your AVD device on an ARM architecture, execute:
-
-    avd-create.sh -a armeabi-v7a -d maline-avd
 
 The device creation process usually takes about 5 minutes.
 
