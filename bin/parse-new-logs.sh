@@ -32,12 +32,12 @@ fi
 # Set the strace parsing command name and use a compiled version when
 # possible
 STRACE_PY_SRC="$MALINE/bin/parse-strace-log.py"
-COMMAND_COMPILED="$MALINE/bin/parse-strace-log.pyc"
+STRACE_PY_BYTE="$MALINE/bin/parse-strace-log.pyc"
 
-if hash pycompile 2>/dev/null && [ ! -e "$COMMAND_COMPILED" ]; then
+if [ ! -e "$STRACE_PY_BYTE" ]; then
     cd $MALINE/bin
     pycompile $STRACE_PY_SRC
-    chmod +x $COMMAND_COMPILED
+    chmod +x $STRACE_PY_BYTE
     cd -
 fi
 

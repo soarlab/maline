@@ -29,13 +29,7 @@ LOCK_FILE=/var/lock/.$BASE_NAME
 CURR_PID=$$
 
 # Set the strace parsing command name
-STRACE_PY_SRC="$MALINE/bin/parse-strace-log.py"
-COMMAND="python $STRACE_PY_SRC"
-COMMAND_COMPILED="$MALINE/bin/parse-strace-log.pyc"
-
-# if [ -e "$COMMAND_COMPILED" ]; then
-#     COMMAND="$COMMAND_COMPILED"
-# fi
+COMMAND="python $MALINE/bin/parse-strace-log.pyc"
 
 # Clean up upon exiting from the process
 function __sig_func {

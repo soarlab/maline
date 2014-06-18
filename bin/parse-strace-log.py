@@ -19,9 +19,6 @@
 # along with maline.  If not, see <http://www.gnu.org/licenses/>.
 
 
-# To use this program, simply run it from the command line with one
-# argument that is an strace log file
-
 import argparse
 import fcntl
 import os
@@ -127,21 +124,18 @@ class strace_log_parser:
 
             for s2_pos in range(s1_pos + 1, len(self.sys_call_made)):
                 s2 = self.sys_call_made[s2_pos]
+                if s1 == s2:
+                    break
                 if s2 not in self.sys_call_dict:
                     not_found_calls.add(s2)
                     continue
-                if s1 == s2:
-                    break
                 index2 = self.sys_call_dict[s2]
                 dep_graph_weight[index1][index2] += self.distance_function(s1_pos, s2_pos)
 
-        # Output weights
+        # Output weights as a single row
         for i in range(len(self.sys_call_dict)):
             for j in range(len(self.sys_call_dict)):
-                if j > 0:
-                    f.write(" ")
-                f.write("%f" % dep_graph_weight[i][j])
-            f.write("\n")
+                f.write("%f " % dep_graph_weight[i][j])
 
         # Print out system calls observed in the log file, but not
         # found in the system call list
