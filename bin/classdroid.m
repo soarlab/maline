@@ -1,4 +1,4 @@
-% classDroid
+#! /usr/bin/octave -qf
 
 % Copyright 2013,2014 Marko Dimjašević, Simone Atzeni, Ivo Ugrina, Zvonimir Rakamarić
 %
@@ -18,36 +18,30 @@
 % along with maline.  If not, see <http://www.gnu.org/licenses/>.
 
 
-function classdroid()
+function classdroid(features_file, results_file, confusion_file)
   addpath(sprintf('%s%s', getenv('MALINE'), '/lib/libsvm-3.17/matlab/'));
 
   % Reading Input Files
-  [N dim ratio random dataWeight dataWeightLabels dataCount dataCountLabels] = readDataFile(sprintf('%s%s', getenv('MALINE'), '/data/feature_data.dat'));
+  [N dim ratio random dataWeight dataWeightLabels] = readDataFile(features_file);
 
   data = dataWeight;
   dataLabels = dataWeightLabels;
-  %data = dataCount;
-  %dataLabels = dataCountLabels;
 
   total_data = [data dataLabels];
 
-  source('make_datasets.m');
-
-  results_file_name = sprintf('%s%s', getenv('MALINE'), '/log/results.txt');
-
   # Erase previous content
-  fid = fopen(results_file_name, 'w');
+  fid = fopen(results_file, 'w');
   fclose(fid);
 
   random = 0;
   for ratio = 50:40:90
     if (ratio == 50) && (random == 0)
 
-      fid = fopen(results_file_name, 'a');
+      fid = fopen(results_file, 'a');
       fprintf(fid, '%%Ratio: 50 - Random = 0\n');
       fclose(fid);
 
-      file = fopen(sprintf('%s%s', getenv('MALINE'), '/log/confusion.txt'), 'a');
+      file = fopen(confusion_file);
       fprintf(file, '%%Ratio: 50 -  Random = 0\n');
       fclose(file);
 
@@ -59,7 +53,7 @@ function classdroid()
 	end
 	
 	printf('%%Calculating[50 ratio] - Iteration[%d]\n', i);
-	svmClassification(training_data, training_labels, testing_data, testing_labels, results_file_name);
+	svmClassification(training_data, training_labels, testing_data, testing_labels, results_file, confusion_file);
       end
     else
 	for index = 1:2
@@ -69,57 +63,94 @@ function classdroid()
 	    size = 1;
 	  end
 
-	  fid = fopen(results_file_name, 'a');
+	  fid = fopen(results_file, 'a');
 	  fprintf(fid, '%%Ratio: 90 -  Random: %d\n', random);
 	  fclose(fid);
 
-	  file = fopen(sprintf('%s%s', getenv('MALINE'), '/log/confusion.txt'), 'a');
+	  file = fopen(confusion_file, 'a');
 	  fprintf(file, '%%Ratio: 90 -  Random: %d\n', random);
 	  fclose(file);
 
 	  for i = 1:size
 	    [training_data, training_labels, testing_data, testing_labels] = make_datasets(total_data, ratio, random);
 	    
-	    %% size(training_data);
-	    %% size(training_labels);
-	    %% size(testing_data);
-	    %% size(testing_labels);
-	    
 	    disp('Calculating...');
-	    svmClassification(training_data, training_labels, testing_data, testing_labels, results_file_name);
+	    svmClassification(training_data, training_labels, testing_data, testing_labels, results_file, confusion_file);
 	  end
 	end
     end
   end
 end
 
-function [accuracy] = svmClassification(training_data, training_labels, testing_data, testing_labels, results_file_name)
+% Splits data into training and testing data sets
+%
+% data - The data.
+% training_data - The data for training.
+% training_labels - The labels for each of the training samples.
+% testing_data - The data for testing.
+% testing_data - The labels for each of the testing samples.
+function [training_data, training_labels, testing_data, testing_labels] = make_datasets(data, ratio, random)
+
+  if random == 1
+    printf('Randomly sort...\n');
+    idxs = randperm(size(data,1));
+    data = data(idxs,:);
+    
+    % Determine number of points in each set
+    training_cnt=floor((ratio / 100) * size(data,1));
+
+    [N dim] = size(data);   
+
+    % Make data set
+    training_data = data(1:training_cnt,(1:dim - 1));
+    training_labels = data(1:training_cnt,dim);
+    testing_data = data((training_cnt+1):end,(1:dim - 1));
+    testing_labels = data((training_cnt+1):end,dim);
+  else
+    printf('Deterministic sort...\n');
+    [N dim] = size(data)
+    mSize = sum(data(:, dim));
+    gSize = N - mSize;
+    index = floor((ratio / 100) * gSize);
+    training_data = data(1:index,(1:dim - 1));
+    training_labels = data(1:index,dim);
+    testing_data = data((index + 1):gSize,(1:dim - 1));
+    testing_labels = data((index + 1):gSize,dim);
+    index = floor((ratio / 100) * mSize);
+    training_data = [training_data; data(gSize + 1:gSize + index,(1:dim - 1))];
+    training_labels = [training_labels; data(gSize + 1:gSize + index,dim)];
+    testing_data = [testing_data; data((gSize + index + 1):end,(1:dim - 1))];
+    testing_labels = [testing_labels; data((gSize + index + 1):end,dim)];
+  endif
+end
+
+function [accuracy] = svmClassification(training_data, training_labels, testing_data, testing_labels, results_file, confusion_file)
   printf("Linear Kernel\n");
   kernel_type = sprintf('-q -t 0');
-  [accuracy, model] = svm(training_data, training_labels, testing_data, testing_labels, kernel_type);
+  [accuracy, model] = svm(training_data, training_labels, testing_data, testing_labels, kernel_type, confusion_file);
   printf( "# of class[%d]\n", model.nr_class);
 
-  fid = fopen(results_file_name, 'a');
+  fid = fopen(results_file, 'a');
   fprintf(fid, '%f ', accuracy(1));
   fclose(fid);
   
   printf("Polynomial Kernel\n");
   for i = 1:4
     kernel_type = sprintf('-q -t 1 -d %d', i);
-    [accuracy model confusion] = svm(training_data, training_labels, testing_data, testing_labels, kernel_type);
+    [accuracy model confusion] = svm(training_data, training_labels, testing_data, testing_labels, kernel_type, confusion_file);
     printf( "# of class[%d] - Kernel Degree[%d]\n", model.nr_class, i);
 
-    fid = fopen(results_file_name, 'a');
+    fid = fopen(results_file, 'a');
     fprintf(fid, '%f ', accuracy(1));
     fclose(fid);
   end
 
-  fid = fopen(results_file_name, 'a');
+  fid = fopen(results_file, 'a');
   fprintf(fid, '\n');
   fclose(fid);
 end
 
-function [accuracy, model, confusion] = svm(training_data, training_labels, testing_data, testing_labels, kernel_type)
+function [accuracy, model, confusion] = svm(training_data, training_labels, testing_data, testing_labels, kernel_type, confusion_file)
   model = svmtrain(training_labels, training_data, kernel_type);
   [predicted_labels, accuracy, decision_values] = svmpredict(testing_labels, testing_data, model);
   size = length(testing_labels)
@@ -136,13 +167,13 @@ function [accuracy, model, confusion] = svm(training_data, training_labels, test
   end
   [testing_labels predicted_labels];
   confusion;
-  file = fopen(sprintf('%s%s', getenv('MALINE'), '/log/confusion.txt'), 'a');
+  file = fopen(confusion_file, 'a');
   fprintf(file, '%f %f\n', confusion(1, :));
   fprintf(file, '%f %f\n', confusion(2, :));
   fclose(file);
 end
 
-function [N dim ratio random dataWeight dataWeightLabels dataCount dataCountLabels] = readDataFile(filename)
+function [N dim ratio random dataWeight dataWeightLabels] = readDataFile(filename)
   data = [];
   fid = fopen(filename, 'r');
   N = fscanf(fid, '%d', [1 1]);
@@ -155,18 +186,13 @@ function [N dim ratio random dataWeight dataWeightLabels dataCount dataCountLabe
   end
   dataWeight = data(:, 1:(dim - 1));
   dataWeightLabels = data(:, dim);
- 
-  data = [];
-  for i = 1:N
-    data(i, :) = fscanf(fid, '%f ', [1 dim]);
-    fscanf(fid, '\n');
-  end
-  fclose(fid);
-  dataCount = data(:, 1:(dim - 1));
-  dataCountLabels = data(:, dim);
 end
+
+arg_list = argv ();
+classdroid(arg_list{1}, arg_list{2}, arg_list{3})
 
 %%% Local Variables: ***
 %%% mode:octave ***
 %%% comment-start: "%"  ***
 %%%  End: ***
+

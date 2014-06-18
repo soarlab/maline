@@ -95,6 +95,10 @@ stored to a file `apk-list-file` that has paths to the apps:
     ~/projects/maline/apps/to.networld.android.divedroid_1.apk
     ~/projects/maline/apps/4147f7d801c4bc5241536886309d507c5124fe3b.apk
 
+It is assumed that malicious applications have file names consisting of 64
+hexadecimal characters. That is how **maline** distinguishes malicious from
+benign apps in its learning phase.
+
 To execute the apps and get their execution logs, run the following:
 
     maline.sh -f apk-list-file -d maline-avd

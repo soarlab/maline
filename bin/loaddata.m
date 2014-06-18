@@ -1,4 +1,4 @@
-% loaddata
+#! /usr/bin/octave -qf
 
 % Copyright 2013,2014 Marko Dimjašević, Simone Atzeni, Ivo Ugrina, Zvonimir Rakamarić
 %
@@ -17,29 +17,30 @@
 % You should have received a copy of the GNU Affero General Public License
 % along with maline.  If not, see <http://www.gnu.org/licenses/>.
 
-
-function loaddata()
+function loaddata2(foldername, outputfile)
   % Reading Input Files 
-  [gN gDataWeight gDataCount] = readFiles(sprintf('%s%s', getenv('MALINE'), '/data/goodware'));
-  [mN mDataWeight mDataCount] = readFiles(sprintf('%s%s', getenv('MALINE'), '/data/malware'));
+
+  [gN gDataWeight] = readFiles(sprintf('%s%s', foldername, '/goodware'));
+  [mN mDataWeight] = readFiles(sprintf('%s%s', foldername, '/malware'));
   printf('Creating Labels...\n');
   dataWeightLabels = zeros(length(gDataWeight(:, 1)), 1);
-  dataCountLabels = zeros(length(gDataCount(:, 1)), 1);
+  %% dataCountLabels = zeros(length(gDataCount(:, 1)), 1);
   dataWeightLabels = [dataWeightLabels; ones(length(mDataWeight(:, 1)), 1)];
-  dataCountLabels = [dataCountLabels; ones(length(mDataCount(:, 1)), 1)];
+  %% dataCountLabels = [dataCountLabels; ones(length(mDataCount(:, 1)), 1)];
   printf('Creating Data Matrix...\n');
   dataWeight = [gDataWeight; mDataWeight];
-  dataCount = [gDataCount; mDataCount];
+  %% dataCount = [gDataCount; mDataCount];
 
   printf('Creating Final...\n');
   dataWeightFinal = [dataWeight dataWeightLabels];
-  dataCountFinal = [dataCount dataCountLabels];
+  %% dataCountFinal = [dataCount dataCountLabels];
   dim = size(dataWeightFinal);
   printf('Creating Last Matrix\n...');
-  data = [dataWeightFinal; dataCountFinal];
+  %% data = [dataWeightFinal; dataCountFinal];
+  data = dataWeightFinal;
 
   printf('Creating data file...\n');
-  fid = fopen(sprintf('%s%s', getenv('MALINE'), '/data/features_data.dat'), 'w+');
+  fid = fopen(outputfile, 'w+');
   fprintf(fid, '%d ', dim);
   fprintf(fid, '90 ');
   fprintf(fid, '1');
@@ -52,10 +53,9 @@ function loaddata()
   fclose(fid);
 end
 
-function [N dataWeight dataCount] = readFiles(foldername)
+function [N dataWeight] = readFiles(foldername)
   N = 0;
   dataWeight = [];
-  dataCount = [];
   filelist = readdir(foldername);
   for ii = 1:numel(filelist)
     ## skip special files . and ..
@@ -63,29 +63,28 @@ function [N dataWeight dataCount] = readFiles(foldername)
       continue;
     endif
     ## load your file
-    printf('Filename: %s\n', filelist{ii});
     path = sprintf('%s/%s', foldername, filelist{ii});
-    [localN, localDataWeight localDataCount] = readDataFile(path);
+    printf('Reading file %s... ', filelist{ii});
+    [localN, localDataWeight] = readDataFile(path);
+    printf('done\n');
     dataWeight = [dataWeight; localDataWeight];
-    dataCount = [dataCount; localDataCount];
-    N = N = localN;
+    N = localN;
   endfor
   printf('All files Done!\n');
 end
 
-function [N, dataWeight dataCount] = readDataFile(filename)
-  printf('Analyzing file %s\n', filename);
+function [N, dataWeight] = readDataFile(filename)
   file = fopen(filename);
   dim = fscanf(file, '%d', [1 1]);
   dataWeight = fscanf(file, '%f ', [dim dim]);
-  fscanf(file, '%d', [1 1]);
-  dataCount = fscanf(file, '%f ', [dim dim]);
   dataWeight = dataWeight(:)';
-  dataCount = dataCount(:)';
   N = dim * dim;
   fclose(file);
-  printf('Done!\n');
 end
+
+arg_list = argv ();
+loaddata2(arg_list{1}, arg_list{2})
+
 
 %%% Local Variables: ***
 %%% mode:octave ***
