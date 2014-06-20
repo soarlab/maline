@@ -144,7 +144,7 @@ sleep 1s
 # Pull the logfile to the host machine
 echo -n "Pulling the app system calls log file... "
 mkdir -p $LOG_DIR
-timeout 180 adb -P $ADB_SERVER_PORT pull /sdcard/$LOGFILE $LOG_DIR &>/dev/null && echo "done" || echo "failed"
+timeout 300 adb -P $ADB_SERVER_PORT pull /sdcard/$LOGFILE $LOG_DIR &>/dev/null && echo "done" || echo "failed"
 
 # Remove the logfile from the device
 RM_CMD="rm /sdcard/$LOGFILE"

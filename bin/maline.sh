@@ -103,7 +103,6 @@ get_emu_ready() {
 	    sleep 1s
 	    adb -P $ADB_SERVER_PORT kill-server
 	    kill -9 $EMULATOR_PID &>/dev/null
-	    kill $(jobs -p) &>/dev/null
 	    rm -f $EMULATOR_OUTPUT_FILE
 	    rm -f $EMULATOR_NAND_FILE
 	    set -e
@@ -253,7 +252,7 @@ available_port CONSOLE_PORT
 available_port ADB_PORT
 
 # Start a log parsing process
-loop-parse-new-logs.sh $LOG_DIR &
+parse-new-logs.sh $LOG_DIR &
 PARSE_PID=$!
 
 PROC_INFO_FILE=$MALINE/.maline-$CURR_PID

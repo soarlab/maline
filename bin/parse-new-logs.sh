@@ -29,25 +29,11 @@ fi
 
 : ${LOG_DIR=$LOG_DIR_DEFAULT}
 
-# Set the strace parsing command name and use a compiled version when
-# possible
-STRACE_PY_SRC="$MALINE/bin/parse-strace-log.py"
-STRACE_PY_BYTE="$MALINE/bin/parse-strace-log.pyc"
+while :
+do
+    for LOG in `ls -1 $LOG_DIR/*log 2>/dev/null`; do
+	parse-log-lock.sh $LOG_DIR $LOG
+    done
 
-if [ ! -e "$STRACE_PY_BYTE" ]; then
-    cd $MALINE/bin
-    pycompile $STRACE_PY_SRC
-    chmod +x $STRACE_PY_BYTE
-    cd -
-fi
-
-COUNTER=0
-
-for LOG in `ls -1 $LOG_DIR/*log 2>/dev/null`; do
-    parse-log-lock.sh $LOG_DIR $LOG
-    RET_VAL=$?
-
-    if [ $RET_VAL -eq 0 ]; then
-	let COUNTER++
-    fi
+    sleep 5s
 done

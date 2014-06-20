@@ -29,7 +29,7 @@ LOCK_FILE=/var/lock/.$BASE_NAME
 CURR_PID=$$
 
 # Set the strace parsing command name
-COMMAND="python $MALINE/bin/parse-strace-log.pyc"
+COMMAND="parse-strace-log"
 
 # Clean up upon exiting from the process
 function __sig_func {
@@ -47,18 +47,20 @@ trap __sig_func INT
 trap __sig_func SIGQUIT
 trap __sig_func SIGTERM
 
-
 if [ -e "$LOG_DIR/$BASE_NAME.graph" ]; then
     # Skipping $LOG because it was already parsed ...
     exit 1
 fi
+
+# The only architecture we support
+ARCH="i386"
 
 (
     # Test for an exclusive lock on $LOCK_FILE
     flock --exclusive --nonblock 42 || exit 1
     echo $CURR_PID > $LOCK_FILE
 
-    $COMMAND --file $LOG
+    $COMMAND $LOG $ARCH
     
 ) 42> $LOCK_FILE
 
