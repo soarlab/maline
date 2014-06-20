@@ -35,5 +35,5 @@ do
 	parse-log-lock.sh $LOG_DIR $LOG
     done
 
-    sleep 5s
+    sleep 90s
 done
