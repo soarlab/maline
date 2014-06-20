@@ -41,7 +41,7 @@ EXP_NAME=$1
 # Number of maline instances to start
 COUNT=$2
 # Limit due to the memory size (each AVD needs about 5 GB)
-COUNT_LIMIT=30
+COUNT_LIMIT=25
 
 # A file with a list of apps to be analyzed
 APP_FILE=$3

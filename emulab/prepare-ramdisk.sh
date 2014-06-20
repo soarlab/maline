@@ -11,7 +11,7 @@ ANDROID_TMP_OLD=$LOCAL/.android
 export RAMDISK=/mnt/ramdisk
 mkdir -p $RAMDISK
 
-# This will create a ram disk of the default size (~ 100 GB)
+# This will create a ram disk of the default size (~ 95 GB)
 RAM_DEV=/dev/ram0
 sudo mkfs -q $RAM_DEV
 

@@ -19,5 +19,11 @@ $bs1 set-lease "Maline/storage"
 $bs1 set-node $crawler
 $bs1 set-mount-point "/mnt/storage"
 
+set bs2 [$ns blockstore]
+$bs2 set-lease "Maline/exp-res"
+$bs2 set-node $crawler
+$bs2 set-mount-point "/mnt/experiments"
+
+
 # Start
 $ns run
