@@ -41,7 +41,7 @@ function classdroid(features_file, results_file, confusion_file)
       fprintf(fid, '%%Ratio: 50 - Random = 0\n');
       fclose(fid);
 
-      file = fopen(confusion_file);
+      file = fopen(confusion_file, 'w');
       fprintf(file, '%%Ratio: 50 -  Random = 0\n');
       fclose(file);
 

@@ -18,7 +18,9 @@
 # along with maline.  If not, see <http://www.gnu.org/licenses/>.
 
 
-echo 'Running classdroid for apps classification...'
-filename=$MALINE/tools
-cd $filename
-octave --eval 'classdroid.m'
+FEATURES_FILE=$1
+RESULTS_FILE=$2
+CONFUSION_FILE=$3
+
+echo 'Running classdroid for app classification...'
+classdroid.m $FEATURES_FILE $RESULTS_FILE $CONFUSION_FILE

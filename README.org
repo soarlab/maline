@@ -49,8 +49,6 @@ To use *maline*, you need the following:
 - [[http://www.csie.ntu.edu.tw/~cjlin/libsvm/][LIBSVM]] - *maline* already ships with LIBSVM, which is licensed under the
   Modified BSD License.
 - [[http://www.gnu.org/software/bash/][Bash]] - ships with Ubuntu.
-- [[http://www.python.org/][Python]] - we tested *maline* with Python 2.7.3, but it might work with more
-  recent versions too. It is available through a Ubuntu's default repository.
 - [[http://sourceforge.net/projects/expect/][expect]] - a command line tool that automates interactive applications. It is
   available through a Ubuntu's default repository.
      
