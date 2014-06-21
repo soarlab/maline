@@ -60,7 +60,7 @@ THIS_EXP_ROOT=$EXP_ROOT/$EXP_NAME
 echo -n "Creating an experiment directory at $THIS_EXP_ROOT ... "
 mkdir -p $THIS_EXP_ROOT/screen-logs/ && echo "done" || die "failed. Aborting..."
 mkdir -p $THIS_EXP_ROOT/input-lists
-ANDROID_LOG_DIR=$THIS_EXP_ROOT/android-logs # This one will be created by maline.sh
+ANDROID_LOG_DIR=$THIS_EXP_ROOT/android-logs # This directory will be created in maline.sh
 
 # Split the input file. The output is in $APP_COPY_FILE.XX
 APP_COPY_FILE=$THIS_EXP_ROOT/input-lists/$(basename $APP_FILE)
@@ -103,6 +103,8 @@ for i in $(seq 0 $(($COUNT-1))); do
     screen -S "$EXP_NAME" -p $i -X stuff "$CMD$(printf \\r)" && echo "done" || echo "failed"
 done
 
+echo ""
+echo "Experiment data will be stored in $THIS_EXP_ROOT"
 echo ""
 echo "To watch the progress of the experiment, execute:"
 echo "  screen -r $EXP_NAME"
