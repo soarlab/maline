@@ -23,42 +23,47 @@ die() {
     exit 1
 }
 
-# A directory where log and graph files are
-LOG_DIR=$1
+# A root directory of the experiment
+EXP_ROOT=$1
 
-# A directory where files should be split based on app behavior
-BEHAVIOR_DIR=$2
+# A directory where log and graph files are
+LOG_DIR=$2
+
+[ ! -z $EXP_ROOT ] || EXP_ROOT=$MALINE
+[ -d $EXP_ROOT ] || die "Non-existing experiment directory!"
 
 [ ! -z $LOG_DIR ] || LOG_DIR=$MALINE/log
 [ -d $LOG_DIR ] || die "Non-existing log directory!"
 
-[ ! -z $BEHAVIOR_DIR ] || BEHAVIOR_DIR=$MALINE/features
+OUTPUT_FILE=$EXP_ROOT/features-file
+rm -f $OUTPUT_FILE &>/dev/null
 
-GOODWARE_DIR=$BEHAVIOR_DIR/goodware
-MALWARE_DIR=$BEHAVIOR_DIR/malware
+NUM_OF_FEATURES=$(head -1 `ls -1 $LOG_DIR/*graph | head -1`)
+NUM_OF_APPS=$(ls -1 $LOG_DIR/*graph | wc -l)
 
-rm -rf $BEHAVIOR_DIR &>/dev/null
-
-mkdir -p $GOODWARE_DIR
-mkdir -p $MALWARE_DIR
+echo "$NUM_OF_APPS $(($NUM_OF_FEATURES + 1))" >> $OUTPUT_FILE
+# TODO: Remove the ratio from the input file
+echo "90" >> $OUTPUT_FILE
+# TODO: Remove the random flag from the input file
+echo "1" >> $OUTPUT_FILE
 
 # Separate goodware and malware files. Malware file names have to
 # start with 64 hexadecimal digits
-echo -n "Splitting goodware and malware based on file names... "
 for FILE in $(ls -1 $LOG_DIR/*graph); do
+    echo -n "Adding file $FILE... "
+    CURR_NUM_OF_FEATURES=$(head -1 $FILE)
+    [ $NUM_OF_FEATURES -eq $CURR_NUM_OF_FEATURES ] || die "Not all .graph files have the same number of features! Aborting."
+
+    tail -1 $FILE >> $OUTPUT_FILE
+
     FIRST_PART=$(basename $FILE | awk -F"-" '{print $1}')
     if [[ $FIRST_PART =~ [0-9a-fA-F]{64} ]]; then
-	ln -s $FILE $MALWARE_DIR/
+	echo "1" >> $OUTPUT_FILE
     else
-	ln -s $FILE $GOODWARE_DIR/
+	echo "0" >> $OUTPUT_FILE
     fi
+    echo "done"
 done
-echo "done"
 
-OUTPUT_FILE=$BEHAVIOR_DIR/features-file
-
-echo "Generating a big feature data file from app trace logs..."
-# CURR_DIR=$(pwd)
-# cd $MALINE/bin
-loaddata.m $BEHAVIOR_DIR $OUTPUT_FILE
-# cd $CURR_DIR
+echo ""
+echo "A feature file is in $OUTPUT_FILE"

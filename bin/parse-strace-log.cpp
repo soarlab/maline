@@ -41,7 +41,6 @@ FILE *mf = NULL;
 void
 signal_callback_handler(int signum)
 {
-  // something with locks here
   if (f)
   {
                      /* l_type   l_whence  l_start  l_len  l_pid   */

@@ -34,7 +34,7 @@ COMMAND="parse-strace-log"
 # Clean up upon exiting from the process
 function __sig_func {
     if [ -e $LOCK_FILE ]; then
-	PID_IN_FILE=`cat $LOCK_FILE`
+	PID_IN_FILE=`cat $LOCK_FILE 2>/dev/null`
 	[[ $PID_IN_FILE -eq $CURR_PID ]] && rm $LOCK_FILE || exit 1
     else
 	exit 1
