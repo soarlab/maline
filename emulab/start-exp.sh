@@ -106,5 +106,5 @@ done
 echo ""
 echo "Experiment data will be stored in $THIS_EXP_ROOT"
 echo ""
-echo "To watch the progress of the experiment, execute:"
-echo "  screen -r $EXP_NAME"
+echo "All users from the Maline user group can watch the progress of the experiment by executing:"
+echo "  screen -x $USER/$EXP_NAME"

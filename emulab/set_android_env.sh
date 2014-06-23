@@ -18,3 +18,6 @@ export PATH=$ANDROID_SDK_ROOT/platform-tools:$ANDROID_SDK_ROOT/tools:$MALINE/bin
 # Add all users to the kvm user group                                                            
 sudo usermod -a -G kvm marko
 sudo usermod -a -G kvm simoatze
+
+# Prepare the screen tool for a multiuser mode
+sudo chmod 755 /var/run/screen

@@ -33,4 +33,7 @@ sudo update-grub
 # Strongly discourage swappiness
 sudo echo "vm.swappiness=0" >> /etc/sysctl.conf
 
+# Prepare the screen tool for a multiuser mode
+sudo chmod u+s /usr/bin/screen
+
 reboot

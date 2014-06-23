@@ -1,6 +1,11 @@
 autodetach on
 startup_message off
 defscrollback 10000
+multiuser on
+acladd marko
+acladd simoatze
+acladd iugrina
+acladd zvonimir
 caption always "%{rw}%n%f %t %{wk} | %?%-Lw%?%{wb}[%n*%f %t]%?(%u)%?%{wk}%?%+Lw%? %{wk}"
 backtick 1 5 5 ramdisk-use.sh
 hardstatus alwayslastline "%{+b kr}host: %{kw}%H%{kb} | experiment: %{kw}name-goes-here%{kb} | %{ky}RAM disk: %{kw}%1`%{kb} | %{kg}(load: %l)%-0=%{kb}"
