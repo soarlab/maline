@@ -1,0 +1,69 @@
+#+TITLE:     maline Experiments at Emulab
+#+AUTHOR:    Marko Dimjašević, Simone Atzeni, Ivo Ugrina, Zvonimir Rakamarić
+#+EMAIL:     marko@cs.utah.edu
+#+DATE:      2014-06-23 Mon
+#+DESCRIPTION:
+#+KEYWORDS:
+#+LANGUAGE:  en
+#+OPTIONS:   H:3 num:t toc:t \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS:   TeX:t LaTeX:t skip:nil d:nil todo:t pri:nil tags:not-in-toc
+
+#+EXPORT_SELECT_TAGS: export
+#+EXPORT_EXCLUDE_TAGS: noexport
+#+LINK_UP:   
+#+LINK_HOME: 
+#+XSLT:
+
+* Prerequisites
+To run an experiment on an Emulab machine, use a clean installation of Ubuntu
+12.04.4 LTS.
+* Preparation
+The first script that needs to be executed on a pristine operating system
+installation is =prepare-node.sh=, with root permissions, e.g.:
+
+#+BEGIN_SRC sh :exports code
+  sudo prepare-node.sh
+#+END_SRC
+
+This will install various needed software packages and prepare the machine
+system-wide for KVM virtualization to speed up Android Virtual Devices.
+
+Next thing is to set up permissions on two external storage partitions:
+
+#+BEGIN_SRC sh :exports code
+  source prepare-storage.sh
+#+END_SRC
+
+Because we have been using a d820 Emulab node, which has 128 GB of RAM, we
+store Android Virtual Devices in a RAM disk. To set up the disk, execute:
+
+#+BEGIN_SRC sh :exports code
+  source prepare-ramdisk.sh
+#+END_SRC
+
+Finally, to set up various environment variables needed by *maline*, run:
+
+#+BEGIN_SRC sh :exports code
+  source set_android_env.sh
+#+END_SRC
+
+* Running an experiment
+To start running the first phase of the analysis in *maline*, start an
+experiment with optionally multiple instances of *maline* running in
+parallel. Name the experiment, provide the number of instances, and an input
+list of applications to be analyzed:
+
+#+BEGIN_SRC sh :exports code
+  start-exp.sh full-test-14-06-20 20 /mnt/storage/input-files/apk-full-list
+#+END_SRC
+
+This will start an experiment named *full-test-14-06-20* with 20 *maline*
+instances, each instance analyzing an equal share of apps listed in a file
+=/mnt/storage/input-files/apk-full-list=.
+
+Instructions on how to watch the experiment are given once the command is
+executed.
+
+# TODO: Finish this section.
+# The second part is to generate a feature file that will be used in the machine
+# learning phase. 
