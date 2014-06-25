@@ -1,0 +1,18 @@
+#+TITLE:     maline Experiments
+#+AUTHOR:    Marko Dimjašević, Simone Atzeni, Ivo Ugrina, Zvonimir Rakamarić
+#+EMAIL:     marko@cs.utah.edu
+#+DATE:      2014-06-23 Mon
+#+DESCRIPTION:
+#+KEYWORDS:
+#+LANGUAGE:  en
+#+OPTIONS:   H:3 num:t toc:t \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS:   TeX:t LaTeX:t skip:nil d:nil todo:t pri:nil tags:not-in-toc
+
+#+EXPORT_SELECT_TAGS: export
+#+EXPORT_EXCLUDE_TAGS: noexport
+#+LINK_UP:   
+#+LINK_HOME: 
+#+XSLT:
+
+To read about experiments on Emulab, find the README in the =emulab=
+directory.

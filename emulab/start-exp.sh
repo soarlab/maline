@@ -63,7 +63,7 @@ mkdir -p $THIS_EXP_ROOT/input-lists
 ANDROID_LOG_DIR=$THIS_EXP_ROOT/android-logs # This directory will be created in maline.sh
 
 # Split the input file. The output is in $APP_COPY_FILE.XX
-APP_COPY_FILE=$THIS_EXP_ROOT/input-lists/$(basename $APP_FILE)
+APP_COPY_FILE=$THIS_EXP_ROOT/input-lists/app-list
 cp $APP_FILE $APP_COPY_FILE
 
 split-file.sh $APP_COPY_FILE $COUNT &>/dev/null
@@ -106,9 +106,13 @@ done
 # Put an indication file for the next phase of the experiment
 touch $THIS_EXP_ROOT/.maline-started
 
-echo ""
-echo "Changing directory to $THIS_EXP_ROOT. All experiment data will be stored here."
-cd $THIS_EXP_ROOT
+# echo ""
+# echo "Changing directory to $THIS_EXP_ROOT. All experiment data will be stored here."
+# change_dir $THIS_EXP_ROOT
 echo ""
 echo "All users from the Maline user group can watch the progress of the experiment by executing:"
 echo "  screen -x $USER/$EXP_NAME"
+
+echo ""
+echo "When this part is done, run the following in the current directory to generate a features file:"
+echo "  create-features-file.sh"
