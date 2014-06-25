@@ -37,9 +37,8 @@ FILE *f = NULL;
 // missing-calls.txt
 FILE *mf = NULL;
 
-
 void
-signal_callback_handler(int signum)
+cleanup(void)
 {
   if (f)
   {
@@ -66,7 +65,12 @@ signal_callback_handler(int signum)
     }
     fclose(mf);
   }
+}
 
+void
+signal_callback_handler(int signum)
+{
+  cleanup();
   exit(signum);
 }
 
@@ -319,6 +323,8 @@ int main(int argc, char **argv)
   Parser.extract_sys_calls();
   Parser.parse();
   Parser.print();
+
+  cleanup();
 
   return 0;
 }

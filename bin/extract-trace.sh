@@ -32,7 +32,7 @@ function get_app_pid {
     for i in $(seq 1 $RETRY_COUNT); do
 	# Fetch the app PID
 	__APP_PID=`adb -P $ADB_SERVER_PORT shell "ps" | grep -v "USER " | grep $APP_NAME | head -1 | awk -F" " '{print $2}'`
-	if [ ! -z "$APP_PID" ]; then
+	if [ ! -z "$__APP_PID" ]; then
     	    break
 	fi
 	sleep 0.25s

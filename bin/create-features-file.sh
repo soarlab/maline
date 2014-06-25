@@ -29,11 +29,19 @@ EXP_ROOT=$1
 # A directory where log and graph files are
 LOG_DIR=$2
 
-[ ! -z $EXP_ROOT ] || EXP_ROOT=$MALINE
-[ -d $EXP_ROOT ] || die "Non-existing experiment directory!"
+CURR_DIR=$(pwd)
+EXP_STARTED_FILE=$CURR_DIR/.maline-started
+# Check if the script was started within an experiment directory
+if [ -f $EXP_STARTED_FILE ] && [ -z $EXP_ROOT ] && [ -z $LOG_DIR ]; then
+    EXP_ROOT=$CURR_DIR
+    LOG_DIR=$CURR_DIR/android-logs
+else
+    [ ! -z $EXP_ROOT ] || EXP_ROOT=$MALINE
+    [ ! -z $LOG_DIR ] || LOG_DIR=$MALINE/log
+fi
 
-[ ! -z $LOG_DIR ] || LOG_DIR=$MALINE/log
-[ -d $LOG_DIR ] || die "Non-existing log directory!"
+[ -d $EXP_ROOT ] || die "Non-existing experiment directory $EXP_ROOT!"
+[ -d $LOG_DIR ] || die "Non-existing log directory $LOG_DIR!"
 
 OUTPUT_FILE=$EXP_ROOT/features-file
 rm -f $OUTPUT_FILE &>/dev/null
