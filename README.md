@@ -1,4 +1,5 @@
-maline-experiments
+maline Experiments
 ==================
 
-Experimental environments for maline
+To read about experiments on Emulab, find the README in the `emulab`
+directory.

@@ -103,8 +103,12 @@ for i in $(seq 0 $(($COUNT-1))); do
     screen -S "$EXP_NAME" -p $i -X stuff "$CMD$(printf \\r)" && echo "done" || echo "failed"
 done
 
+# Put an indication file for the next phase of the experiment
+touch $THIS_EXP_ROOT/.maline-started
+
 echo ""
-echo "Experiment data will be stored in $THIS_EXP_ROOT"
+echo "Changing directory to $THIS_EXP_ROOT. All experiment data will be stored here."
+cd $THIS_EXP_ROOT
 echo ""
 echo "All users from the Maline user group can watch the progress of the experiment by executing:"
 echo "  screen -x $USER/$EXP_NAME"

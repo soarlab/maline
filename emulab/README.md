@@ -11,7 +11,8 @@ installation is `prepare-node.sh`, with root permissions, e.g.:
     sudo prepare-node.sh
 
 This will install various needed software packages and prepare the machine
-system-wide for KVM virtualization to speed up Android Virtual Devices.
+system-wide for KVM virtualization to speed up Android Virtual Devices. The
+script will reboot the system once it is done.
 
 Next thing is to set up permissions on two external storage partitions:
 
@@ -35,9 +36,16 @@ list of applications to be analyzed:
 
     start-exp.sh full-test-14-06-20 20 /mnt/storage/input-files/apk-full-list
 
-This will start an experiment named **full-test-14-06-20** with 20 **maline**
+This will start an experiment named *full-test-14-06-20* with *20* **maline**
 instances, each instance analyzing an equal share of apps listed in a file
 `/mnt/storage/input-files/apk-full-list`.
 
-Instructions on how to watch the experiment are given once the command is
-executed.
+Instructions on how to watch the experiment are given at the end of the
+command output.
+
+Once the first phase is done, run the following command while in the same
+directory as when `start-exp.sh` returned:
+
+    create-features-file.sh
+
+to generate a file with features for all the analyzed applications.
