@@ -96,6 +96,9 @@ MESSAGES_FILE="$MALINE/data/sms-list"
 send-all-sms.sh $MESSAGES_FILE $CONSOLE_PORT &
 SMS_PID=$!
 
+# WARNING: linker: libdvm.so has text relocations. This is wasting memory and is a security risk. Please fix.
+WARNING_MSG_PART="Please"
+
 for i in $(seq 1 $ITERATIONS); do
     # Check if the user has interrupted the execution in the meantime
     check-adb-status.sh $ADB_SERVER_PORT $ADB_PORT || __sig_func
@@ -129,7 +132,7 @@ for i in $(seq 1 $ITERATIONS); do
     # a delay between consecutive events because the Android emulator
     # is slow, and kill strace once Monkey is done
     echo "Iteration $i, sending $COUNT_PER_ITER random events to the app..."
-    timeout 45 adb -P $ADB_SERVER_PORT shell "monkey --throttle 100 -p $APP_NAME -s $MONKEY_SEED $COUNT_PER_ITER && $STRACE_KILL_CMD"
+    timeout 45 adb -P $ADB_SERVER_PORT shell "monkey --throttle 100 -p $APP_NAME -s $MONKEY_SEED $COUNT_PER_ITER 2>&1 | grep -v $WARNING_MSG_PART && $STRACE_KILL_CMD"
     # increase the seed for the next round of events
     let MONKEY_SEED=MONKEY_SEED+1
 done
@@ -153,7 +156,7 @@ adb -P $ADB_SERVER_PORT shell "$RM_CMD"
 
 # Fetch logcat log and remove it from the phone
 echo -n "Pulling the app execution logcat file... "
-adb -P $ADB_SERVER_PORT shell "logcat -d > /sdcard/$LOGCATFILE" && \
+adb -P $ADB_SERVER_PORT shell "logcat -d > /sdcard/$LOGCATFILE 2>/dev/null" && \
 adb -P $ADB_SERVER_PORT pull /sdcard/$LOGCATFILE $LOG_DIR &>/dev/null && echo "done" || echo "failed"
 RM_CAT_CMD="rm /sdcard/$LOGCATFILE"
 adb -P $ADB_SERVER_PORT shell "$RM_CAT_CMD"
