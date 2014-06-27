@@ -11,13 +11,6 @@ will work under other POSIX systems too (GNU/Linux and Mac alike). The Android
 version we tested **maline** with is Android 4.4.3 (API version 19), which is
 assumed throughout the readme.
 
-**maline** is a collection of Bash and Python scripts, so no installation is
-needed. It suffices to obtain **maline**, e.g. from Github:
-
-    mkdir ~/projects
-    cd ~/projects
-    git clone git@github.com:soarlab/maline.git
-
 ## Dependencies
 
 To use **maline**, you need the following:
@@ -35,6 +28,19 @@ To use **maline**, you need the following:
 -   [Bash](http://www.gnu.org/software/bash/) - ships with Ubuntu.
 -   [expect](http://sourceforge.net/projects/expect/) - a command line tool that automates interactive applications. It is
     available through a Ubuntu's default repository.
+
+## Building
+
+First obtain **maline**, e.g. from Github:
+
+    mkdir ~/projects
+    cd ~/projects
+    git clone git@github.com:soarlab/maline.git
+
+Then change directory and build **maline** by running `make`:
+
+    cd maline
+    make
 
 # Configuration
 
