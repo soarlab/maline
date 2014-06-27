@@ -55,7 +55,7 @@ parallel. Name the experiment, provide the number of instances, and an input
 list of applications to be analyzed:
 
 #+BEGIN_SRC sh :exports code
-  start-exp.sh full-test-14-06-20 20 /mnt/storage/input-files/apk-full-list
+  source start-exp.sh full-test-14-06-20 20 /mnt/storage/input-files/apk-full-list
 #+END_SRC
 
 This will start an experiment named /full-test-14-06-20/ with /20/ *maline*

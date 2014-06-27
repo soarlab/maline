@@ -34,7 +34,7 @@ experiment with optionally multiple instances of **maline** running in
 parallel. Name the experiment, provide the number of instances, and an input
 list of applications to be analyzed:
 
-    start-exp.sh full-test-14-06-20 20 /mnt/storage/input-files/apk-full-list
+    source start-exp.sh full-test-14-06-20 20 /mnt/storage/input-files/apk-full-list
 
 This will start an experiment named *full-test-14-06-20* with *20* **maline**
 instances, each instance analyzing an equal share of apps listed in a file

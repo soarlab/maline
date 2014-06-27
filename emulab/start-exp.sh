@@ -35,6 +35,15 @@ function copy_avd() {
     echo "done"
 }
 
+function git_init() {
+    cd $1 &>/dev/null
+    git clean -fd &>/dev/null
+    git reset --hard &>/dev/null
+    git log -n 1 --pretty=oneline > $2
+    cd - &>/dev/null
+}
+
+
 # Short experiment name
 EXP_NAME=$1
 
@@ -61,6 +70,17 @@ echo -n "Creating an experiment directory at $THIS_EXP_ROOT ... "
 mkdir -p $THIS_EXP_ROOT/screen-logs/ && echo "done" || die "failed. Aborting..."
 mkdir -p $THIS_EXP_ROOT/input-lists
 ANDROID_LOG_DIR=$THIS_EXP_ROOT/android-logs # This directory will be created in maline.sh
+
+
+# Make sure to clean up maline and maline-experiments repositories and
+# to write down the version of both used in the experiment
+git_init $MALINE "$THIS_EXP_ROOT/maline-version-used"
+cd $MALINE
+make &>/dev/null
+cd - &>/dev/null
+
+git_init $MALINE_ENV "$THIS_EXP_ROOT/maline-experiments-version-used"
+
 
 # Split the input file. The output is in $APP_COPY_FILE.XX
 APP_COPY_FILE=$THIS_EXP_ROOT/input-lists/app-list
@@ -106,13 +126,13 @@ done
 # Put an indication file for the next phase of the experiment
 touch $THIS_EXP_ROOT/.maline-started
 
-# echo ""
-# echo "Changing directory to $THIS_EXP_ROOT. All experiment data will be stored here."
-# change_dir $THIS_EXP_ROOT
+echo ""
+echo "Changing directory to $THIS_EXP_ROOT. All experiment data will be stored here."
+cd $THIS_EXP_ROOT &>/dev/null
 echo ""
 echo "All users from the Maline user group can watch the progress of the experiment by executing:"
 echo "  screen -x $USER/$EXP_NAME"
 
 echo ""
-echo "When this part is done, run the following in the current directory to generate a features file:"
+echo "When this part is done, run the following in the current experiment directory to generate a features file:"
 echo "  create-features-file.sh"
