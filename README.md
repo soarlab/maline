@@ -19,6 +19,7 @@ To use **maline**, you need the following:
     experience, it is very unlikely **maline** will work correctly with the
     official version provided by Google. The official version ships without the
     fixes for multiple showstopping bugs.
+-   [OpenJDK 7](http://openjdk.java.net/)
 -   [apktool](https://code.google.com/p/android-apktool/) - **maline** already ships with apktool, which is licensed under the
     Apache License 2.0.
 -   [GNU Octave](https://www.gnu.org/software/octave/) - a programming language for numerical computations. It is
