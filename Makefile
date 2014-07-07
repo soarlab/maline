@@ -3,7 +3,7 @@ RM = rm -rf
 SRC_DIR=src
 BIN_DIR=bin
 
-SRCS = $(SRC_DIR)/parse-strace-log.cpp
+SRCS = $(SRC_DIR)/parse-strace-log.cpp $(SRC_DIR)/sparsify.cpp
 _OBJS = $(subst .cpp,,$(SRCS))
 OBJS = $(patsubst $(SRC_DIR)%,$(BIN_DIR)%,$(_OBJS))
 

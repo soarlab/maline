@@ -35,6 +35,7 @@ EXP_STARTED_FILE=$CURR_DIR/.maline-started
 if [ -f $EXP_STARTED_FILE ] && [ -z $EXP_ROOT ] && [ -z $LOG_DIR ]; then
     EXP_ROOT=$CURR_DIR
     LOG_DIR=$CURR_DIR/android-logs
+    kill $(cat $EXP_STARTED_FILE) &>/dev/null
 else
     [ ! -z $EXP_ROOT ] || EXP_ROOT=$MALINE
     [ ! -z $LOG_DIR ] || LOG_DIR=$MALINE/log
