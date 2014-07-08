@@ -123,8 +123,13 @@ for i in $(seq 0 $(($COUNT-1))); do
     screen -S "$EXP_NAME" -p $i -X stuff "$CMD$(printf \\r)" && echo "done" || echo "failed"
 done
 
+# Have a work-around for Android emulator not responding if a person
+# is not watching the experiment
+screen-screening.sh $EXP_NAME $COUNT &
+SCREENING_PID=$!
+
 # Put an indication file for the next phase of the experiment
-touch $THIS_EXP_ROOT/.maline-started
+echo $SCREENING_PID > $THIS_EXP_ROOT/.maline-started
 
 echo ""
 echo "Changing directory to $THIS_EXP_ROOT. All experiment data will be stored here."
