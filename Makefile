@@ -15,7 +15,7 @@ $(BIN_DIR)/%: $(SRC_DIR)/%.cpp create_bin
 	$(CXX) $(CXXFLAGS) -o $@ $<
 
 create_bin:
-	mkdir -p $(BIN_DIR)
+	mkdir -p $(BIN_DIR) -m 775
 
 scripts:
 	find $(SRC_DIR) -not -name "*.cpp" -type f -print0 | xargs -0 cp -t $(BIN_DIR)
