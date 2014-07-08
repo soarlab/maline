@@ -25,15 +25,6 @@ will work under other POSIX systems too (GNU/Linux and Mac alike). The Android
 version we tested *maline* with is Android 4.4.3 (API version 19), which is
 assumed throughout the readme.
 
-*maline* is a collection of Bash and Python scripts, so no installation is
-needed. It suffices to obtain *maline*, e.g. from Github:
-
-#+BEGIN_SRC sh :exports code
-  mkdir ~/projects
-  cd ~/projects
-  git clone git@github.com:soarlab/maline.git
-#+END_SRC
-
 ** Dependencies
 To use *maline*, you need the following:
 
@@ -42,6 +33,7 @@ To use *maline*, you need the following:
   experience, it is very unlikely *maline* will work correctly with the
   official version provided by Google. The official version ships without the
   fixes for multiple showstopping bugs.
+- [[http://openjdk.java.net/][OpenJDK 7]]
 - [[https://code.google.com/p/android-apktool/][apktool]] - *maline* already ships with apktool, which is licensed under the
   Apache License 2.0.
 - [[https://www.gnu.org/software/octave/][GNU Octave]] - a programming language for numerical computations. It is
@@ -51,7 +43,23 @@ To use *maline*, you need the following:
 - [[http://www.gnu.org/software/bash/][Bash]] - ships with Ubuntu.
 - [[http://sourceforge.net/projects/expect/][expect]] - a command line tool that automates interactive applications. It is
   available through a Ubuntu's default repository.
-     
+
+** Building
+First obtain *maline*, e.g. from Github:
+
+#+BEGIN_SRC sh :exports code
+  mkdir ~/projects
+  cd ~/projects
+  git clone git@github.com:soarlab/maline.git
+#+END_SRC
+
+Then change directory and build *maline* by running =make=:
+
+#+BEGIN_SRC sh :exports code
+  cd maline
+  make
+#+END_SRC
+
 * Configuration
 
 ** Unpacking the SDK
@@ -130,7 +138,7 @@ As *maline* is executing, obtained =.log= files are parsed and as a result one
 generate a feature vector for every analyzed app by executing:
 
 #+BEGIN_SRC sh :exports code
-  createFeatureDataFile.sh
+  create-features-file.sh
 #+END_SRC
 
 Now it is possible to classify the data by running the following:

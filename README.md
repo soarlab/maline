@@ -11,13 +11,6 @@ will work under other POSIX systems too (GNU/Linux and Mac alike). The Android
 version we tested **maline** with is Android 4.4.3 (API version 19), which is
 assumed throughout the readme.
 
-**maline** is a collection of Bash and Python scripts, so no installation is
-needed. It suffices to obtain **maline**, e.g. from Github:
-
-    mkdir ~/projects
-    cd ~/projects
-    git clone git@github.com:soarlab/maline.git
-
 ## Dependencies
 
 To use **maline**, you need the following:
@@ -26,6 +19,7 @@ To use **maline**, you need the following:
     experience, it is very unlikely **maline** will work correctly with the
     official version provided by Google. The official version ships without the
     fixes for multiple showstopping bugs.
+-   [OpenJDK 7](http://openjdk.java.net/)
 -   [apktool](https://code.google.com/p/android-apktool/) - **maline** already ships with apktool, which is licensed under the
     Apache License 2.0.
 -   [GNU Octave](https://www.gnu.org/software/octave/) - a programming language for numerical computations. It is
@@ -35,6 +29,19 @@ To use **maline**, you need the following:
 -   [Bash](http://www.gnu.org/software/bash/) - ships with Ubuntu.
 -   [expect](http://sourceforge.net/projects/expect/) - a command line tool that automates interactive applications. It is
     available through a Ubuntu's default repository.
+
+## Building
+
+First obtain **maline**, e.g. from Github:
+
+    mkdir ~/projects
+    cd ~/projects
+    git clone git@github.com:soarlab/maline.git
+
+Then change directory and build **maline** by running `make`:
+
+    cd maline
+    make
 
 # Configuration
 
@@ -105,7 +112,7 @@ As **maline** is executing, obtained `.log` files are parsed and as a result one
 `.graph` file per `.log` file is generated. From the `.graph` files we
 generate a feature vector for every analyzed app by executing:
 
-    createFeatureDataFile.sh
+    create-features-file.sh
 
 Now it is possible to classify the data by running the following:
 
