@@ -81,6 +81,8 @@ cd - &>/dev/null
 
 git_init $MALINE_ENV "$THIS_EXP_ROOT/maline-experiments-version-used"
 
+# Write down system package versions installed during the experiment
+dpkg -l | grep ^ii > $THIS_EXP_ROOT/system-packages-installed
 
 # Split the input file. The output is in $APP_COPY_FILE.XX
 APP_COPY_FILE=$THIS_EXP_ROOT/input-lists/app-list
