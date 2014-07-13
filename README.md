@@ -2,7 +2,9 @@
 
 **maline** is a free software Android malware detection framework. If you are an
 Org-mode user, you might want to read the [executable version](http://orgmode.org/worg/org-contrib/babel/intro.html) of this readme
-(the README.org file in the root).
+(the README.org file in the root). If you are interested in running extensive
+experiments with **maline**, there is [a repository](https://github.com/soarlab/maline-experiments/) with a lot of information on
+setting up a reproducible research environment.
 
 # Installation
 
