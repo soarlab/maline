@@ -47,8 +47,8 @@ fi
 OUTPUT_FILE=$EXP_ROOT/features-file
 rm -f $OUTPUT_FILE &>/dev/null
 
-NUM_OF_FEATURES=$(head -1 `ls -1 $LOG_DIR/*graph | head -1`)
-NUM_OF_APPS=$(ls -1 $LOG_DIR/*graph | wc -l)
+NUM_OF_FEATURES=$(head -1 `find $LOG_DIR -name "*graph" | head -1`)
+NUM_OF_APPS=$(find $LOG_DIR -name "*graph" | wc -l)
 
 echo "$NUM_OF_APPS $(($NUM_OF_FEATURES + 1))" >> $OUTPUT_FILE
 # TODO: Remove the ratio from the input file
@@ -58,7 +58,7 @@ echo "1" >> $OUTPUT_FILE
 
 # Separate goodware and malware files. Malware file names have to
 # start with 64 hexadecimal digits
-for FILE in $(ls -1 $LOG_DIR/*graph); do
+for FILE in $(find $LOG_DIR -name "*graph"); do
     echo -n "Adding file $FILE... "
     CURR_NUM_OF_FEATURES=$(head -1 $FILE)
     [ $NUM_OF_FEATURES -eq $CURR_NUM_OF_FEATURES ] || die "Not all .graph files have the same number of features! Aborting."
