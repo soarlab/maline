@@ -20,8 +20,8 @@
 
 # Clean up upon exiting from the process
 function __sig_func {
-    kill $SMS_PID &>/dev/null
-    kill $GEO_PID &>/dev/null
+    # kill $SMS_PID &>/dev/null
+    # kill $GEO_PID &>/dev/null
     exit 1
 }
 
@@ -85,16 +85,16 @@ ITERATIONS=10
 echo "Testing the app..."
 echo "There will be up to $ITERATIONS iterations, each sending $COUNT_PER_ITER random events to the app"
 
-echo "Also sending geo-location updates in parallel..."
-LOCATIONS_FILE="$MALINE/data/locations-list"
-GEO_COUNT=$(cat $LOCATIONS_FILE | wc -l)
-send-locations.sh $LOCATIONS_FILE 0 $GEO_COUNT $CONSOLE_PORT &
-GEO_PID=$!
+# echo "Also sending geo-location updates in parallel..."
+# LOCATIONS_FILE="$MALINE/data/locations-list"
+# GEO_COUNT=$(cat $LOCATIONS_FILE | wc -l)
+# send-locations.sh $LOCATIONS_FILE 0 $GEO_COUNT $CONSOLE_PORT &
+# GEO_PID=$!
 
-echo "Spoofing SMS text messages in paralell too..."
-MESSAGES_FILE="$MALINE/data/sms-list"
-send-all-sms.sh $MESSAGES_FILE $CONSOLE_PORT &
-SMS_PID=$!
+# echo "Spoofing SMS text messages in paralell too..."
+# MESSAGES_FILE="$MALINE/data/sms-list"
+# send-all-sms.sh $MESSAGES_FILE $CONSOLE_PORT &
+# SMS_PID=$!
 
 # WARNING: linker: libdvm.so has text relocations. This is wasting memory and is a security risk. Please fix.
 WARNING_MSG_PART="Please"
@@ -137,8 +137,8 @@ for i in $(seq 1 $ITERATIONS); do
     let MONKEY_SEED=MONKEY_SEED+1
 done
 
-kill $SMS_PID &>/dev/null
-kill $GEO_PID &>/dev/null
+# kill $SMS_PID &>/dev/null
+# kill $GEO_PID &>/dev/null
 
 check-adb-status.sh $ADB_SERVER_PORT $ADB_PORT || __sig_func
 
