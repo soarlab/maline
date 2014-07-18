@@ -118,7 +118,7 @@ for i in $(seq 0 $(($COUNT-1))); do
     copy_avd $i
 
     # Start a command in its own screen window
-    CMD="maline.sh -f $APP_COPY_FILE.$(printf "%02d" $i) -d maline-$i -l $ANDROID_LOG_DIR -p $THIS_EXP_ROOT/per-app-time-and-calls"
+    CMD="maline.sh -f $APP_COPY_FILE.$(printf "%02d" $i) -d maline-$i -l $ANDROID_LOG_DIR -p $THIS_EXP_ROOT/per-app-time-and-calls/maline-$i"
     echo -n "Starting instance #$i in a detached screen... "
     # \\r is there to avoid a window being closed once the command
     # finishes
