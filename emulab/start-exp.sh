@@ -25,14 +25,10 @@ function perform_init_checks() {
     [ ! -z $EXP_ROOT ] || die "Environment variable EXP_ROOT not set"
 }
 
-function copy_avd() {
-    EXISTING_AVD=maline-1
-    echo -n "Making a copy for maline-$1... "
-    rsync -a $OLD_ANDROID_TMP/$EXISTING_AVD.avd/ $AVDDIR/maline-$1.avd/
-    sed -i "s/$EXISTING_AVD/maline-$1/g" $AVDDIR/maline-$1.avd/*ini
-    rsync -a $OLD_ANDROID_TMP/$EXISTING_AVD.ini $AVDDIR/maline-$1.ini
-    sed -i "s/$EXISTING_AVD/maline-$1/g" $AVDDIR/maline-$1.ini
-    echo "done"
+function init_avd() {
+    EXISTING_AVD=maline-99
+    rsync -a $OLD_ANDROID_TMP/$EXISTING_AVD.avd $AVDDIR/
+    rsync -a $OLD_ANDROID_TMP/$EXISTING_AVD.ini $AVDDIR/
 }
 
 function git_init() {
@@ -109,13 +105,13 @@ screen -dmS "$EXP_NAME" -t "d/p: 0" -c $SCREENRC
 rm -f $ANDROID_TMP/emulator-* &>/dev/null
 rm -f $ANDROID_TMP/modem-nv-ram-* &>/dev/null
 
+init_avd
+
 for i in $(seq 0 $(($COUNT-1))); do
     if [ $i -ne 0 ]; then
 	# Open a new window
 	screen -S "$EXP_NAME" -X screen -t "d/p: $i"
     fi
-    # Copy an AVD if needed
-    copy_avd $i
 
     # Start a command in its own screen window
     CMD="maline.sh -f $APP_COPY_FILE.$(printf "%02d" $i) -d maline-$i -l $ANDROID_LOG_DIR"
