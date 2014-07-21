@@ -29,11 +29,19 @@ fi
 
 : ${LOG_DIR=$LOG_DIR_DEFAULT}
 
+PER_APP_TIME_CALLS_DIR=$2
+
+APK_LIST_FILE=$3
+
 while :
 do
-    for LOG in `ls -1 $LOG_DIR/*log 2>/dev/null`; do
-	parse-log-lock.sh $LOG_DIR $LOG
+    for LOG in $(find $LOG_DIR -name "*log" 2>/dev/null); do
+	BASE_NAME=$(basename $LOG .log | awk -F"-" '{ print $2 }')
+	if [ "$(grep $BASE_NAME $APK_LIST_FILE | wc -l)" -eq 0 ]; then
+	    continue
+	fi
+	parse-log-lock.sh $LOG_DIR $LOG $PER_APP_TIME_CALLS_DIR
     done
 
-    sleep 90s
+    sleep 42s
 done

@@ -48,13 +48,8 @@ function wait_for_emu {
 	
 	if [ $COUNTER -eq $COUNTER_LIMIT ]; then
 	    let COUNTER=0
-	    
-	    # echo "Disconnecting from the device ..."
 	    adb -P $ADB_SERVER_PORT -e disconnect localhost:$ADB_PORT &>/dev/null 
-	    
-	    # echo "Killing and starting the adb server ..."
 	    adb -P $ADB_SERVER_PORT kill-server &>/dev/null
-	    
 	    adb -P $ADB_SERVER_PORT start-server &>/dev/null &
 	    ADB_PID=$!
 	fi

@@ -22,26 +22,13 @@
 # paths to Android apps - one path per line - is specified in a file
 # given with the -f parameter.
 #
-# Example usage: maline.sh -f apk-list-file -d maline-android-19
+# Example usage: maline.sh -f apk-list-file -d maline-avd
 
 set -e
 
 # Clean up upon exiting from the process
 function __sig_func {
-    set +e
-    # Kill the ADB server
-    adb -P $ADB_SERVER_PORT kill-server
-
-    # Kill the emulator
-    kill-emulator $CONSOLE_PORT &>/dev/null
-    sleep 1s
-    kill -9 $EMULATOR_PID &>/dev/null
-    sleep 1s
-    # Remove lock files
-    find $AVDDIR/$AVD_NAME.avd/ -name "*lock" | xargs rm -f
-    
-    # Kill the log parsing process
-    kill $PARSE_PID &>/dev/null
+    kill_emulator
 
     kill $(jobs -p) &>/dev/null
     
@@ -50,12 +37,9 @@ function __sig_func {
 
     # Remove emulator-related files
     rm -f $STATUS_FILE
-    rm -f $EMULATOR_OUTPUT_FILE
-    rm -f $EMULATOR_NAND_FILE
 
-    # NUM_OF_APPS=`cat $APK_LIST_FILE | wc -l`
-    if [ $NUM_OF_APPS -ne 0 ]; then
-	PER_APP_TIME=`echo "scale=3; $MALINE_TOTAL_TIME / $NUM_OF_APPS" | bc`
+    if [ $NUM_OF_APPS_ANALYZED -ne 0 ]; then
+	PER_APP_TIME=`echo "scale=3; $MALINE_TOTAL_TIME / $NUM_OF_APPS_ANALYZED" | bc`
 	echo ""
 	echo "Per app time: $PER_APP_TIME s"
     fi
@@ -97,22 +81,8 @@ get_emu_ready() {
 
 	# Check if the device is ready
 	if [ "`cat $STATUS_FILE 2>/dev/null`" != "1" ]; then
-	    set +e
-	    adb -P $ADB_SERVER_PORT kill-server
-	    kill-emulator $CONSOLE_PORT &>/dev/null
-	    sleep 1s
-	    adb -P $ADB_SERVER_PORT kill-server
-	    kill -9 $EMULATOR_PID &>/dev/null
-	    rm -f $EMULATOR_OUTPUT_FILE
-	    rm -f $EMULATOR_NAND_FILE
-	    set -e
-	    sleep 1s
-	    # Remove lock files
-	    find $AVDDIR/$AVD_NAME.avd/ -name "*lock" | xargs rm -f
-	    EMULATOR_NAND_FILE=
-	    $EMULATOR_CMD &>$EMULATOR_OUTPUT_FILE &
-	    EMULATOR_PID=$!
-	    find_emulator_nand_file
+	    kill_emulator
+	    start_emulator
 	fi
     done
 
@@ -121,7 +91,7 @@ get_emu_ready() {
 
 # A function for installing an app, running it, and removing it from
 # the device
-inst_run_rm() {
+inst_run() {
     set +e
 
     # Temporary status files
@@ -172,16 +142,11 @@ inst_run_rm() {
     fi
 
     # Extract trace from the app
-    timeout $TIMEOUT extract-trace.sh $APP_PATH $CONSOLE_PORT $ADB_SERVER_PORT $ADB_PORT $TIMESTAMP $LOG_DIR || return 1
+    timeout $TIMEOUT extract-trace.sh $APP_PATH $CONSOLE_PORT $ADB_SERVER_PORT $ADB_PORT $TIMESTAMP $LOG_DIR $COUNTER || return 1
     
     check-adb-status.sh $ADB_SERVER_PORT $ADB_PORT || __sig_func
-    
     sleep 1s
-    
-    # Uninstall the app from the device
-    echo -n "Uninstalling the app... "
-    timeout 60 adb -P $ADB_SERVER_PORT uninstall $APP_NAME &>/dev/null && echo "done" || echo "failed"
-    
+
     set -e
 
     return 0
@@ -208,6 +173,41 @@ find_emulator_nand_file() {
     [ ! -z $EMULATOR_NAND_FILE ] || __sig_func
 }
 
+# Makes a fresh copy of an AVD
+function copy_avd() {
+    EXISTING_AVD=maline-99
+    echo -n "Making a pristine copy of $AVD_NAME... "
+    rsync -a $AVDDIR/$EXISTING_AVD.avd/ $AVDDIR/$AVD_NAME.avd/
+    sed -i "s/$EXISTING_AVD/$AVD_NAME/g" $AVDDIR/$AVD_NAME.avd/*ini
+    rsync -a $AVDDIR/$EXISTING_AVD.ini $AVDDIR/$AVD_NAME.ini
+    sed -i "s/$EXISTING_AVD/$AVD_NAME/g" $AVDDIR/$AVD_NAME.ini
+    echo "done"
+}
+
+# Starts the emulator
+start_emulator() {
+    EMULATOR_NAND_FILE=
+    $EMULATOR_CMD &>$EMULATOR_OUTPUT_FILE &
+    EMULATOR_PID=$!
+    find_emulator_nand_file
+}
+
+# Kills the emulator
+kill_emulator() {
+    set +e
+    adb -P $ADB_SERVER_PORT kill-server
+    kill-emulator $CONSOLE_PORT &>/dev/null
+    sleep 1s
+    adb -P $ADB_SERVER_PORT kill-server
+    kill -9 $EMULATOR_PID &>/dev/null
+    rm -f $EMULATOR_OUTPUT_FILE
+    rm -f $EMULATOR_NAND_FILE
+    set -e
+    sleep 1s
+    # Remove lock files
+    find $AVDDIR/$AVD_NAME.avd/ -name "*lock" | xargs rm -f
+}
+
 source $MALINE/lib/maline.lib
 CURR_PID=$$
 
@@ -218,7 +218,7 @@ SCRIPTNAME=`basename $0`
 # Constant snapshot name
 SNAPSHOT_NAME="maline"
 
-while getopts "f:d:l:" OPTION; do
+while getopts "f:d:l:p:" OPTION; do
     case $OPTION in
 	f)
 	    APK_LIST_FILE="$OPTARG";;
@@ -226,13 +226,15 @@ while getopts "f:d:l:" OPTION; do
 	    AVD_NAME="$OPTARG";;
 	l)
 	    LOG_DIR="$OPTARG";;
+	p)
+	    PER_APP_TIME_CALLS_DIR="$OPTARG";;
 	\?)
 	    echo "Invalid option: -$OPTARG" >&2;;
     esac
 done
 
 
-# Check if all parameters are provided
+# Check if all mandatory parameters are provided
 check_and_exit "-f" $APK_LIST_FILE
 check_and_exit "-d" $AVD_NAME
 
@@ -247,6 +249,12 @@ if [ -z $LOG_DIR ]; then
 fi
 mkdir -p $LOG_DIR
 
+if [ -z $PER_APP_TIME_CALLS_DIR ]; then
+    PER_APP_TIME_CALLS_DIR=$MALINE/per-app-time-and-calls
+fi
+mkdir -p $PER_APP_TIME_CALLS_DIR
+
+
 # Set traps
 trap __sig_func EXIT
 trap __sig_func INT
@@ -256,26 +264,19 @@ trap __sig_func SIGTERM
 
 available_port CONSOLE_PORT
 available_port ADB_PORT
-
-# Start a log parsing process
-parse-new-logs.sh $LOG_DIR &
-PARSE_PID=$!
+available_port ADB_SERVER_PORT
 
 PROC_INFO_FILE=$MALINE/.maline-$CURR_PID
 rm -f $PROC_INFO_FILE
 
 echo "Console port: ${CONSOLE_PORT}" >> $PROC_INFO_FILE
 echo "ADB port: ${ADB_PORT}" >> $PROC_INFO_FILE
+echo "ADB server port: ${ADB_SERVER_PORT}" >> $PROC_INFO_FILE
 
 # Start the emulator
 EMULATOR_OUTPUT_FILE=$MALINE/.emulator-output-$CURR_PID
 rm -f $EMULATOR_OUTPUT_FILE
-EMULATOR_NAND_FILE=
 EMULATOR_CMD="emulator -verbose -no-boot-anim -ports $CONSOLE_PORT,$ADB_PORT -prop persist.sys.dalvik.vm.lib.1=libdvm.so -prop persist.sys.language=en -prop persist.sys.country=US -avd $AVD_NAME -snapshot $SNAPSHOT_NAME -no-snapshot-save -wipe-data -netfast -no-window"
-# $EMULATOR_CMD &>/dev/null &
-$EMULATOR_CMD &>$EMULATOR_OUTPUT_FILE &
-EMULATOR_PID=$!
-find_emulator_nand_file
 
 # Get the current time
 TIMESTAMP=`date +"%Y-%m-%d-%H-%M-%S"`
@@ -287,15 +288,7 @@ TIMEOUT=840
 STATUS_FILE=$MALINE/.emulator-$ADB_PORT
 
 # Number of apps analyzed so far
-NUM_OF_APPS=0
-
-# Reserve an adb server port only now that the emulator is up so as to
-# minimize chances of someone else getting the port in the meantime
-available_port ADB_SERVER_PORT
-echo "ADB server port: ${ADB_SERVER_PORT}" >> $PROC_INFO_FILE
-
-# Get the emulator ready
-get_emu_ready
+NUM_OF_APPS_ANALYZED=0
 
 # Check if the input file exists
 [ -f $APK_LIST_FILE ] || die "Non-existing input file!"
@@ -316,7 +309,9 @@ GPS_SMS_STATUS_FILE=
 # For every app, wait for the emulator to be avaiable, install the
 # app, test it with Monkey, trace system calls with strace, fetch the
 # strace log, and load a clean Android snapshot for the next app
+COUNTER=0
 for APP_PATH in `cat $APK_LIST_FILE`; do
+    COUNTER=$(($COUNTER + 1))
 
     date
     # measure the time it will take to do everything for an app
@@ -328,39 +323,49 @@ for APP_PATH in `cat $APK_LIST_FILE`; do
 	continue
     fi
 
-    # Get the Emulator ready for the app
+    # Make an AVD copy, start the emulator, and get it ready
+    copy_avd
+    start_emulator
     get_emu_ready
 
     # Check if a log file for this app already exists
     APK_FILE_NAME=`basename $APP_PATH .apk`
-    APP_NAME=`getAppPackageName.sh $APP_PATH`
-    
-    LOGFILE="$LOG_DIR/$APK_FILE_NAME-$APP_NAME-$TIMESTAMP.log"
+    APP_NAME=$(getAppPackageName.sh $APP_PATH)
+
+    BASE_FILE_NAME="$COUNTER-$APK_FILE_NAME-$APP_NAME-$TIMESTAMP"
+    STATS_FILE="$PER_APP_TIME_CALLS_DIR/$BASE_FILE_NAME.txt"
+
+    LOGFILE="$LOG_DIR/$BASE_FILE_NAME.log"
     rm -f $LOGFILE
 
     set +e
-    inst_run_rm
+    inst_run
     set -e
 
     # If there is no log file of the app at this point, it means
     # something has went wrong and the app hasn't been analyzed
-    if [ -f $LOGFILE ]; then
+    if [ -f "$LOGFILE" ]; then
 	# Remove app from the list of non-analyzed apps
 	sed -i "s|$APP_PATH||g" $NON_ANALYZED_FILE
 	# Delete empty lines
 	sed -i '/^$/d' $NON_ANALYZED_FILE
 
-	let NUM_OF_APPS=NUM_OF_APPS+1
+	let NUM_OF_APPS_ANALYZED=NUM_OF_APPS_ANALYZED+1
     fi
 
-    # Reload a clean snapshot
-    echo -n "Reloading a clean snapshot for the next app... "
-    avd-reload $CONSOLE_PORT $SNAPSHOT_NAME &>/dev/null || exit 1
-    echo "done"
+    # Kill emulator because it will be started again for the next app
+    kill_emulator
     
     END_TIME=`date +"%s"`
     TOTAL_TIME=$((${END_TIME} - ${START_TIME}))
-    echo "Total time for app `getAppPackageName.sh $APP_PATH`: $TOTAL_TIME s"
+    echo "Total time for $APP_NAME: $TOTAL_TIME s"
+
+    set +e
+    echo $TOTAL_TIME > $STATS_FILE
+    set -e
+
+    echo -n "Parsing a log file... "
+    parse-log-lock.sh $LOG_DIR $LOGFILE $PER_APP_TIME_CALLS_DIR && echo "done" || echo "failed"
     echo ""
 done
 

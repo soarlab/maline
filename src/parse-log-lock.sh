@@ -24,6 +24,9 @@ LOG_DIR=$1
 # Log file to be parsed
 LOG=$2
 
+# Directory where per-app time and system call count files are
+PER_APP_TIME_CALLS_DIR=$3
+
 BASE_NAME=$(basename $LOG .log)
 LOCK_FILE=/var/lock/.$BASE_NAME
 CURR_PID=$$
@@ -60,7 +63,7 @@ ARCH="i386"
     flock --exclusive --nonblock 42 || exit 1
     echo $CURR_PID > $LOCK_FILE
 
-    $COMMAND $LOG $ARCH
+    $COMMAND $LOG $ARCH $PER_APP_TIME_CALLS_DIR
     
 ) 42> $LOCK_FILE
 

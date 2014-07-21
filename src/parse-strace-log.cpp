@@ -37,6 +37,9 @@ FILE *f = NULL;
 // missing-calls.txt
 FILE *mf = NULL;
 
+// statistics file
+FILE *sf = NULL;
+
 void
 cleanup(void)
 {
@@ -80,6 +83,7 @@ private:
   string log_file_name;
   string output_file_name;
   string architecture;
+  string stats_file;
   map<string, int> sys_call_map;
   vector<string> sys_calls_made;
   vector<vector<double> > dep_graph_weight;
@@ -167,13 +171,15 @@ private:
   }
 
 public:
-  parser(string log_file_name, string architecture)
+  parser(string log_file_name, string architecture, string stats_dir)
   {
     this->log_file_name = log_file_name;
     this->architecture = architecture;
     this->import_sys_call_list();
     // strip .log from the end of the log file name and add .graph
     this->output_file_name = log_file_name.substr(0, log_file_name.size() - 4) + ".graph";
+    vector<string> path = this->mysplit(log_file_name.substr(0, log_file_name.size() - 4), '/');
+    this->stats_file = stats_dir + "/" + path[path.size() - 1];
   }
 
   void extract_sys_calls()
@@ -256,6 +262,14 @@ public:
       for(j = 0; j < size; ++j)
     	outs << this->dep_graph_weight[i][j] << " ";
 
+    // print out the number of system calls made
+    sf = fopen(this->stats_file.c_str(), "a");
+    if (sf)
+    {
+      fprintf(sf, "%d\n", (int)(this->sys_calls_made.size()));
+      fclose(sf);
+    }
+
     f = fopen(this->output_file_name.c_str(), "w");
     if (f)
     {
@@ -309,17 +323,19 @@ int main(int argc, char **argv)
   signal(SIGINT, signal_callback_handler);
   signal(SIGQUIT, signal_callback_handler);
 
-  // beside the program name there should be an input file and an
-  // architecture type
-  assert(argc == 3);
+  // beside the program name there should be an input file, an
+  // architecture type, and a directory where the number of system
+  // calls should be written to
+  assert(argc == 4);
   string input_file(argv[1]);
   string architecture(argv[2]);
+  string stats_dir(argv[3]);
 
   // if a different architecture is ever to be supported, the
   // following assertion has to be updated
   assert(architecture == "i386");
 
-  parser Parser = parser(input_file, architecture);
+  parser Parser = parser(input_file, architecture, stats_dir);
   Parser.extract_sys_calls();
   Parser.parse();
   Parser.print();

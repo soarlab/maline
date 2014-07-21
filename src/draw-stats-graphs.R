@@ -1,0 +1,6 @@
+args <- commandArgs(TRUE)
+s <- read.table(args[1])
+png(paste(args[1],"-time.png",sep=""))
+barplot(s$V1, main="Per-app time", xlab="Apps", ylab="Time")
+png(paste(args[1],"-sys-call-count.png",sep=""))
+barplot(s$V2, main="Per-app system call count", xlab="Apps", ylab="System call count")

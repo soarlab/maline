@@ -65,7 +65,7 @@ for FILE in $(find $LOG_DIR -name "*graph"); do
 
     tail -1 $FILE >> $OUTPUT_FILE
 
-    FIRST_PART=$(basename $FILE | awk -F"-" '{print $1}')
+    FIRST_PART=$(basename $FILE | awk -F"-" '{print $2}')
     if [[ $FIRST_PART =~ [0-9a-fA-F]{64} ]]; then
 	echo "1" >> $OUTPUT_FILE
     else

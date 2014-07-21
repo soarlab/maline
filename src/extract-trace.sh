@@ -63,12 +63,15 @@ TIMESTAMP="$5"
 # Directory where Android log files should be stored
 LOG_DIR="$6"
 
+# Main loop counter from maline.sh
+COUNTER="$7"
+
 # get apk file name
 APK_FILE_NAME=`basename $1 .apk`
 
 # Log file names
-LOGFILE="$APK_FILE_NAME-$APP_NAME-$TIMESTAMP.log"
-LOGCATFILE="$APK_FILE_NAME-$APP_NAME-$TIMESTAMP.logcat"
+LOGFILE="$COUNTER-$APK_FILE_NAME-$APP_NAME-$TIMESTAMP.log"
+LOGCATFILE="$COUNTER-$APK_FILE_NAME-$APP_NAME-$TIMESTAMP.logcat"
 
 MONKEY_SEED=42
 
