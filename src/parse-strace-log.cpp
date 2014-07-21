@@ -179,7 +179,7 @@ public:
     // strip .log from the end of the log file name and add .graph
     this->output_file_name = log_file_name.substr(0, log_file_name.size() - 4) + ".graph";
     vector<string> path = this->mysplit(log_file_name.substr(0, log_file_name.size() - 4), '/');
-    this->stats_file = stats_dir + "/" + path[path.size() - 1];
+    this->stats_file = stats_dir + "/" + path[path.size() - 1] + ".txt";
   }
 
   void extract_sys_calls()
