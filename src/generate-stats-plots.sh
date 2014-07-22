@@ -6,7 +6,7 @@ INPUT_DIR=$1
 # A file to write a table to
 STATS_FILE=$2
 
-COUNT=$((find $INPUT_DIR -type f -name "*txt" | wc -l))
+COUNT=$(find $INPUT_DIR -type f -name "*txt" | wc -l)
 COUNT=$(($COUNT+$COUNT))
 
 for i in $(seq 1 $COUNT); do
