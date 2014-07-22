@@ -6,7 +6,14 @@ INPUT_DIR=$1
 # A file to write a table to
 STATS_FILE=$2
 
-for app in $(find $INPUT_DIR -type f -name "*txt"); do
+COUNT=$((find $INPUT_DIR -type f -name "*txt" | wc -l))
+COUNT=$(($COUNT+$COUNT))
+
+for i in $(seq 1 $COUNT); do
+    app=$(find $INPUT_DIR -type f -name "$i-*.txt")
+    if [ -z $app ]; then
+	continue
+    fi
     TIME=$(head -n 1 $app)
     LINES=$(wc -l $app | awk -F" " '{print $1}')
     if [ "$LINES" -eq 2 ]; then
