@@ -1,0 +1,24 @@
+set ns [new Simulator]
+source tb_compat.tcl
+
+set num_clients 5
+set lanstr ""
+
+for {set i 1} {$i <= $num_clients} {incr i} {
+    set node($i) [$ns node]
+    append lanstr "$node($i) "
+    tb-set-hardware $node($i) d820
+    tb-set-node-os $node($i) UBUNTU12-64-STD
+
+    # Persistent storage
+    set bs($i) [$ns blockstore]
+    $bs($i) set-lease "Maline/storage$i"
+    $bs($i) set-node $node($i)
+    $bs($i) set-mount-point "/mnt/storage"
+}
+ 
+# Put all the nodes in a lan
+set big-lan [$ns make-lan "$lanstr" 100Mb 0ms]
+
+# Go!
+$ns run
