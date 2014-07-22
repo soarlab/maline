@@ -162,10 +162,11 @@ find_emulator_nand_file() {
     TIME_TIMEOUT=$(($CURR_TIME + 60))
 
     while [ "$CURR_TIME" -lt "$TIME_TIMEOUT" ]; do
-	[ -f $EMULATOR_OUTPUT_FILE ] || (echo "Non-existing file $EMULATOR_OUTPUT_FILE" && __sig_func)
-	if [ "$(grep -c "emulator: mapping 'system'" $EMULATOR_OUTPUT_FILE)" -gt 0 ]; then
-	    EMULATOR_NAND_FILE=$(grep "emulator: mapping 'system'" $EMULATOR_OUTPUT_FILE | awk -F" " '{print $NF}')
-	    break
+	if [ -f $EMULATOR_OUTPUT_FILE ]; then
+	    if [ "$(grep -c "emulator: mapping 'system'" $EMULATOR_OUTPUT_FILE)" -gt 0 ]; then
+		EMULATOR_NAND_FILE=$(grep "emulator: mapping 'system'" $EMULATOR_OUTPUT_FILE | awk -F" " '{print $NF}')
+		break
+	    fi
 	fi
 	sleep 0.25s
     done
