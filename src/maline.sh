@@ -365,9 +365,11 @@ for APP_PATH in `cat $APK_LIST_FILE`; do
     echo $TOTAL_TIME > $STATS_FILE
     set -e
 
-    echo -n "Parsing a log file... "
-    parse-log-lock.sh $LOG_DIR $LOGFILE $PER_APP_TIME_CALLS_DIR && echo "done" || echo "failed"
-    echo ""
+    if [ -f "$LOGFILE" ]; then
+	echo -n "Parsing a log file... "
+	parse-log-lock.sh $LOG_DIR $LOGFILE $PER_APP_TIME_CALLS_DIR && echo "done" || echo "failed"
+	echo ""
+    fi
 done
 
 echo "Done analysing apps in $APK_LIST_FILE"
