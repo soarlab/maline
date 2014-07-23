@@ -155,7 +155,8 @@ Now it is possible to classify the data by running the following:
 The classification used is Support Vector Machine (SVM).
 A new folder will be created to store the temporary file used for the
 classification process and a file called "result.dat" will contain the
-final results.T
+final results.
+
 The SVM methods used consists in classify the feature using Linear and Polynomial
 Kernel (from 1st to 4th degree) using 50% or 90% of the data set for training.
 
