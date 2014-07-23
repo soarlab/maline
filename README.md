@@ -1,3 +1,28 @@
+<div id="table-of-contents">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents">
+<ul>
+<li><a href="#sec-1">1. Introduction</a></li>
+<li><a href="#sec-2">2. Installation</a>
+<ul>
+<li><a href="#sec-2-1">2.1. Dependencies</a></li>
+<li><a href="#sec-2-2">2.2. Building</a></li>
+</ul>
+</li>
+<li><a href="#sec-3">3. Configuration</a>
+<ul>
+<li><a href="#sec-3-1">3.1. Unpacking the SDK</a></li>
+<li><a href="#sec-3-2">3.2. Path to Executables</a></li>
+<li><a href="#sec-3-3">3.3. Android Virtual Device</a></li>
+</ul>
+</li>
+<li><a href="#sec-4">4. Usage</a></li>
+<li><a href="#sec-5">5. Emulab</a></li>
+<li><a href="#sec-6">6. Copyright</a></li>
+</ul>
+</div>
+</div>
+
 # Introduction
 
 **maline** is a free software Android malware detection framework. If you are an
@@ -16,19 +41,26 @@ assumed throughout the readme.
 ## Dependencies
 
 To use **maline**, you need the following:
+
 -   Android SDK - please [download and use our build](http://www.cs.utah.edu/formal_verification/downloads/custom-android-sdk.tar.xz) of the SDK. It is a
     stripped-down version with multiple bug fixes applied. Based on our
     experience, it is very unlikely **maline** will work correctly with the
     official version provided by Google. The official version ships without the
     fixes for multiple showstopping bugs.
+
 -   [OpenJDK 7](http://openjdk.java.net/)
+
 -   [apktool](https://code.google.com/p/android-apktool/) - **maline** already ships with apktool, which is licensed under the
     Apache License 2.0.
+
 -   [GNU Octave](https://www.gnu.org/software/octave/) - a programming language for numerical computations. It is
     available through a Ubuntu's default repository.
+
 -   [LIBSVM](http://www.csie.ntu.edu.tw/~cjlin/libsvm/) - **maline** already ships with LIBSVM, which is licensed under the
     Modified BSD License.
+
 -   [Bash](http://www.gnu.org/software/bash/) - ships with Ubuntu.
+
 -   [expect](http://sourceforge.net/projects/expect/) - a command line tool that automates interactive applications. It is
     available through a Ubuntu's default repository.
 
@@ -118,7 +150,14 @@ generate a feature vector for every analyzed app by executing:
 
 Now it is possible to classify the data by running the following:
 
-    runClassDroid.sh
+    run-classdroid.sh FEATURES_FILE SHUFFLE_MODE [0 | 1]
+
+The classification used is Support Vector Machine (SVM).
+A new folder will be created to store the temporary file used for the
+classification process and a file called "result.dat" will contain the
+final results.T
+The SVM methods used consists in classify the feature using Linear and Polynomial
+Kernel (from 1st to 4th degree) using 50% or 90% of the data set for training.
 
 # Emulab
 
