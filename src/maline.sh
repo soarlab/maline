@@ -24,8 +24,6 @@
 #
 # Example usage: maline.sh -f apk-list-file -d maline-avd
 
-set -e
-
 # Clean up upon exiting from the process
 function __sig_func {
     kill_emulator
@@ -92,8 +90,6 @@ get_emu_ready() {
 # A function for installing an app, running it, and removing it from
 # the device
 inst_run() {
-    set +e
-
     # Temporary status files
     APP_STATUS_FILE=$MALINE/.app_status-$CURR_PID
     GPS_SMS_STATUS_FILE=$MALINE/.inst-run-rm-$CURR_PID
@@ -147,8 +143,6 @@ inst_run() {
     check-adb-status.sh $ADB_SERVER_PORT $ADB_PORT || __sig_func
     sleep 1s
 
-    set -e
-
     return 0
 }
 
@@ -195,7 +189,6 @@ start_emulator() {
 
 # Kills the emulator
 kill_emulator() {
-    set +e
     adb -P $ADB_SERVER_PORT kill-server
     kill-emulator $CONSOLE_PORT &>/dev/null
     sleep 1s
@@ -203,7 +196,6 @@ kill_emulator() {
     kill -9 $EMULATOR_PID &>/dev/null
     rm -f $EMULATOR_OUTPUT_FILE
     rm -f $EMULATOR_NAND_FILE
-    set -e
     sleep 1s
     # Remove lock files
     find $AVDDIR/$AVD_NAME.avd/ -name "*lock" | xargs rm -f
@@ -339,9 +331,7 @@ for APP_PATH in `cat $APK_LIST_FILE`; do
     LOGFILE="$LOG_DIR/$BASE_FILE_NAME.log"
     rm -f $LOGFILE
 
-    set +e
     inst_run
-    set -e
 
     # If there is no log file of the app at this point, it means
     # something has went wrong and the app hasn't been analyzed
@@ -361,9 +351,7 @@ for APP_PATH in `cat $APK_LIST_FILE`; do
     TOTAL_TIME=$((${END_TIME} - ${START_TIME}))
     echo "Total time for $APP_NAME: $TOTAL_TIME s"
 
-    set +e
     echo $TOTAL_TIME > $STATS_FILE
-    set -e
 
     if [ -f "$LOGFILE" ]; then
 	echo -n "Parsing a log file... "
