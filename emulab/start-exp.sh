@@ -72,7 +72,8 @@ ANDROID_LOG_DIR=$THIS_EXP_ROOT/android-logs # This directory will be created in 
 # to write down the version of both used in the experiment
 git_init $MALINE "$THIS_EXP_ROOT/maline-version-used"
 cd $MALINE
-make &>/dev/null
+echo -n "Compiling maline... "
+make &>/dev/null && echo "Done" || echo "Failed"
 cd - &>/dev/null
 
 git_init $MALINE_ENV "$THIS_EXP_ROOT/maline-experiments-version-used"
