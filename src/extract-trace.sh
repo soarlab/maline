@@ -20,8 +20,6 @@
 
 # Clean up upon exiting from the process
 function __sig_func {
-    # kill $SMS_PID &>/dev/null
-    # kill $GEO_PID &>/dev/null
     exit 1
 }
 
@@ -114,7 +112,7 @@ for i in $(seq 1 $ITERATIONS); do
 
     # Send $COUNT_PER_ITER random events to the app with Monkey, with
     # a delay between consecutive events because the Android emulator
-    # is slow, and kill strace once Monkey is done
+    # is slow
     echo "Iteration $i, sending $COUNT_PER_ITER random events to the app..."
     timeout 45 adb -P $ADB_SERVER_PORT shell "monkey --throttle 100 -p $APP_NAME -s $MONKEY_SEED $COUNT_PER_ITER 2>&1 | grep -v $WARNING_MSG_PART"
     # increase the seed for the next round of events

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 export MALINE=/mnt/storage/maline
-export MALINE_ENV=/proj/Maline/maline-experiments/emulab
+export MALINE_ENV=$MALINE/env/emulab
 
 export RAMDISK=/mnt/ramdisk
 # ANDROID_SDK_HOME has a default value of ~/.android.                                            

@@ -1,35 +1,11 @@
-<div id="table-of-contents">
-<h2>Table of Contents</h2>
-<div id="text-table-of-contents">
-<ul>
-<li><a href="#sec-1">1. Introduction</a></li>
-<li><a href="#sec-2">2. Installation</a>
-<ul>
-<li><a href="#sec-2-1">2.1. Dependencies</a></li>
-<li><a href="#sec-2-2">2.2. Building</a></li>
-</ul>
-</li>
-<li><a href="#sec-3">3. Configuration</a>
-<ul>
-<li><a href="#sec-3-1">3.1. Unpacking the SDK</a></li>
-<li><a href="#sec-3-2">3.2. Path to Executables</a></li>
-<li><a href="#sec-3-3">3.3. Android Virtual Device</a></li>
-</ul>
-</li>
-<li><a href="#sec-4">4. Usage</a></li>
-<li><a href="#sec-5">5. Emulab</a></li>
-<li><a href="#sec-6">6. Copyright</a></li>
-</ul>
-</div>
-</div>
-
 # Introduction
 
 **maline** is a free software Android malware detection framework. If you are an
 Org-mode user, you might want to read the [executable version](http://orgmode.org/worg/org-contrib/babel/intro.html) of this readme
 (the README.org file in the root). If you are interested in running extensive
-experiments with **maline**, there is [a repository](https://github.com/soarlab/maline-experiments/) with a lot of information on
-setting up a reproducible research environment.
+experiments with **maline**, take a look at the README file in the `env/emulab`
+directory, where you can find a lot of information on setting up a
+reproducible research environment.
 
 # Installation
 
@@ -41,26 +17,19 @@ assumed throughout the readme.
 ## Dependencies
 
 To use **maline**, you need the following:
-
 -   Android SDK - please [download and use our build](http://www.cs.utah.edu/formal_verification/downloads/custom-android-sdk.tar.xz) of the SDK. It is a
     stripped-down version with multiple bug fixes applied. Based on our
     experience, it is very unlikely **maline** will work correctly with the
     official version provided by Google. The official version ships without the
     fixes for multiple showstopping bugs.
-
 -   [OpenJDK 7](http://openjdk.java.net/)
-
 -   [apktool](https://code.google.com/p/android-apktool/) - **maline** already ships with apktool, which is licensed under the
     Apache License 2.0.
-
 -   [GNU Octave](https://www.gnu.org/software/octave/) - a programming language for numerical computations. It is
     available through a Ubuntu's default repository.
-
 -   [LIBSVM](http://www.csie.ntu.edu.tw/~cjlin/libsvm/) - **maline** already ships with LIBSVM, which is licensed under the
     Modified BSD License.
-
 -   [Bash](http://www.gnu.org/software/bash/) - ships with Ubuntu.
-
 -   [expect](http://sourceforge.net/projects/expect/) - a command line tool that automates interactive applications. It is
     available through a Ubuntu's default repository.
 

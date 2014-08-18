@@ -73,10 +73,8 @@ ANDROID_LOG_DIR=$THIS_EXP_ROOT/android-logs # This directory will be created in 
 git_init $MALINE "$THIS_EXP_ROOT/maline-version-used"
 cd $MALINE
 echo -n "Compiling maline... "
-make &>/dev/null && echo "Done" || echo "Failed"
+make &>/dev/null && echo "done" || echo "failed"
 cd - &>/dev/null
-
-git_init $MALINE_ENV "$THIS_EXP_ROOT/maline-experiments-version-used"
 
 # Write down system package versions installed during the experiment
 dpkg -l | grep ^ii > $THIS_EXP_ROOT/system-packages-installed
@@ -122,13 +120,8 @@ for i in $(seq 0 $(($COUNT-1))); do
     screen -S "$EXP_NAME" -p $i -X stuff "$CMD$(printf \\r)" && echo "done" || echo "failed"
 done
 
-# Have a work-around for Android emulator not responding if a person
-# is not watching the experiment
-screen-screening.sh $EXP_NAME $COUNT &
-SCREENING_PID=$!
-
 # Put an indication file for the next phase of the experiment
-echo $SCREENING_PID > $THIS_EXP_ROOT/.maline-started
+touch $THIS_EXP_ROOT/.maline-started
 
 echo ""
 echo "Changing directory to $THIS_EXP_ROOT. All experiment data will be stored here."
