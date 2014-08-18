@@ -35,7 +35,6 @@ function get_app_pid {
 	if [ ! -z "$__APP_PID" ]; then
     	    break
 	fi
-	sleep 0.25s
     done
     eval "$1=$__APP_PID"
 }
@@ -77,10 +76,17 @@ MONKEY_SEED=42
 
 # Send an event to the app to start it
 echo "Starting the app... "
-adb -P $ADB_SERVER_PORT shell monkey -p $APP_NAME 1 &>/dev/null
+adb -P $ADB_SERVER_PORT shell monkey -p $APP_NAME 1 &>/dev/null &
 
 # Fetch app's PID
 get_app_pid APP_PID
+
+# Start tracing system calls the app makes
+STRACE_CMD="strace -ff -F -tt -T -p $APP_PID &>> /sdcard/$LOGFILE"
+adb -P $ADB_SERVER_PORT shell "$STRACE_CMD" &
+
+# Get the PID of the strace instance
+STRACE_PID=`adb -P $ADB_SERVER_PORT shell "ps -C strace" | grep -v "USER " | awk -F" " '{print $2}'`
 
 COUNT_PER_ITER=100
 ITERATIONS=10
@@ -88,19 +94,9 @@ ITERATIONS=10
 echo "Testing the app..."
 echo "There will be up to $ITERATIONS iterations, each sending $COUNT_PER_ITER random events to the app"
 
-# echo "Also sending geo-location updates in parallel..."
-# LOCATIONS_FILE="$MALINE/data/locations-list"
-# GEO_COUNT=$(cat $LOCATIONS_FILE | wc -l)
-# send-locations.sh $LOCATIONS_FILE 0 $GEO_COUNT $CONSOLE_PORT &
-# GEO_PID=$!
-
-# echo "Spoofing SMS text messages in paralell too..."
-# MESSAGES_FILE="$MALINE/data/sms-list"
-# send-all-sms.sh $MESSAGES_FILE $CONSOLE_PORT &
-# SMS_PID=$!
-
 # WARNING: linker: libdvm.so has text relocations. This is wasting memory and is a security risk. Please fix.
 WARNING_MSG_PART="Please"
+
 
 for i in $(seq 1 $ITERATIONS); do
     # Check if the user has interrupted the execution in the meantime
@@ -112,21 +108,6 @@ for i in $(seq 1 $ITERATIONS); do
 	echo "App not running any more. Stopping testing... "
 	break
     fi
-    
-    # Check if the user has interrupted the execution in the meantime
-    check-adb-status.sh $ADB_SERVER_PORT $ADB_PORT || __sig_func
-
-    # Start tracing system calls the app makes
-    STRACE_CMD="strace -ff -F -tt -T -p $APP_PID &>> /sdcard/$LOGFILE"
-    adb -P $ADB_SERVER_PORT shell "$STRACE_CMD" &
-
-    # Give some time to the emulator to start strace
-    sleep 2s
-
-    # Get the PID of the strace instance
-    STRACE_PID=`adb -P $ADB_SERVER_PORT shell "ps -C strace" | grep -v "USER " | awk -F" " '{print $2}'`
-
-    STRACE_KILL_CMD="kill $STRACE_PID"
 
     # Check if the user has interrupted the execution in the meantime
     check-adb-status.sh $ADB_SERVER_PORT $ADB_PORT || __sig_func
@@ -135,17 +116,14 @@ for i in $(seq 1 $ITERATIONS); do
     # a delay between consecutive events because the Android emulator
     # is slow, and kill strace once Monkey is done
     echo "Iteration $i, sending $COUNT_PER_ITER random events to the app..."
-    timeout 45 adb -P $ADB_SERVER_PORT shell "monkey --throttle 100 -p $APP_NAME -s $MONKEY_SEED $COUNT_PER_ITER 2>&1 | grep -v $WARNING_MSG_PART && $STRACE_KILL_CMD"
+    timeout 45 adb -P $ADB_SERVER_PORT shell "monkey --throttle 100 -p $APP_NAME -s $MONKEY_SEED $COUNT_PER_ITER 2>&1 | grep -v $WARNING_MSG_PART"
     # increase the seed for the next round of events
     let MONKEY_SEED=MONKEY_SEED+1
 done
 
-# kill $SMS_PID &>/dev/null
-# kill $GEO_PID &>/dev/null
-
 check-adb-status.sh $ADB_SERVER_PORT $ADB_PORT || __sig_func
 
-sleep 1s
+adb -P $ADB_SERVER_PORT shell "kill $STRACE_PID" &>/dev/null
 
 # Pull the logfile to the host machine
 echo -n "Pulling the app system calls log file... "
