@@ -51,6 +51,15 @@ COUNT_LIMIT=25
 # A file with a list of apps to be analyzed
 APP_FILE=$3
 
+# Number of events that should be sent to each app (an optional
+# parameter)
+if [ ! -z $4 ]; then
+    EVENT_NUM=$4
+else
+    # Default value
+    EVENT_NUM=1000
+fi
+
 # Location of pristine AVDs
 OLD_ANDROID_TMP=/mnt/storage/.android/avd
 
@@ -113,7 +122,7 @@ for i in $(seq 0 $(($COUNT-1))); do
     fi
 
     # Start a command in its own screen window
-    CMD="maline.sh -f $APP_COPY_FILE.$(printf "%02d" $i) -d maline-$i -l $ANDROID_LOG_DIR -p $THIS_EXP_ROOT/per-app-time-and-calls/maline-$i"
+    CMD="maline.sh -f $APP_COPY_FILE.$(printf "%02d" $i) -d maline-$i -e $EVENT_NUM -l $ANDROID_LOG_DIR -p $THIS_EXP_ROOT/per-app-time-and-calls/maline-$i"
     echo -n "Starting instance #$i in a detached screen... "
     # \\r is there to avoid a window being closed once the command
     # finishes

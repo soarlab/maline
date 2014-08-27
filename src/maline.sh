@@ -138,7 +138,7 @@ inst_run() {
     fi
 
     # Extract trace from the app
-    timeout $TIMEOUT extract-trace.sh $APP_PATH $CONSOLE_PORT $ADB_SERVER_PORT $ADB_PORT $TIMESTAMP $LOG_DIR $COUNTER || return 1
+    timeout $TIMEOUT extract-trace.sh $APP_PATH $CONSOLE_PORT $ADB_SERVER_PORT $ADB_PORT $TIMESTAMP $LOG_DIR $COUNTER $EVEN_NUM || return 1
     
     check-adb-status.sh $ADB_SERVER_PORT $ADB_PORT || __sig_func
     sleep 1s
@@ -211,7 +211,7 @@ SCRIPTNAME=`basename $0`
 # Constant snapshot name
 SNAPSHOT_NAME="maline"
 
-while getopts "f:d:l:p:" OPTION; do
+while getopts "f:d:l:p:e:" OPTION; do
     case $OPTION in
 	f)
 	    APK_LIST_FILE="$OPTARG";;
@@ -221,6 +221,8 @@ while getopts "f:d:l:p:" OPTION; do
 	    LOG_DIR="$OPTARG";;
 	p)
 	    PER_APP_TIME_CALLS_DIR="$OPTARG";;
+	e)
+	    EVENT_NUM="$OPTARG";;
 	\?)
 	    echo "Invalid option: -$OPTARG" >&2;;
     esac

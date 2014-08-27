@@ -63,6 +63,9 @@ LOG_DIR="$6"
 # Main loop counter from maline.sh
 COUNTER="$7"
 
+# Number of events that should be sent to each app
+EVEN_NUM="$8"
+
 # get apk file name
 APK_FILE_NAME=`basename $1 .apk`
 
@@ -87,7 +90,7 @@ adb -P $ADB_SERVER_PORT shell "$STRACE_CMD" &
 STRACE_PID=`adb -P $ADB_SERVER_PORT shell "ps -C strace" | grep -v "USER " | awk -F" " '{print $2}'`
 
 COUNT_PER_ITER=100
-ITERATIONS=10
+ITERATIONS=$(($EVENT_NUM/$COUNT_PER_ITER))
 
 echo "Testing the app..."
 echo "There will be up to $ITERATIONS iterations, each sending $COUNT_PER_ITER random events to the app"
