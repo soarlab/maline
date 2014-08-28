@@ -163,6 +163,7 @@ find_emulator_nand_file() {
 	    fi
 	fi
 	sleep 0.25s
+	CURR_TIME=$((`date +"%s"`))
     done
 
     [ ! -z $EMULATOR_NAND_FILE ] || __sig_func
