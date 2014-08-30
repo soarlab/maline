@@ -64,7 +64,7 @@ LOG_DIR="$6"
 COUNTER="$7"
 
 # Number of events that should be sent to each app
-EVEN_NUM="$8"
+EVENT_NUM="$8"
 
 # get apk file name
 APK_FILE_NAME=`basename $1 .apk`
