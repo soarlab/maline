@@ -129,7 +129,10 @@ adb -P $ADB_SERVER_PORT shell "kill $STRACE_PID" &>/dev/null
 # Pull the logfile to the host machine
 echo -n "Pulling the app system calls log file... "
 mkdir -p $LOG_DIR
-timeout 420 adb -P $ADB_SERVER_PORT pull /sdcard/$LOGFILE $LOG_DIR &>/dev/null && echo "done" || echo "failed"
+
+DEFAULT_EVENT_NUM=1000
+TIME_OUT=$(echo "420 * $EVENT_NUM / $DEFAULT_EVENT_NUM" | bc)
+timeout $TIME_OUT adb -P $ADB_SERVER_PORT pull /sdcard/$LOGFILE $LOG_DIR &>/dev/null && echo "done" || echo "failed"
 
 # Remove the logfile from the device
 RM_CMD="rm /sdcard/$LOGFILE"
