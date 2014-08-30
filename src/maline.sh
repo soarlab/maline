@@ -138,7 +138,7 @@ inst_run() {
     fi
 
     # Extract trace from the app
-    timeout $TIMEOUT extract-trace.sh $APP_PATH $CONSOLE_PORT $ADB_SERVER_PORT $ADB_PORT $TIMESTAMP $LOG_DIR $COUNTER $EVEN_NUM || return 1
+    timeout $TIMEOUT extract-trace.sh $APP_PATH $CONSOLE_PORT $ADB_SERVER_PORT $ADB_PORT $TIMESTAMP $LOG_DIR $COUNTER $EVENT_NUM || return 1
     
     check-adb-status.sh $ADB_SERVER_PORT $ADB_PORT || __sig_func
     sleep 1s
