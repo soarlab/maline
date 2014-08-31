@@ -21,7 +21,6 @@ index <- 1:nrow(X)
 
 X <- as(X, 'matrix')
 
-# ovo treba doraditi!
 build.forest <- function(permutation){
 	randomForest(X, Y[permutation], ntree=100, do.trace=TRUE)
 }
