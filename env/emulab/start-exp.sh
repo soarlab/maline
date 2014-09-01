@@ -95,7 +95,7 @@ dpkg -l | grep ^ii > $THIS_EXP_ROOT/system-packages-installed
 APP_COPY_FILE=$THIS_EXP_ROOT/input-lists/app-list
 cp $APP_FILE $APP_COPY_FILE
 
-split-file.sh $APP_COPY_FILE $COUNT &>/dev/null
+split --number $COUNT --numeric-suffixes ${APP_COPY_FILE} ${APP_COPY_FILE}.
 
 # create a configuration file for screen
 TIMESTAMP=$(date +"%Y-%m-%d-%H-%M-%S")
