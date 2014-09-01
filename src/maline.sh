@@ -283,7 +283,8 @@ EMULATOR_CMD="emulator -verbose -no-boot-anim -ports $CONSOLE_PORT,$ADB_PORT -pr
 TIMESTAMP=`date +"%Y-%m-%d-%H-%M-%S"`
 
 # A timeout in seconds for app testing
-TIMEOUT=840
+DEFAULT_EVENT_NUM=1000
+TIMEOUT=$(echo "1020 * $EVENT_NUM / $DEFAULT_EVENT_NUM" | bc)
 
 # Emulator status file
 STATUS_FILE=$MALINE/.emulator-$ADB_PORT
