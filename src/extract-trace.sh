@@ -20,6 +20,10 @@
 
 # Clean up upon exiting from the process
 function __sig_func {
+    if [ $SPOOF -eq 1 ]; then
+	kill $SMS_PID &>/dev/null
+	kill $GEO_PID &>/dev/null
+    fi
     exit 1
 }
 
@@ -66,6 +70,10 @@ COUNTER="$7"
 # Number of events that should be sent to each app
 EVENT_NUM="$8"
 
+# A flag indicating whether we should spoof text messages and location
+# updates
+SPOOF="$9"
+
 # get apk file name
 APK_FILE_NAME=`basename $1 .apk`
 
@@ -88,6 +96,18 @@ adb -P $ADB_SERVER_PORT shell "$STRACE_CMD" &
 
 # Get the PID of the strace instance
 STRACE_PID=`adb -P $ADB_SERVER_PORT shell "ps -C strace" | grep -v "USER " | awk -F" " '{print $2}'`
+
+if [ $SPOOF -eq 1 ]; then
+    echo "Also sending geo-location updates in parallel..."
+    LOCATIONS_FILE="$MALINE/data/locations-list"
+    GEO_COUNT=$(cat $LOCATIONS_FILE | wc -l)
+    send-locations.sh $LOCATIONS_FILE 0 $GEO_COUNT $CONSOLE_PORT &
+    GEO_PID=$!
+    echo "Spoofing SMS text messages in paralell too..."
+    MESSAGES_FILE="$MALINE/data/sms-list"
+    send-all-sms.sh $MESSAGES_FILE $CONSOLE_PORT &
+    SMS_PID=$!
+fi
 
 COUNT_PER_ITER=100
 ITERATIONS=$(($EVENT_NUM/$COUNT_PER_ITER))
@@ -121,6 +141,11 @@ for i in $(seq 1 $ITERATIONS); do
     # increase the seed for the next round of events
     let MONKEY_SEED=MONKEY_SEED+1
 done
+
+if [ $SPOOF -eq 1 ]; then
+    kill $SMS_PID &>/dev/null
+    kill $GEO_PID &>/dev/null
+fi
 
 check-adb-status.sh $ADB_SERVER_PORT $ADB_PORT || __sig_func
 
