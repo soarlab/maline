@@ -79,7 +79,7 @@ do
 	    
 	    echo "Linear Kernel" >> $results
 	    
-	    svm-train -h $h -s $type -t 0 -c $cscv -v 2 $filename.training.$ratio $filename.training.$ratio.model
+	    svm-train -h $h -s $type -t 0 -c $cscv $filename.training.$ratio $filename.training.$ratio.model
 	    svm-predict $filename.testing.$ratio $filename.training.$ratio.model $filename.$ratio.out >> $results
 	    
 	    echo >> $results
