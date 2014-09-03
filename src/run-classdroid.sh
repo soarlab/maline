@@ -11,7 +11,7 @@
 #
 # maline is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# MERCHANTABILITY or FITNESS FOR A PARTIsCULAR PURPOSE.  See the
 # GNU Affero General Public License for more details.
 #
 # You should have received a copy of the GNU Affero General Public License
@@ -59,37 +59,27 @@ touch $results
 
 h=0 #shrinking
 
-for type in 0 1 #C-SVC or nu-SVC
+for type in 0 #C-SVC(0) or nu-SVC(1)
 do 
-    for ratio in 50 90 #50% or 90% of training set
+    for csvc in 256 128 64 32 16 8 4 2 1 0.5 0.25 0.125 0.625 0.03125 0.015625 0.0078125 0.00390625 #C-SVC(0) or nu-SVC(1)
     do 
-    
-	echo "Testing Set $ratio%" >> $results
-	echo >> $results
-
-	if [ "$shuff" -eq 1 ]; then
-	    shuffle "$filename"
-	    echo "Random" >> $results
-	fi
-	
-	create_datasets $filename $ratio >> $results
-	
-	echo "Linear Kernel" >> $results
-	
-	svm-train -h $h -s $type -t 0 $filename.training.$ratio $filename.training.$ratio.model
-	svm-predict $filename.testing.$ratio $filename.training.$ratio.model $filename.$ratio.out >> $results
-	
-	echo >> $results
-	
-	echo "Confusion Matrix"
-	confusion-matrix.sh $filename $ratio $dir >> $results
-	echo >> $results
-	
-	for deg in 1 2 3 4 #polynomial degree
+       	echo "C-SVC value: $csvc" >> $results
+	for ratio in 70 #50% or 90% of training set
 	do 
-	    echo "Polynomial Kernel - Degree $deg" >> $results
+    
+	    echo "Testing Set $ratio%" >> $results
+	    echo >> $results
 	    
-	    svm-train -s 0 -t 1 -d $deg $filename.training.$ratio $filename.training.$ratio.model
+	    if [ "$shuff" -eq 1 ]; then
+		shuffle "$filename"
+		echo "Random" >> $results
+	    fi
+	    
+	    create_datasets $filename $ratio >> $results
+	    
+	    echo "Linear Kernel" >> $results
+	    
+	    svm-train -h $h -s $type -t 0 -c $cscv -v 2 $filename.training.$ratio $filename.training.$ratio.model
 	    svm-predict $filename.testing.$ratio $filename.training.$ratio.model $filename.$ratio.out >> $results
 	    
 	    echo >> $results
@@ -97,6 +87,20 @@ do
 	    echo "Confusion Matrix"
 	    confusion-matrix.sh $filename $ratio $dir >> $results
 	    echo >> $results
-	done    
+	    
+	    for deg in 1 2 3 4 #polynomial degree
+	    do 
+		echo "Polynomial Kernel - Degree $deg" >> $results
+		
+		svm-train -s 0 -t 1 -d $deg $filename.training.$ratio $filename.training.$ratio.model
+		svm-predict $filename.testing.$ratio $filename.training.$ratio.model $filename.$ratio.out >> $results
+		
+		echo >> $results
+		
+		echo "Confusion Matrix"
+		confusion-matrix.sh $filename $ratio $dir >> $results
+		echo >> $results
+	    done    
+	done
     done
 done
