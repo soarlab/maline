@@ -57,8 +57,6 @@ results=$dir/results.dat
 
 touch $results
 
-h=0 #shrinking
-
 for type in 0 #C-SVC(0) or nu-SVC(1)
 do 
     for csvc in 256 128 64 32 16 8 4 2 1 0.5 0.25 0.125 0.625 0.03125 0.015625 0.0078125 0.00390625 #C-SVC(0) or nu-SVC(1)
@@ -79,7 +77,7 @@ do
 	    
 	    echo "Linear Kernel" >> $results
 	    
-	    svm-train -h $h -s $type -t 0 -c $cscv $filename.training.$ratio $filename.training.$ratio.model
+	    svm-train -s $type -t 0 -c $csvc $filename.training.$ratio $filename.training.$ratio.model
 	    svm-predict $filename.testing.$ratio $filename.training.$ratio.model $filename.$ratio.out >> $results
 	    
 	    echo >> $results
