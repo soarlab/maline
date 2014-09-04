@@ -14,6 +14,8 @@ library(foreach)
 # gives X (covariates) and Y (outcome)
 source('./data.R')
 
+print(dim(X))
+
 index <- 1:nrow(X)
 
 ##############
@@ -21,6 +23,7 @@ index <- 1:nrow(X)
 ##############
 
 inner.cores <- 11
+outer.cores <- 4
 
 X <- as(X, 'matrix')
 
@@ -28,18 +31,18 @@ build.and.test.forest <- function(testindex){
 	registerDoMC(inner.cores) 
 	trainindex <- index[-testindex]
 	ff <- foreach(y=seq(inner.cores), .combine=combine ) %dopar% {
-   		rf <- randomForest(X[trainindex,], Y[trainindex], ntree=50, norm.votes=FALSE, do.trace=TRUE)
+   		rf <- randomForest(X[trainindex,], Y[trainindex], ntree=10, norm.votes=FALSE, do.trace=TRUE)
 	}
 	list(ff, confusionMatrix(Y[testindex], predict(ff,  newdata=X[testindex,])) )
 }
 
 # reproducible research
-set.seed(123)
+#set.seed(123)
 
 # 5-fold outer cross-validation
 folds <- createFolds(index, 5)
 
-l <- mclapply(folds, build.and.test.forest)
+l <- mclapply(folds, build.and.test.forest, mc.cores=outer.cores)
 
 tmp <- lapply(l, function(x){ print(x[2]) })
 
