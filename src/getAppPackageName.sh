@@ -23,4 +23,5 @@ $MALINE/lib/apktool/apktool d $1 $TMP_DIR 1>/dev/null 2>/dev/null
 filename=$TMP_DIR/AndroidManifest.xml
 package=$(grep -e "package" $filename | grep -o -P '(?<=package=").*(?=\")')
 rm -rf $TMP_DIR
+rm -rf $HOME/apktool
 echo $package

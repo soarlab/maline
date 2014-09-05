@@ -24,4 +24,5 @@ filename=$TMP_DIR/AndroidManifest.xml
 echo $filename
 event=$(grep -e "category" $filename | grep -o -P '(?<=category android:name=").*(?=\")' | grep LAUNCHER)
 echo $event
+rm -rf $HOME/apktool
 rm -rf $TMP_DIR
