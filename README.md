@@ -117,7 +117,7 @@ As **maline** is executing, obtained `.log` files are parsed and as a result one
 `.graph` file per `.log` file is generated. From the `.graph` files we
 generate a feature vector for every analyzed app by executing:
 
-    create-features-file.sh
+    create-feature-matrix.sh regular
 
 Now it is possible to classify the data by running the following:
 

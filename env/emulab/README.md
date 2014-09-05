@@ -48,6 +48,21 @@ command output.
 Once the first phase is done, run the following command while in the same
 directory as when `start-exp.sh` returned:
 
-    create-features-file.sh
+    create-feature-matrix.sh regular
 
-to generate a file with features for all the analyzed applications.
+to generate a file with features for all the analyzed applications in the
+regular way. If you want features to be created according to a different
+model, there are two more options: `noncut` and `frequency`.
+
+If you want to generate a different than the regular kind of feature vectors,
+e.g. by doing only a frequency analysis, run:
+
+    parallel-parsing.sh 10 android-logs/ frequency
+
+This will start 10 parallel parsing instances, each looking for its own share
+of log files in the `android-logs/` directory, and then parsing them according
+to the frequency analysis. Once that is done, run:
+
+    create-feature-matrix.sh frequency
+
+to generate a matrix with feature vectors, one per line, for all apps.
