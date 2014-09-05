@@ -35,6 +35,7 @@ cp $LIST_FILE $NON_PARSED_LIST
 
 
 for LOG in $(cat $LIST_FILE); do
+    date
     echo -n "Parsing log file $LOG... "
 
     if [ ! -f "$LOG" ]; then

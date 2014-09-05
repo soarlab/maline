@@ -1,0 +1,23 @@
+# A Network Simulator (NS) file for a single node
+
+# Initialize
+set ns [new Simulator]
+source tb_compat.tcl
+
+# Create a node
+set eat [$ns node]
+
+# Select hardware to be used
+tb-set-hardware $eat d820
+
+# Set an operating system to be used
+tb-set-node-os $eat UBUNTU12-64-STD
+
+# Persistent storage
+set bs1 [$ns blockstore]
+$bs1 set-lease "Maline/store-exp-2"
+$bs1 set-node $eat
+$bs1 set-mount-point "/mnt"
+
+# Start
+$ns run
