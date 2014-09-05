@@ -73,7 +73,7 @@ for i in $(seq 0 $(($COUNT-1))); do
     fi
 
     INPUT_LIST=$TMP_FILE.$(printf "%02d" $i)
-    CMD="sequential-parsing.sh $INPUT_LIST $PARSING_TYPE $NON_PARSED_DIR && rm $INPUT_LIST"
+    CMD="sequential-parsing.sh $INPUT_LIST $PARSING_TYPE $NON_PARSED_DIR"
     echo -n "Starting instance #$i in a detached screen... "
     # \\r is there to avoid a window being closed once the command
     # finishes
@@ -81,7 +81,7 @@ for i in $(seq 0 $(($COUNT-1))); do
 done
 
 echo ""
-echo "All users from the Maline user group can watch the progress of parsing by executing:"
+echo "Use the following command to watch progress:"
 echo "  screen -x $USER/$SCREEN_SESSION"
 echo ""
 

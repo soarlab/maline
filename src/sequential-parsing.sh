@@ -56,3 +56,5 @@ for LOG in $(cat $LIST_FILE); do
     fi
 
 done
+
+rm $LIST_FILE
