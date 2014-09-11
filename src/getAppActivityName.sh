@@ -24,6 +24,15 @@ filename=$TMP_DIR/AndroidManifest.xml
 process=$(grep -e "android:process" $filename | grep -o -P '(?<=android:process=").*(?=\")' | uniq)
 activity=$(grep -e "activity" $filename | head -1 | grep -o -P '(?<=android:name=").*(?=\")')
 package=$(grep -e "package" $filename | grep -o -P '(?<=package=").*(?=\")')
+occurrences=$(grep -o "." <<< "$activity" | wc -l)
+echo $occurrences
+if [[ $activity == ".*" ]]; then
+    activity=$(echo $package$activity)
+elif [[ $occurrences > 1 ]]; then
+    activity=$(echo $package)
+else
+    activity=$(echo $package.$activity)
+fi
 rm -rf $TMP_DIR
 echo $TMP_DIR
 rm -rf $HOME/apktool
