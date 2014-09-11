@@ -26,12 +26,12 @@ activity=$(grep -e "activity" $filename | head -1 | grep -o -P '(?<=android:name
 package=$(grep -e "package" $filename | grep -o -P '(?<=package=").*(?=\")')
 occurrences=$(grep -o "." <<< "$activity" | wc -l)
 echo $occurrences
-if [[ $activity == ".*" ]]; then
-    activity=$(echo $package$activity)
-elif [[ $occurrences > 1 ]]; then
-    activity=$(echo $package)
+if [[ "$activity" == ".*" ]]; then
+    activity=$(echo $activity)
+elif [[ "$occurrences" -gt "1" ]]; then
+    activity=$(echo $activity | awk -F"." '{ print "."$NF }')
 else
-    activity=$(echo $package.$activity)
+    activity=$(echo .$activity)
 fi
 rm -rf $TMP_DIR
 echo $TMP_DIR
