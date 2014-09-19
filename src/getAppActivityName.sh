@@ -21,23 +21,6 @@ CURR_PID=$$
 TMP_DIR=$MALINE/.getAppPackageName-$CURR_PID
 $MALINE/lib/apktool/apktool d $1 $TMP_DIR 1>/dev/null 2>/dev/null
 filename=$TMP_DIR/AndroidManifest.xml
-process=$(grep -e "android:process" $filename | grep -o -P '(?<=android:process=").*(?=\")' | uniq)
-activity=$(grep -e "activity" $filename | head -1 | grep -o -P '(?<=android:name=").*(?=\")')
-package=$(grep -e "package" $filename | grep -o -P '(?<=package=").*(?=\")')
-occurrences=$(grep -o "." <<< "$activity" | wc -l)
-echo $occurrences
-if [[ "$activity" == ".*" ]]; then
-    activity=$(echo $activity)
-elif [[ "$occurrences" -gt "1" ]]; then
-    activity=$(echo $activity | awk -F"." '{ print "."$NF }')
-else
-    activity=$(echo .$activity)
-fi
+python get-package-process-activity.py $filename
 rm -rf $TMP_DIR
-echo $TMP_DIR
 rm -rf $HOME/apktool
-if [ -z "$process" ]; then
-  echo $package $package $activity
-else
-  echo $package $process $activity
-fi
