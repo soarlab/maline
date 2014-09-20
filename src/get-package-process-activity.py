@@ -1,6 +1,23 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
-# add this package to prepare-node.sh: python-beautifulsoup
+# Copyright 2013,2014 Marko Dimjašević, Simone Atzeni, Ivo Ugrina, Zvonimir Rakamarić
+
+# This file is part of maline.
+
+# maline is free software: you can redistribute it and/or modify it
+# under the terms of the GNU Affero General Public License as
+# published by the Free Software Foundation, either version 3 of the
+# License, or (at your option) any later version.
+
+# maline is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Affero General Public License for more details.
+
+# You should have received a copy of the GNU Affero General Public License
+# along with maline.  If not, see <http://www.gnu.org/licenses/>.
+
 
 import sys
 from bs4 import BeautifulSoup
@@ -21,10 +38,10 @@ class xml_parser:
                 break
             intent_filters = activity.findAll(lambda tag: tag.name=="intent-filter")
             for intent_filter in intent_filters:
-                categories = intent_filter.findAll(
-                    lambda tag: tag.name=="category" and
-                    "android.intent.category.DEFAULT" in (dict(tag.attrs))[u'android:name'])
-                if len(categories) > 0:
+                actions = intent_filter.findAll(
+                    lambda tag: tag.name=="action" and
+                    "android.intent.action.MAIN" in dict(tag.attrs)[u'android:name'])
+                if len(actions) > 0:
                     self.activity = str(dict(activity.attrs)[u'android:name'])
                     break
 
@@ -38,7 +55,7 @@ class xml_parser:
         # declared. Most of the time it's the same process name so
         # just pick the first one in case there are multiple
         # android:process attributes.
-        processes = self.soup.findAll(lambda tag: "android:process" in dict(tag.attrs))
+        processes = self.soup.findAll(lambda tag: "android:process" in dict(tag.attrs) and tag.name in {"manifest", "provider"})
         if len(processes) > 0:
             self.process = str(dict(processes[0].attrs)[u'android:process'])
             if self.process[0] == ':':
