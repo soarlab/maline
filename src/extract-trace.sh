@@ -88,7 +88,7 @@ MONKEY_SEED=42
 
 # Start the app and start tracing its system calls
 echo "Starting the app... "
-adb -P $ADB_SERVER_PORT shell "am start -n ${APP_NAME}/${ACTIVITY_NAME} && set `ps | grep $PROC_NAME` && strace -f -tt -T -p \$2 &>> /sdcard/$LOGFILE" &>/dev/null &
+adb -P $ADB_SERVER_PORT shell "am start -n ${APP_NAME}/${ACTIVITY_NAME} && set `ps | grep $PROC_NAME` && strace -ff -F -tt -T -p \$2 &>> /sdcard/$LOGFILE" &>/dev/null &
 
 # Fetch app's PID
 get_app_pid APP_PID
