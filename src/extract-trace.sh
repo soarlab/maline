@@ -33,7 +33,7 @@ function get_app_pid {
     __APP_PID=
     for i in $(seq 1 $RETRY_COUNT); do
 	# Fetch the app PID
-	__APP_PID=`adb -P $ADB_SERVER_PORT shell "ps" | grep -v "USER " | grep $APP_NAME | head -1 | awk -F" " '{print $2}'`
+	__APP_PID=`adb -P $ADB_SERVER_PORT shell "ps" | grep -v "USER " | grep $PROC_NAME | head -1 | awk -F" " '{print $2}'`
 	if [ ! -z "$__APP_PID" ]; then
     	    break
 	fi
@@ -47,7 +47,10 @@ trap __sig_func SIGKILL
 trap __sig_func SIGTERM
 
 # App under test
-APP_NAME=`getAppPackageName.sh $1`
+PACK_PROC_ACT=$(getAppActivityName.sh $1)
+APP_NAME="${PACK_PROC_ACT[0]}"
+PROC_NAME="${PACK_PROC_ACT[1]}"
+ACTIVITY_NAME="${PACK_PROC_ACT[2]}"
 
 # Console port
 CONSOLE_PORT="$2"
@@ -75,7 +78,7 @@ EVENT_NUM="$8"
 SPOOF="$9"
 
 # get apk file name
-APK_FILE_NAME=`basename $1 .apk`
+APK_FILE_NAME=$(basename $1 .apk)
 
 # Log file names
 LOGFILE="$COUNTER-$APK_FILE_NAME-$APP_NAME-$TIMESTAMP.log"
@@ -83,16 +86,12 @@ LOGCATFILE="$COUNTER-$APK_FILE_NAME-$APP_NAME-$TIMESTAMP.logcat"
 
 MONKEY_SEED=42
 
-# Send an event to the app to start it
+# Start the app and start tracing its system calls
 echo "Starting the app... "
-adb -P $ADB_SERVER_PORT shell monkey -p $APP_NAME 1 &>/dev/null &
+adb -P $ADB_SERVER_PORT shell "am start -n ${APP_NAME}/${ACTIVITY_NAME} && set `ps | grep ${PROC_NAME}` && strace -f -tt -T -p \$2 &>> /sdcard/$LOGFILE" &>/dev/null &
 
 # Fetch app's PID
 get_app_pid APP_PID
-
-# Start tracing system calls the app makes
-STRACE_CMD="strace -ff -F -tt -T -p $APP_PID &>> /sdcard/$LOGFILE"
-adb -P $ADB_SERVER_PORT shell "$STRACE_CMD" &
 
 # Get the PID of the strace instance
 STRACE_PID=`adb -P $ADB_SERVER_PORT shell "ps -C strace" | grep -v "USER " | awk -F" " '{print $2}'`
