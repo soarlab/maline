@@ -33,7 +33,7 @@ function get_app_pid {
     __APP_PID=
     for i in $(seq 1 $RETRY_COUNT); do
 	# Fetch the app PID
-	__APP_PID=`adb -P $ADB_SERVER_PORT shell "ps" | grep -v "USER " | grep $APP_NAME | head -1 | awk -F" " '{print $2}'`
+	__APP_PID=`adb -P $ADB_SERVER_PORT shell "ps" | grep -v "USER " | grep $PROC_NAME | head -1 | awk -F" " '{print $2}'`
 	if [ ! -z "$__APP_PID" ]; then
     	    break
 	fi
@@ -47,35 +47,55 @@ trap __sig_func SIGKILL
 trap __sig_func SIGTERM
 
 # App under test
-APP_NAME=`getAppPackageName.sh $1`
+#
+# App file name
+APK_FILE_NAME=$1
+shift
+# Package name
+APP_NAME=$1
+shift
+# App process name
+PROC_NAME=$1
+shift
+# Main app's activity name
+ACTIVITY_NAME=$1
+shift
+# A shell script that will start the app and strace tool
+SH_SCRIPT_IN_ANDROID=$1
+shift
 
 # Console port
-CONSOLE_PORT="$2"
+CONSOLE_PORT=$1
+shift
 
 # ADB server port
-ADB_SERVER_PORT="$3"
+ADB_SERVER_PORT=$1
+shift
 
 # ADB port
-ADB_PORT="$4"
+ADB_PORT=$1
+shift
 
 # Get the current time
-TIMESTAMP="$5"
+TIMESTAMP=$1
+shift
 
 # Directory where Android log files should be stored
-LOG_DIR="$6"
+LOG_DIR=$1
+shift
 
 # Main loop counter from maline.sh
-COUNTER="$7"
+COUNTER=$1
+shift
 
 # Number of events that should be sent to each app
-EVENT_NUM="$8"
+EVENT_NUM=$1
+shift
 
 # A flag indicating whether we should spoof text messages and location
 # updates
-SPOOF="$9"
-
-# get apk file name
-APK_FILE_NAME=`basename $1 .apk`
+SPOOF=$1
+shift
 
 # Log file names
 LOGFILE="$COUNTER-$APK_FILE_NAME-$APP_NAME-$TIMESTAMP.log"
@@ -83,16 +103,15 @@ LOGCATFILE="$COUNTER-$APK_FILE_NAME-$APP_NAME-$TIMESTAMP.logcat"
 
 MONKEY_SEED=42
 
-# Send an event to the app to start it
-echo "Starting the app... "
-adb -P $ADB_SERVER_PORT shell monkey -p $APP_NAME 1 &>/dev/null &
+# Start the app and start tracing its system calls
+echo "About to start the app with the following command:"
+echo "  am start -n ${APP_NAME}/${ACTIVITY_NAME}"
+echo "The main app process name is: $PROC_NAME"
+echo "Starting the app and strace... "
+adb -P $ADB_SERVER_PORT shell $SH_SCRIPT_IN_ANDROID &>/dev/null &
 
 # Fetch app's PID
 get_app_pid APP_PID
-
-# Start tracing system calls the app makes
-STRACE_CMD="strace -ff -F -tt -T -p $APP_PID &>> /sdcard/$LOGFILE"
-adb -P $ADB_SERVER_PORT shell "$STRACE_CMD" &
 
 # Get the PID of the strace instance
 STRACE_PID=`adb -P $ADB_SERVER_PORT shell "ps -C strace" | grep -v "USER " | awk -F" " '{print $2}'`
