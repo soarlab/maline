@@ -19,7 +19,7 @@
 
 CURR_PID=$$
 TMP_DIR=$MALINE/.getAppPackageName-$CURR_PID
-$MALINE/lib/apktool/apktool d $1 $TMP_DIR 1>/dev/null 2>/dev/null
+$MALINE/lib/apktool/apktool decode $1 $TMP_DIR 1>/dev/null 2>/dev/null
 filename=$TMP_DIR/AndroidManifest.xml
 package=$(grep -e "package" $filename | grep -o -P '(?<=package=").*(?=\")')
 rm -rf $TMP_DIR
