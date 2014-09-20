@@ -47,7 +47,7 @@ trap __sig_func SIGKILL
 trap __sig_func SIGTERM
 
 # App under test
-PACK_PROC_ACT=$(getAppActivityName.sh $1)
+PACK_PROC_ACT=($(getAppActivityName.sh $1))
 APP_NAME="${PACK_PROC_ACT[0]}"
 PROC_NAME="${PACK_PROC_ACT[1]}"
 ACTIVITY_NAME="${PACK_PROC_ACT[2]}"
