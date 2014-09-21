@@ -93,7 +93,7 @@ perform_init_checks
 # Create the experiment root directory and a few needed subdirectories
 THIS_EXP_ROOT=$EXP_ROOT/$EXP_NAME
 [ ! -d $THIS_EXP_ROOT ] || die "An experiment named $EXP_NAME at $THIS_EXP_ROOT already exists!"
-echo -n "Creating an experiment directory at $THIS_EXP_ROOT ... "
+echo -n "Creating an experiment directory in $THIS_EXP_ROOT ... "
 mkdir -p $THIS_EXP_ROOT/screen-logs/ && echo "done" || die "failed. Aborting..."
 mkdir -p $THIS_EXP_ROOT/input-lists
 ANDROID_LOG_DIR=$THIS_EXP_ROOT/android-logs # This directory will be created in maline.sh
@@ -165,5 +165,5 @@ echo "All users from the Maline user group can watch the progress of the experim
 echo "  screen -x $USER/$EXP_NAME"
 
 echo ""
-echo "When this part is done, run the following in the current experiment directory to generate a features file:"
-echo "  create-features-file.sh"
+echo "When this part is done, run the following in the current experiment directory to generate a feature matrix in one of the three ways:"
+echo "  create-feature-matrix.sh <regular|noncut|frequency>"

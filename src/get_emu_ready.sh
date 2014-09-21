@@ -20,6 +20,8 @@
 
 ADB_PORT="$1"
 ADB_SERVER_PORT="$2"
+SH_SCRIPT="$3"
+SH_SCRIPT_IN_ANDROID="$4"
 
 STATUS_FILE=$MALINE/.emulator-$ADB_PORT
 
@@ -97,7 +99,8 @@ fi
 
 # Push a patched version of Monkey to the device. We need to do this
 # because we are using a prebuilt image of x86, which doesn't come
-# with the patched version of Monkey
+# with the patched version of Monkey. Do the same with a tiny shell
+# script that starts the app and traces its system calls.
 JAR="$ANDROID_SDK_ROOT/monkey/monkey.jar"
 ODEX="$ANDROID_SDK_ROOT/monkey/monkey.odex"
 [ -f $JAR ] || die "$JAR file does not exist. Use a custom build of Android SDK pointed to in the documentation."
@@ -107,6 +110,8 @@ adb -P $ADB_SERVER_PORT shell mount -o rw,remount /system &>/dev/null || exit 1
 sleep 1
 adb -P $ADB_SERVER_PORT push $JAR /system/framework &>/dev/null || exit 1
 adb -P $ADB_SERVER_PORT push $ODEX /system/framework &>/dev/null || exit 1
+adb -P $ADB_SERVER_PORT push $SH_SCRIPT $SH_SCRIPT_IN_ANDROID &>/dev/null || exit 1
+adb -P $ADB_SERVER_PORT shell chmod 6755 $SH_SCRIPT_IN_ANDROID &>/dev/null || exit 1
 adb -P $ADB_SERVER_PORT shell mount -o ro,remount /system &>/dev/null || exit 1
 
 adb -P $ADB_SERVER_PORT -e connect localhost:$ADB_PORT &>/dev/null || exit 1

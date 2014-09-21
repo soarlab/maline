@@ -18,8 +18,13 @@
 # along with maline.  If not, see <http://www.gnu.org/licenses/>.
 
 CURR_PID=$$
+<<<<<<< HEAD
 TMP_DIR=$MALINE/.getAppPackageName-$CURR_PID
 $MALINE/lib/apktool/apktool -o $TMP_DIR d $1 1>/dev/null 2>/dev/null
+=======
+TMP_DIR=$MALINE/.getAppActivityName-$CURR_PID
+$MALINE/lib/apktool/apktool decode $1 $TMP_DIR 1>/dev/null 2>/dev/null
+>>>>>>> 45cdf46c01e17145af06387946ffa2c9779c7ca0
 filename=$TMP_DIR/AndroidManifest.xml
-python get-package-process-activity.py $filename
+python $MALINE/bin/get-package-process-activity.py $filename
 rm -rf $TMP_DIR
