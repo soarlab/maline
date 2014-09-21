@@ -132,7 +132,7 @@ COUNT_PER_ITER=100
 ITERATIONS=$(($EVENT_NUM/$COUNT_PER_ITER))
 
 echo "Testing the app..."
-echo "There will be up to $ITERATIONS iterations, each sending $COUNT_PER_ITER random events to the app"
+echo "There will be up to $ITERATIONS iteration(s), each sending $COUNT_PER_ITER random events to the app"
 
 # WARNING: linker: libdvm.so has text relocations. This is wasting memory and is a security risk. Please fix.
 WARNING_MSG_PART="Please"
@@ -175,7 +175,7 @@ echo -n "Pulling the app system calls log file... "
 mkdir -p $LOG_DIR
 
 DEFAULT_EVENT_NUM=1000
-TIME_OUT=$(echo "420 * $EVENT_NUM / $DEFAULT_EVENT_NUM" | bc)
+TIME_OUT=$(echo "60 + 420 * $EVENT_NUM / $DEFAULT_EVENT_NUM" | bc)
 timeout $TIME_OUT adb -P $ADB_SERVER_PORT pull /sdcard/$LOGFILE $LOG_DIR &>/dev/null && echo "done" || echo "failed"
 
 # Remove the logfile from the device

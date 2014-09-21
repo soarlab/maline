@@ -13,7 +13,7 @@ export AVDDIR=$RAMDISK/.android/avd
 # Where results of an experiment are stored
 export EXP_ROOT=/mnt/experiments
 
-export PATH=$ANDROID_SDK_ROOT/platform-tools:$ANDROID_SDK_ROOT/tools:$MALINE/bin:$MALINE_ENV:$PATH
+export PATH=$ANDROID_SDK_ROOT/platform-tools:$ANDROID_SDK_ROOT/tools:$MALINE/bin:$MALINE_ENV:$MALINE/lib/apktool:$PATH
 
 # Add all users to the kvm user group                                                            
 sudo usermod -a -G kvm marko
