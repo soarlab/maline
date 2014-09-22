@@ -48,11 +48,13 @@ To use *maline*, you need the following:
   Modified BSD License.
 - [[http://www.r-project.org/][R]] - an environment for statistical computing and graphics.
 - [[http://www.gnu.org/software/bash/][Bash]] - ships with Ubuntu.
+- [[https://www.python.org/][Python]] - pretty much every system has an installation of it. We tested the
+  tool with version 2.7.3.
 - [[http://sourceforge.net/projects/expect/][expect]] - a command line tool that automates interactive applications. It is
   available through a Ubuntu's default repository.
 
 There are other dependencies we used throughout the project - such as for
-building Android from source - that you might not need for all the phases of
+building Android from source - that you might not need to simply use
 *maline*. An extensive list of such dependencies and particular packages of
 the tools listed above can be found in =env/emulab/prepare-node.sh=.
 
