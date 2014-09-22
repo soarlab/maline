@@ -19,7 +19,7 @@
 
 CURR_PID=$$
 TMP_DIR=$MALINE/.getAppActivityName-$CURR_PID
-$MALINE/lib/apktool/apktool decode $1 $TMP_DIR 1>/dev/null 2>/dev/null
+$MALINE/lib/apktool/apktool -p $TMP_DIR -o $TMP_DIR decode $1 1>/dev/null 2>/dev/null
 filename=$TMP_DIR/AndroidManifest.xml
 python $MALINE/bin/get-package-process-activity.py $filename
 rm -rf $TMP_DIR

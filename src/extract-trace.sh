@@ -47,38 +47,55 @@ trap __sig_func SIGKILL
 trap __sig_func SIGTERM
 
 # App under test
-PACK_PROC_ACT=($(getAppActivityName.sh $1))
-APP_NAME="${PACK_PROC_ACT[0]}"
-PROC_NAME="${PACK_PROC_ACT[1]}"
-ACTIVITY_NAME="${PACK_PROC_ACT[2]}"
+#
+# App file name
+APK_FILE_NAME=$1
+shift
+# Package name
+APP_NAME=$1
+shift
+# App process name
+PROC_NAME=$1
+shift
+# Main app's activity name
+ACTIVITY_NAME=$1
+shift
+# A shell script that will start the app and strace tool
+SH_SCRIPT_IN_ANDROID=$1
+shift
 
 # Console port
-CONSOLE_PORT="$2"
+CONSOLE_PORT=$1
+shift
 
 # ADB server port
-ADB_SERVER_PORT="$3"
+ADB_SERVER_PORT=$1
+shift
 
 # ADB port
-ADB_PORT="$4"
+ADB_PORT=$1
+shift
 
 # Get the current time
-TIMESTAMP="$5"
+TIMESTAMP=$1
+shift
 
 # Directory where Android log files should be stored
-LOG_DIR="$6"
+LOG_DIR=$1
+shift
 
 # Main loop counter from maline.sh
-COUNTER="$7"
+COUNTER=$1
+shift
 
 # Number of events that should be sent to each app
-EVENT_NUM="$8"
+EVENT_NUM=$1
+shift
 
 # A flag indicating whether we should spoof text messages and location
 # updates
-SPOOF="$9"
-
-# get apk file name
-APK_FILE_NAME=$(basename $1 .apk)
+SPOOF=$1
+shift
 
 # Log file names
 LOGFILE="$COUNTER-$APK_FILE_NAME-$APP_NAME-$TIMESTAMP.log"
@@ -87,8 +104,11 @@ LOGCATFILE="$COUNTER-$APK_FILE_NAME-$APP_NAME-$TIMESTAMP.logcat"
 MONKEY_SEED=42
 
 # Start the app and start tracing its system calls
-echo "Starting the app... "
-adb -P $ADB_SERVER_PORT shell "am start -n ${APP_NAME}/${ACTIVITY_NAME} && set `ps | grep $PROC_NAME` && strace -ff -F -tt -T -p \$2 &>> /sdcard/$LOGFILE" &>/dev/null &
+echo "About to start the app with the following command:"
+echo "  am start -n ${APP_NAME}/${ACTIVITY_NAME}"
+echo "The main app process name is: $PROC_NAME"
+echo "Starting the app and strace... "
+adb -P $ADB_SERVER_PORT shell $SH_SCRIPT_IN_ANDROID &>/dev/null &
 
 # Fetch app's PID
 get_app_pid APP_PID
@@ -112,7 +132,7 @@ COUNT_PER_ITER=100
 ITERATIONS=$(($EVENT_NUM/$COUNT_PER_ITER))
 
 echo "Testing the app..."
-echo "There will be up to $ITERATIONS iterations, each sending $COUNT_PER_ITER random events to the app"
+echo "There will be up to $ITERATIONS iteration(s), each sending $COUNT_PER_ITER random events to the app"
 
 # WARNING: linker: libdvm.so has text relocations. This is wasting memory and is a security risk. Please fix.
 WARNING_MSG_PART="Please"
@@ -155,7 +175,7 @@ echo -n "Pulling the app system calls log file... "
 mkdir -p $LOG_DIR
 
 DEFAULT_EVENT_NUM=1000
-TIME_OUT=$(echo "420 * $EVENT_NUM / $DEFAULT_EVENT_NUM" | bc)
+TIME_OUT=$(echo "60 + 420 * $EVENT_NUM / $DEFAULT_EVENT_NUM" | bc)
 timeout $TIME_OUT adb -P $ADB_SERVER_PORT pull /sdcard/$LOGFILE $LOG_DIR &>/dev/null && echo "done" || echo "failed"
 
 # Remove the logfile from the device
