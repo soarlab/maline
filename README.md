@@ -31,9 +31,15 @@ To use **maline**, you need the following:
     available through a Ubuntu's default repository.
 -   [LIBSVM](http://www.csie.ntu.edu.tw/~cjlin/libsvm/) - **maline** already ships with LIBSVM, which is licensed under the
     Modified BSD License.
+-   [R](http://www.r-project.org/) - an environment for statistical computing and graphics.
 -   [Bash](http://www.gnu.org/software/bash/) - ships with Ubuntu.
 -   [expect](http://sourceforge.net/projects/expect/) - a command line tool that automates interactive applications. It is
     available through a Ubuntu's default repository.
+
+There are other dependencies we used throughout the project - such as for
+building Android from source - that you might not need for all the phases of
+**maline**. An extensive list of such dependencies and particular packages of
+the tools listed above can be found in `env/emulab/prepare-node.sh`.
 
 ## Building
 
