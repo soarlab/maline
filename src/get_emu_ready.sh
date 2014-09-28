@@ -32,6 +32,11 @@ function __sig_func {
     exit 1
 }
 
+die() {
+    echo >&2 "$@"
+    exit 1
+}
+
 function wait_for_emu {
     COUNTER=0
     COUNTER_LIMIT=2
@@ -105,18 +110,32 @@ JAR="$ANDROID_SDK_ROOT/monkey/monkey.jar"
 ODEX="$ANDROID_SDK_ROOT/monkey/monkey.odex"
 [ -f $JAR ] || die "$JAR file does not exist. Use a custom build of Android SDK pointed to in the documentation."
 [ -f $ODEX ] || die "$ODEX file does not exist. Use a custom build of Android SDK pointed to in the documentation."
+
 echo -n "Pushing a patched version of Monkey... "
-adb -P $ADB_SERVER_PORT shell mount -o rw,remount /system &>/dev/null || exit 1
-sleep 1
-adb -P $ADB_SERVER_PORT push $JAR /system/framework &>/dev/null || exit 1
-adb -P $ADB_SERVER_PORT push $ODEX /system/framework &>/dev/null || exit 1
-adb -P $ADB_SERVER_PORT push $SH_SCRIPT $SH_SCRIPT_IN_ANDROID &>/dev/null || exit 1
-adb -P $ADB_SERVER_PORT shell chmod 6755 $SH_SCRIPT_IN_ANDROID &>/dev/null || exit 1
-adb -P $ADB_SERVER_PORT shell mount -o ro,remount /system &>/dev/null || exit 1
+let COUNTER=0
+OK=0
+while [ $OK -eq 0 ] && [ "$COUNTER" -lt 3 ]; do
+    OK=1
+    adb -P $ADB_SERVER_PORT shell mount -o rw,remount /system &>/dev/null || OK=0
+    sleep 1
+    adb -P $ADB_SERVER_PORT push $JAR /system/framework &>/dev/null || OK=0
+    adb -P $ADB_SERVER_PORT push $ODEX /system/framework &>/dev/null || OK=0
+    adb -P $ADB_SERVER_PORT push $SH_SCRIPT $SH_SCRIPT_IN_ANDROID &>/dev/null || OK=0
+    adb -P $ADB_SERVER_PORT shell chmod 6755 $SH_SCRIPT_IN_ANDROID &>/dev/null || OK=0
+    sleep 1
+    adb -P $ADB_SERVER_PORT shell mount -o ro,remount /system &>/dev/null || OK=0
 
-adb -P $ADB_SERVER_PORT -e connect localhost:$ADB_PORT &>/dev/null || exit 1
+    adb -P $ADB_SERVER_PORT -e connect localhost:$ADB_PORT &>/dev/null || OK=0
 
-echo "done"
+    let COUNTER=COUNTER+1
+done
+
+if [ $OK -eq 1 ]; then
+    echo "done"
+else
+    echo "failed"
+    exit 1
+fi
 echo ""
 
 exit 0
