@@ -361,19 +361,6 @@ for APP_PATH in `cat $APK_LIST_FILE`; do
 
     inst_run
 
-    # Check if a log file for this app exists.
-    #
-    # If there is no log file of the app at this point, it means
-    # something has went wrong and the app hasn't been analyzed
-    if [ -f "$LOGFILE" ]; then
-	# Remove app from the list of non-analyzed apps
-	sed -i "s|$APP_PATH||g" $NON_ANALYZED_FILE
-	# Delete empty lines
-	sed -i '/^$/d' $NON_ANALYZED_FILE
-
-	let NUM_OF_APPS_ANALYZED=NUM_OF_APPS_ANALYZED+1
-    fi
-
     # Kill emulator because it will be started again for the next app
     kill_emulator
     
@@ -387,6 +374,19 @@ for APP_PATH in `cat $APK_LIST_FILE`; do
 	echo -n "Parsing the log file... "
 	parse-log-lock.sh $LOG_DIR $LOGFILE $PER_APP_TIME_CALLS_DIR && echo "done" || echo "failed"
 	echo ""
+    fi
+
+    # Check if a log file for this app exists.
+    #
+    # If there is no log file of the app at this point, it means
+    # something has went wrong and the app hasn't been analyzed
+    if [ -f "$LOGFILE" ]; then
+	# Remove app from the list of non-analyzed apps
+	sed -i "s|$APP_PATH||g" $NON_ANALYZED_FILE
+	# Delete empty lines
+	sed -i '/^$/d' $NON_ANALYZED_FILE
+
+	let NUM_OF_APPS_ANALYZED=NUM_OF_APPS_ANALYZED+1
     fi
 
     rm $SH_SCRIPT &>/dev/null
