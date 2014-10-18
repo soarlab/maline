@@ -27,6 +27,11 @@ Finally, to set up various environment variables needed by **maline**, run:
 
     source set_android_env.sh
 
+If data analysis will be performed on emulab it is necessary to install
+additional packages.
+
+    source prepare-dataanalysis.sh
+
 # Running an experiment
 
 To start running the first phase of the analysis in **maline**, start an
