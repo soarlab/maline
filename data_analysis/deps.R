@@ -9,4 +9,5 @@ install.packages(c("caret",
                    "randomForest",
                    "rpart",
                    "rpart.plot",
-                   "RRF"))
+                   "RRF"),
+		 repos="http://cran.us.r-project.org")
