@@ -57,6 +57,8 @@ to download the source code.
 
 ```bash
 $ cd ${MALINE}
+$ mkdir tmp opt
+$ cd tmp
 $ wget http://cran.at.r-project.org/src/base/R-3/R-3.1.1.tar.gz
 ```
 
