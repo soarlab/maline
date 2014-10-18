@@ -30,7 +30,7 @@ Finally, to set up various environment variables needed by **maline**, run:
 If data analysis will be performed on emulab it is necessary to install
 additional packages.
 
-    source prepare-dataanalysis.sh
+    sudo prepare-dataanalysis.sh
 
 # Running an experiment
 
