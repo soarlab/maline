@@ -42,6 +42,41 @@ $ sudo apt-get install build-essential fort77 libreadline-dev
 
 ## R
 
+If everything went ok in the previous step we can now try to build and install
+R from source. As a first task we need to download the source code.
+We shall download the source code and install it into our MALINE folder.
+Therefore, MALINE environment variable should be set the the path of the
+maline installation.
+
+```bash
+# export MALINE=path_to_maline_directory
+```
+
+After we check that MALINE variable exists we can do the following
+to download the source code.
+
+```bash
+# cd $MALINE
+# wget http://cran.at.r-project.org/src/base/R-3/R-3.1.1.tar.gz
+```
+
+Once we have the source code it can be built and installed as follows:
+
+```bash
+# tar -xvf R-3.1.1.tar.gz
+# cd R-3.1.1
+# ./configure --with-x=no --prefix=$MALINE/opt/R-3.1.1/
+# make
+# make install
+```
+
+If everything went fine with the previous block of commands R should be
+installed under `$MALINE/opt/R-3.1.1/` directory and can be executed with
+
+```bash
+# $MALINE/opt/R-3.1.1/bin/R
+```
+
 ## R packages
 
 # Data analysis
