@@ -79,6 +79,14 @@ $ ${MALINE}/opt/R-3.1.1/bin/R
 
 ## R packages
 
+Before starting the data analysis one more step is needed. Installing
+appropriate R packages. It can be done as follows:
+
+```bash
+$ cd ${MALINE}/data_analysis/
+$ ${MALINE}/opt/R-3.1.1/bin/R --no-save --no-restore ${MALINE}/data_analysis/deps.R
+```
+
 # Data analysis
 
 ## Concepts
