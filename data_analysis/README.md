@@ -4,7 +4,7 @@
 
 # Installation
 
-## Ubunty packages
+## Ubuntu packages
 
 ## R
 
