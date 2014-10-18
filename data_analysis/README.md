@@ -86,7 +86,7 @@ appropriate R packages. It can be done as follows:
 
 ```bash
 $ cd ${MALINE}/data_analysis/
-$ ${MALINE}/opt/R-3.1.1/bin/R --no-save --no-restore ${MALINE}/data_analysis/deps.R
+$ ${MALINE}/opt/R-3.1.1/bin/R CMD BATCH --no-save --no-restore ${MALINE}/data_analysis/deps.R
 ```
 
 # Data analysis
