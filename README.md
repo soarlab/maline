@@ -32,6 +32,8 @@ To use **maline**, you need the following:
 -   [LIBSVM](http://www.csie.ntu.edu.tw/~cjlin/libsvm/) - **maline** already ships with LIBSVM, which is licensed under the
     Modified BSD License.
 -   [R](http://www.r-project.org/) - an environment for statistical computing and graphics.
+    More about how to install R and necessary R packages can be found in 
+    [data analysis README file](data_analysis/README.md).
 -   [Bash](http://www.gnu.org/software/bash/) - ships with Ubuntu.
 -   [Python](https://www.python.org/) - pretty much every system has an installation of it. We tested the
     tool with version 2.7.3.
