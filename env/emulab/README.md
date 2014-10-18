@@ -28,9 +28,10 @@ Finally, to set up various environment variables needed by **maline**, run:
     source set_android_env.sh
 
 If data analysis will be performed on emulab it is necessary to install
-additional packages.
+additional Ubuntu packages and build R with appropriate libraries.
 
-    sudo prepare-dataanalysis.sh
+    sudo prepare-dataanalysis-deps.sh
+    source prepare-dataanalysis.sh
 
 # Running an experiment
 
