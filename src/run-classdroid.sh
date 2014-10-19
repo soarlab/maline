@@ -77,7 +77,7 @@ do
 	    
 	    echo "Linear Kernel" >> $results
 	    
-	    svm-train -s $type -t 0 -c $csvc $filename.training.$ratio $filename.training.$ratio.model
+	    svm-train -s $type -t 0 -c $csvc -h 0 $filename.training.$ratio $filename.training.$ratio.model
 	    svm-predict $filename.testing.$ratio $filename.training.$ratio.model $filename.$ratio.out >> $results
 	    
 	    echo >> $results
@@ -90,7 +90,7 @@ do
 	    do 
 		echo "Polynomial Kernel - Degree $deg" >> $results
 		
-		svm-train -s $type -t 1 -c $csvc -d $deg $filename.training.$ratio $filename.training.$ratio.model
+		svm-train -s $type -t 1 -c $csvc -d $deg -h 0 $filename.training.$ratio $filename.training.$ratio.model
 		svm-predict $filename.testing.$ratio $filename.training.$ratio.model $filename.$ratio.out >> $results
 		
 		echo >> $results
