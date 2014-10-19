@@ -28,12 +28,12 @@ dir=$3
 
 $(cat $filename.testing.$ratio | awk -F " " '{ print $1 }' > $dir/orig_label.dat)
 paste $dir/orig_label.dat $filename.$ratio.out > $dir/compare.dat
-gNum=$(cat $filename.testing.$ratio | awk -F " " '{ print $1 }' | grep 0 | wc -l)
-mNum=$(cat $filename.testing.$ratio | awk -F " " '{ print $1 }' | grep 1 | wc -l)
-goodware=$(cat $dir/compare.dat | awk -F "\t" '{if ($1 == $2 && $1 == 0) print $1 }' | wc -l)
-malware=$(cat $dir/compare.dat | awk -F "\t" '{if ($1 == $2 && $1 == 1) print $1 }' | wc -l)
-wrongGoodware=$(cat $dir/compare.dat | awk -F "\t" '{if ($1 != $2 && $1 == 0) print $1 }' | wc -l)
-wrongMalware=$(cat $dir/compare.dat | awk -F "\t" '{if ($1 != $2 && $1 == 1) print $1 }' | wc -l)
+gNum=$(cat $filename.testing.$ratio | awk -F " " '{ print $1 }' | grep "-1" | wc -l)
+mNum=$(cat $filename.testing.$ratio | awk -F " " '{ print $1 }' | grep "+1" | wc -l)
+goodware=$(cat $dir/compare.dat | awk -F "\t" '{if ($1 == $2 && $1 == "-1") print $1 }' | wc -l)
+malware=$(cat $dir/compare.dat | awk -F "\t" '{if ($1 == $2 && $1 == "+1") print $1 }' | wc -l)
+wrongGoodware=$(cat $dir/compare.dat | awk -F "\t" '{if ($1 != $2 && $1 == "-1") print $1 }' | wc -l)
+wrongMalware=$(cat $dir/compare.dat | awk -F "\t" '{if ($1 != $2 && $1 == "+1") print $1 }' | wc -l)
 
 echo "Testing Set"
 echo -e "Number of goodware: "$gNum

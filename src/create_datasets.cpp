@@ -75,7 +75,7 @@ int main(int argc, char **argv)
   gSize=0;
   for(; std::getline(in1, line); ) {
     //std::cout << "Processed line " << line.size() << "\n";
-    if (boost::starts_with(line, "0"))
+    if (boost::starts_with(line, "-1"))
       gSize++;
     else
       mSize++;
