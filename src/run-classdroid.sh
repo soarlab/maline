@@ -90,7 +90,7 @@ do
 	    do 
 		echo "Polynomial Kernel - Degree $deg" >> $results
 		
-		svm-train -s 0 -t 1 -d $deg $filename.training.$ratio $filename.training.$ratio.model
+		svm-train -s $type -t 1 -c $csvc -d $deg $filename.training.$ratio $filename.training.$ratio.model
 		svm-predict $filename.testing.$ratio $filename.training.$ratio.model $filename.$ratio.out >> $results
 		
 		echo >> $results
