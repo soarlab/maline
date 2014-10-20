@@ -46,3 +46,5 @@ do
 	first=0
     fi
 done
+
+rm -rf $dirint*.int
