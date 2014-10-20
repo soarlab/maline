@@ -17,7 +17,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with maline.  If not, see <http://www.gnu.org/licenses/>.
 
-if [ "$#" -lt 2 ]; then
+if [ "$#" -lt 1 ]; then
     echo "Usage: find-log-intersection.sh LIST-OF-EXPERIMENTS-LOG-DIRS"
     exit 1
 fi
