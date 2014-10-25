@@ -23,18 +23,17 @@ if [ "$#" -lt 1 ]; then
 fi
 
 explist=$1
-str=$(echo $explist | awk -F/ '{ print $NF }' )
-dirint=$(echo $explist | awk -F$str '{ print $1}' )
+dirint=$(dirname $explist)
 
 while read line
 do
     dir=$line
     name=$(echo $dir | awk -F"/android-logs" '{ print $1}' | awk -F/ '{ print $NF}' )
-    find $dir -name "*.log" | awk -F/ '{ print $NF }' | awk -F"-" '{ print $2"-"$3}' | sort -n | uniq > $dirint$name.int
+    find $dir -name "*.log" | awk -F/ '{ print $NF }' | awk -F"-" '{ print $2"-"$3}' | sort | uniq > $dirint/$name.int
 done < $explist
 
-FILES=$dirint*.int
-intersection=$dirint"intersection.txt"
+FILES=$dirint/*.int
+intersection=/tmp/intersection-$(date +"%s").txt
 first=1
 for file in $FILES
 do
@@ -47,4 +46,6 @@ do
     fi
 done
 
-rm -rf $dirint*.int
+cat $intersection
+rm -f $intersection
+rm -f $dirint/*.int
