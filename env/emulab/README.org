@@ -55,13 +55,14 @@ parallel. Name the experiment, provide the number of instances, and an input
 list of applications to be analyzed:
 
 #+BEGIN_SRC sh :exports code
-  source start-exp.sh full-test-14-06-20 20 /mnt/storage/input-files/apk-full-list 500
+  source start-exp.sh full-test-14-06-20 20 /mnt/storage/input-files/apk-full-list 0 500
 #+END_SRC
 
 This will start an experiment named /full-test-14-06-20/ with /20/ *maline*
 instances, each instance analyzing an equal share of apps listed in a file
-=/mnt/storage/input-files/apk-full-list=, where each app will receive 500
-pseudo-random events that drive its execution.
+=/mnt/storage/input-files/apk-full-list=, without text message and location
+update spoofing (0 for no spoofing, 1 for spoofing), where each app will
+receive 500 pseudo-random events that drive its execution.
 
 Instructions on how to watch the experiment are given at the end of the
 command output.
@@ -71,11 +72,29 @@ Once the first phase is done, run the following command while in the same
 directory as when =start-exp.sh= returned:
 
 #+BEGIN_SRC sh :exports code
-  create-features-file.sh
+  create-feature-matrix.sh regular
 #+END_SRC
 
-to generate a file with features for all the analyzed applications.
+to generate a file with features for all the analyzed applications in the
+regular way. If you want features to be created according to a different
+model, there are two more options: =noncut= and =frequency=.
 
+If you want to generate a different than the regular kind of feature vectors,
+e.g. by doing only a frequency analysis, run:
+
+#+BEGIN_SRC sh :exports code
+  parallel-parsing.sh 10 android-logs/ frequency
+#+END_SRC
+
+This will start 10 parallel parsing instances, each looking for its own share
+of log files in the =android-logs/= directory, and then parsing them according
+to the frequency analysis. Once that is done, run:
+
+#+BEGIN_SRC sh :exports code
+  create-feature-matrix.sh frequency
+#+END_SRC
+
+to generate a matrix with feature vectors, one per line, for all apps.
 
 # TODO: Finish this section.
 # The second part is to generate a feature file that will be used in the machine

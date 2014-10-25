@@ -52,6 +52,7 @@ function __sig_func {
     # Remove app testing files
     rm -f $APP_STATUS_FILE
     rm -f $GPS_SMS_STATUS_FILE
+    rm $SH_SCRIPT &>/dev/null
 
     echo "Exiting from $SCRIPTNAME..."
 }
@@ -75,7 +76,7 @@ get_emu_ready() {
     # until the emulator is ready.
 
     while [ "`cat $STATUS_FILE 2>/dev/null`" != "1" ]; do
-	get_emu_ready.sh $ADB_PORT $ADB_SERVER_PORT || exit 1
+	get_emu_ready.sh $ADB_PORT $ADB_SERVER_PORT $SH_SCRIPT $SH_SCRIPT_IN_ANDROID || exit 1
 
 	# Check if the device is ready
 	if [ "`cat $STATUS_FILE 2>/dev/null`" != "1" ]; then
@@ -138,7 +139,7 @@ inst_run() {
     fi
 
     # Extract trace from the app
-    timeout $TIMEOUT extract-trace.sh $APP_PATH $CONSOLE_PORT $ADB_SERVER_PORT $ADB_PORT $TIMESTAMP $LOG_DIR $COUNTER $EVENT_NUM || return 1
+    timeout $TIMEOUT extract-trace.sh $APK_FILE_NAME $APP_NAME $PROC_NAME $ACTIVITY_NAME $SH_SCRIPT_IN_ANDROID $CONSOLE_PORT $ADB_SERVER_PORT $ADB_PORT $TIMESTAMP $LOG_DIR $COUNTER $EVENT_NUM $SPOOF || return 1
     
     check-adb-status.sh $ADB_SERVER_PORT $ADB_PORT || __sig_func
     sleep 1s
@@ -212,7 +213,10 @@ SCRIPTNAME=`basename $0`
 # Constant snapshot name
 SNAPSHOT_NAME="maline"
 
-while getopts "f:d:l:p:e:" OPTION; do
+# Whether to spoof text messages and location updates (default: not)
+SPOOF=0
+ 
+while getopts "f:d:l:p:e:s" OPTION; do
     case $OPTION in
 	f)
 	    APK_LIST_FILE="$OPTARG";;
@@ -224,6 +228,8 @@ while getopts "f:d:l:p:e:" OPTION; do
 	    PER_APP_TIME_CALLS_DIR="$OPTARG";;
 	e)
 	    EVENT_NUM="$OPTARG";;
+	s)
+	    SPOOF=1;;
 	\?)
 	    echo "Invalid option: -$OPTARG" >&2;;
     esac
@@ -272,13 +278,14 @@ echo "ADB server port: ${ADB_SERVER_PORT}" >> $PROC_INFO_FILE
 # Start the emulator
 EMULATOR_OUTPUT_FILE=$MALINE/.emulator-output-$CURR_PID
 rm -f $EMULATOR_OUTPUT_FILE
-EMULATOR_CMD="emulator -verbose -no-boot-anim -ports $CONSOLE_PORT,$ADB_PORT -prop persist.sys.dalvik.vm.lib.1=libdvm.so -prop persist.sys.language=en -prop persist.sys.country=US -avd $AVD_NAME -snapshot $SNAPSHOT_NAME -no-snapshot-save -wipe-data -netfast -no-window"
+EMULATOR_CMD="emulator -verbose -no-boot-anim -ports $CONSOLE_PORT,$ADB_PORT -prop persist.sys.dalvik.vm.lib.1=libdvm.so -prop persist.sys.language=en -prop persist.sys.country=US -avd $AVD_NAME -snapshot $SNAPSHOT_NAME -no-snapshot-save -wipe-data -netfast -no-skin -no-audio -no-window"
 
 # Get the current time
 TIMESTAMP=`date +"%Y-%m-%d-%H-%M-%S"`
 
 # A timeout in seconds for app testing
-TIMEOUT=840
+DEFAULT_EVENT_NUM=1000
+TIMEOUT=$(echo "1020 * $EVENT_NUM / $DEFAULT_EVENT_NUM" | bc)
 
 # Emulator status file
 STATUS_FILE=$MALINE/.emulator-$ADB_PORT
@@ -319,14 +326,32 @@ for APP_PATH in `cat $APK_LIST_FILE`; do
 	continue
     fi
 
+    # App information
+    APK_FILE_NAME=$(basename $APP_PATH .apk)
+    PACK_PROC_ACT=($(getAppActivityName.sh $APP_PATH))
+    APP_NAME="${PACK_PROC_ACT[0]}"
+    PROC_NAME="${PACK_PROC_ACT[1]}"
+    ACTIVITY_NAME="${PACK_PROC_ACT[2]}"
+    LOGFILE="$COUNTER-$APK_FILE_NAME-$APP_NAME-$TIMESTAMP.log"
+
+    # Construct a shell script that will start the app and the strace
+    # tool to trace its system calls
+    SH_SCRIPT="$MALINE/$APP_NAME-$$.sh"
+    rm $SH_SCRIPT &>/dev/null
+    echo "#!/system/bin/sh" >> $SH_SCRIPT
+    echo "am start -n ${APP_NAME}/${ACTIVITY_NAME}" >> $SH_SCRIPT
+    echo -n 'set `ps | grep ' >> $SH_SCRIPT
+    echo -n "$PROC_NAME" >> $SH_SCRIPT
+    echo -n '` && strace -ff -F -tt -T -p $2 &>> ' >> $SH_SCRIPT
+    echo "/sdcard/$LOGFILE" >> $SH_SCRIPT
+
+    SH_SCRIPT_IN_ANDROID=/system/xbin/app_start
+
     # Make an AVD copy, start the emulator, and get it ready
     copy_avd
     start_emulator
     get_emu_ready
 
-    # Check if a log file for this app already exists
-    APK_FILE_NAME=`basename $APP_PATH .apk`
-    APP_NAME=$(getAppPackageName.sh $APP_PATH)
 
     BASE_FILE_NAME="$COUNTER-$APK_FILE_NAME-$APP_NAME-$TIMESTAMP"
     STATS_FILE="$PER_APP_TIME_CALLS_DIR/$BASE_FILE_NAME.txt"
@@ -335,17 +360,6 @@ for APP_PATH in `cat $APK_LIST_FILE`; do
     rm -f $LOGFILE
 
     inst_run
-
-    # If there is no log file of the app at this point, it means
-    # something has went wrong and the app hasn't been analyzed
-    if [ -f "$LOGFILE" ]; then
-	# Remove app from the list of non-analyzed apps
-	sed -i "s|$APP_PATH||g" $NON_ANALYZED_FILE
-	# Delete empty lines
-	sed -i '/^$/d' $NON_ANALYZED_FILE
-
-	let NUM_OF_APPS_ANALYZED=NUM_OF_APPS_ANALYZED+1
-    fi
 
     # Kill emulator because it will be started again for the next app
     kill_emulator
@@ -361,6 +375,21 @@ for APP_PATH in `cat $APK_LIST_FILE`; do
 	parse-log-lock.sh $LOG_DIR $LOGFILE $PER_APP_TIME_CALLS_DIR && echo "done" || echo "failed"
 	echo ""
     fi
+
+    # Check if a log file for this app exists.
+    #
+    # If there is no log file of the app at this point, it means
+    # something has went wrong and the app hasn't been analyzed
+    if [ -f "$LOGFILE" ]; then
+	# Remove app from the list of non-analyzed apps
+	sed -i "s|$APP_PATH||g" $NON_ANALYZED_FILE
+	# Delete empty lines
+	sed -i '/^$/d' $NON_ANALYZED_FILE
+
+	let NUM_OF_APPS_ANALYZED=NUM_OF_APPS_ANALYZED+1
+    fi
+
+    rm $SH_SCRIPT &>/dev/null
 done
 
 echo "Done analysing apps in $APK_LIST_FILE"

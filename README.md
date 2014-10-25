@@ -31,9 +31,19 @@ To use **maline**, you need the following:
     available through a Ubuntu's default repository.
 -   [LIBSVM](http://www.csie.ntu.edu.tw/~cjlin/libsvm/) - **maline** already ships with LIBSVM, which is licensed under the
     Modified BSD License.
+-   [R](http://www.r-project.org/) - an environment for statistical computing and graphics.
+    More about how to install R and necessary R packages can be found in 
+    [data analysis README file](data_analysis/README.md).
 -   [Bash](http://www.gnu.org/software/bash/) - ships with Ubuntu.
+-   [Python](https://www.python.org/) - pretty much every system has an installation of it. We tested the
+    tool with version 2.7.3.
 -   [expect](http://sourceforge.net/projects/expect/) - a command line tool that automates interactive applications. It is
     available through a Ubuntu's default repository.
+
+There are other dependencies we used throughout the project - such as for
+building Android from source - that you might not need to simply use
+**maline**. An extensive list of such dependencies and particular packages of
+the tools listed above can be found in `env/emulab/prepare-node.sh`.
 
 ## Building
 
@@ -117,7 +127,7 @@ As **maline** is executing, obtained `.log` files are parsed and as a result one
 `.graph` file per `.log` file is generated. From the `.graph` files we
 generate a feature vector for every analyzed app by executing:
 
-    create-features-file.sh
+    create-feature-matrix.sh regular
 
 Now it is possible to classify the data by running the following:
 

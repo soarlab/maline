@@ -40,6 +40,9 @@ FILE *mf = NULL;
 // statistics file
 FILE *sf = NULL;
 
+const char *parsing_types_c[] = { "regular", "noncut", "frequency" };
+const vector<string> parsing_types(parsing_types_c, parsing_types_c + 3);
+
 void
 cleanup(void)
 {
@@ -84,10 +87,12 @@ private:
   string output_file_name;
   string architecture;
   string stats_file;
+  string parsing_type;
   map<string, int> sys_call_map;
   vector<string> sys_calls_made;
   vector<vector<double> > dep_graph_weight;
   set<string> not_found_calls;
+  vector<int> frequency;
 
   vector<string> mysplit(string s, const char delim)
   {
@@ -171,15 +176,30 @@ private:
   }
 
 public:
-  parser(string log_file_name, string architecture, string stats_dir)
+  parser(string log_file_name, string architecture, string stats_dir, string parsing_type)
   {
     this->log_file_name = log_file_name;
     this->architecture = architecture;
+    this->parsing_type = parsing_type;
     this->import_sys_call_list();
-    // strip .log from the end of the log file name and add .graph
-    this->output_file_name = log_file_name.substr(0, log_file_name.size() - 4) + ".graph";
-    vector<string> path = this->mysplit(log_file_name.substr(0, log_file_name.size() - 4), '/');
-    this->stats_file = stats_dir + "/" + path[path.size() - 1] + ".txt";
+
+    string filename_extension;
+
+    if (this->parsing_type == parsing_types[0])
+      filename_extension = ".graph";
+    else if (this->parsing_type == parsing_types[1])
+      filename_extension = ".graph-noncut";
+    else if (this->parsing_type == parsing_types[2])
+      filename_extension = ".freq";
+
+    // strip .log from the end of the log file name and filename_ext
+    this->output_file_name = log_file_name.substr(0, log_file_name.size() - 4) + filename_extension;
+
+    if (this->parsing_type == parsing_types[0])
+    {
+      vector<string> path = this->mysplit(log_file_name.substr(0, log_file_name.size() - 4), '/');
+      this->stats_file = stats_dir + "/" + path[path.size() - 1] + ".txt";
+    }
   }
 
   void extract_sys_calls()
@@ -193,57 +213,86 @@ public:
       sys_call = this->extract_sys_call_name(*it);
       if (sys_call == "")
 	continue;
-      this->sys_calls_made.push_back(sys_call);
+      if (!this->sys_call_map.count(sys_call))
+	this->not_found_calls.insert(sys_call);
+      else
+	// add only system call occurrences whose names are not broken
+	this->sys_calls_made.push_back(sys_call);
     }
   }
 
+  // assumption: pos1 != pos2 /\ pos1 < pos2
   double distance_function(int pos1, int pos2)
   {
-    if (pos1 == pos2)
-      return 0;
-
-    return 1.0 / abs(pos1 - pos2);
+    return 1.0 / (pos2 - pos1);
   }
 
   void parse()
   {
     int i, j, index1, index2;
     string s1, s2;
+    vector<int> sys_calls_made_index;
 
-    // initialize the matrix
-    this->dep_graph_weight.resize(this->sys_call_map.size());
-    for(i = 0; i < this->dep_graph_weight.size(); ++i)
+    // pre-compute indices of system calls
+    for(i = 0; i < this->sys_calls_made.size(); ++i)
+      sys_calls_made_index.push_back(this->sys_call_map[this->sys_calls_made[i]]);
+
+    if (this->parsing_type == parsing_types[0] || this->parsing_type == parsing_types[1])
     {
-      this->dep_graph_weight[i].resize(this->sys_call_map.size());
-      for(j = 0; j < this->dep_graph_weight[i].size(); ++j)
-	this->dep_graph_weight[i][j] = 0;
+      // initialize the matrix
+      this->dep_graph_weight.resize(this->sys_call_map.size());
+      for(i = 0; i < this->dep_graph_weight.size(); ++i)
+      {
+	this->dep_graph_weight[i].resize(this->sys_call_map.size());
+	for(j = 0; j < this->dep_graph_weight[i].size(); ++j)
+	  this->dep_graph_weight[i][j] = 0;
+      }
+
+      // compute values based on the model
+      if (this->parsing_type == parsing_types[0])
+      {
+	// regular model
+	for(i = 0; i < this->sys_calls_made.size(); ++i)
+	{
+	  index1 = sys_calls_made_index[i];
+	  
+	  for(j = i + 1; j < this->sys_calls_made.size(); ++j)
+	  {
+	    index2 = sys_calls_made_index[j];
+	    if (index1 == index2)
+	      break;
+	    this->dep_graph_weight[index1][index2] += this->distance_function(i, j);
+	  }
+	}
+      }
+      else
+      {
+	// non-cut model
+	for(i = 0; i < this->sys_calls_made.size(); ++i)
+	{
+	  index1 = sys_calls_made_index[i];
+	  
+	  for(j = i + 1; j < this->sys_calls_made.size(); ++j)
+	  {
+	    index2 = sys_calls_made_index[j];
+	    this->dep_graph_weight[index1][index2] += this->distance_function(i, j);
+	  }
+	}
+      }
     }
 
-    // compute values based on the model
-    for(i = 0; i < this->sys_calls_made.size(); ++i)
+    else if (this->parsing_type == parsing_types[2])
     {
-      s1 = this->sys_calls_made[i];
-      if (!this->sys_call_map.count(s1))
-      {
-	this->not_found_calls.insert(s1);
-	continue;
-      }
-      index1 = this->sys_call_map[s1];
+      // count system call frequencies
+      int index;
 
-      for(j = i + 1; j < this->sys_calls_made.size(); ++j)
-      {
-	s2 = this->sys_calls_made[j];
-	if (s1 == s2)
-	  break;
-	if (!this->sys_call_map.count(s2))
-	{
-	  this->not_found_calls.insert(s2);
-	  continue;
-	}
+      this->frequency.resize(sys_call_map.size());
+      fill(this->frequency.begin(), this->frequency.end(), 0);
 
-	index2 = this->sys_call_map[s2];
-	this->dep_graph_weight[index1][index2] += this->distance_function(i, j);
-	
+      for(i = 0; i < this->sys_calls_made.size(); ++i)
+      {
+	index = sys_calls_made_index[i];
+	this->frequency[index]++;
       }
     }
   }
@@ -254,20 +303,40 @@ public:
     int i, j;
     int size = this->dep_graph_weight.size();
 
+    // check if this is an invalid log file
+    if (this->sys_calls_made.size() == 0)
+    {
+      // delete the log file and return from this function
+      remove(this->log_file_name.c_str());
+      return;
+    }
+
     // write to a string stream first and then convert the stream to a
     // string to be written to a file
     outs.setf(ios::fixed, ios::floatfield);
     outs.precision(6);
-    for(i = 0; i < size; ++i)
-      for(j = 0; j < size; ++j)
-    	outs << this->dep_graph_weight[i][j] << " ";
 
-    // print out the number of system calls made
-    sf = fopen(this->stats_file.c_str(), "a");
-    if (sf)
+    if (this->parsing_type == parsing_types[0] || this->parsing_type == parsing_types[1])
     {
-      fprintf(sf, "%d\n", (int)(this->sys_calls_made.size()));
-      fclose(sf);
+      for(i = 0; i < size; ++i)
+	for(j = 0; j < size; ++j)
+	  outs << this->dep_graph_weight[i][j] << " ";
+    }
+    else if (this->parsing_type == parsing_types[2])
+    {
+      for(i = 0; i < this->frequency.size(); ++i)
+	outs << this->frequency[i] << " ";
+    }
+
+    if (this->parsing_type == parsing_types[0])
+    {
+      // print out the number of system calls made
+      sf = fopen(this->stats_file.c_str(), "a");
+      if (sf)
+      {
+	fprintf(sf, "%d\n", (int)(this->sys_calls_made.size()));
+	fclose(sf);
+      }
     }
 
     f = fopen(this->output_file_name.c_str(), "w");
@@ -281,13 +350,16 @@ public:
 	perror("fcntl");
 	exit(1);
       }
-      fprintf(f, "%d\n", size * size);
+      if (this->parsing_type == parsing_types[0] || this->parsing_type == parsing_types[1])
+	fprintf(f, "%d\n", size * size);
+      else if (this->parsing_type == parsing_types[2])
+	fprintf(f, "%d\n", this->frequency.size());
       fprintf(f, "%s", outs.str().c_str());
     }
     else
       throw(errno);
 
-    if (this->not_found_calls.size() > 0)
+    if (this->not_found_calls.size() > 0 && this->parsing_type == parsing_types[0])
     {
       string maline_path(getenv("MALINE") ? getenv("MALINE") : "");
       assert(maline_path != "");
@@ -324,18 +396,26 @@ int main(int argc, char **argv)
   signal(SIGQUIT, signal_callback_handler);
 
   // beside the program name there should be an input file, an
-  // architecture type, and a directory where the number of system
-  // calls should be written to
-  assert(argc == 4);
+  // architecture type, a directory where the number of system calls
+  // should be written to, and an optional parameter specifying what
+  // kind of parsing should be done (accepted values: regular, noncut,
+  // frequency)
+  assert(argc == 4 || argc == 5);
   string input_file(argv[1]);
   string architecture(argv[2]);
   string stats_dir(argv[3]);
+  string parsing_type = parsing_types[0];
+  if (argc == 5)
+  {
+    parsing_type.assign(argv[4]);
+    assert(parsing_type == parsing_types[0] || parsing_type == parsing_types[1] || parsing_type == parsing_types[2]);
+  }
 
   // if a different architecture is ever to be supported, the
   // following assertion has to be updated
   assert(architecture == "i386");
 
-  parser Parser = parser(input_file, architecture, stats_dir);
+  parser Parser = parser(input_file, architecture, stats_dir, parsing_type);
   Parser.extract_sys_calls();
   Parser.parse();
   Parser.print();
