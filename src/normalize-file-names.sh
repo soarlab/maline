@@ -21,7 +21,7 @@
 dir=$1
 i=1
 
-for file in $(find $dir -name "*.log"); do
+for file in $(find $dir -name "*.log" | sort); do
     bname=$(basename $file .log)
     apkname=$(echo $bname | awk -F"-" '{ print $2 }')
     appname=$(echo $bname | awk -F"-" '{ print $3 }')
