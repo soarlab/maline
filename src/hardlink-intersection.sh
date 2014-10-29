@@ -34,7 +34,13 @@ while read line
 do
     hl=$(echo "$filelist" | grep --max-count=1 "$line")
     if [ ! -z "$hl" ]; then
-	name=$(basename $hl)
-	ln $hl $intersectedlogs/$name
+        bname=$(basename $hl ".log")
+        ln $hl $intersectedlogs/${bname}.log
+        if [ -f "$androidlogs/${bname}.graph" ]; then
+            ln $androidlogs/${bname}.graph $intersectedlogs/${bname}.graph
+        fi
+        if [ -f "$androidlogs/${bname}.freq" ]; then
+            ln $androidlogs/${bname}.freq $intersectedlogs/${bname}.freq
+        fi
     fi
 done < $intersectionlist
