@@ -70,7 +70,7 @@ echo "1" >> $OUTPUT_FILE
 
 # Separate goodware and malware files. Malware file names have to
 # start with 64 hexadecimal digits
-for FILE in $(find $LOG_DIR -name "*.$FILE_EXT"); do
+for FILE in $(find $LOG_DIR -name "*.$FILE_EXT" | sort); do
     echo -n "Adding file $FILE... "
     CURR_NUM_OF_FEATURES=$(head -1 $FILE)
     [ $NUM_OF_FEATURES -eq $CURR_NUM_OF_FEATURES ] || die "Not all .$FILE_EXT files have the same number of features! Aborting."
