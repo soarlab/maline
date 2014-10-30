@@ -26,16 +26,14 @@ os.chdir(logsdir)
 
 files = os.listdir("./")
 files = [x[:-4] for x in files if x[-4:] == ".log"]
-print(files)
 
 tmp = [(x, x.split("-", -1)) for x in files]
-#print(tmp)
 f = [(x[1][1] + "-" + x[1][2], x[0]) for x in tmp]
-print(f)
 f.sort(key=lambda y: y[0])
-print(f)
 
 for i in range(0, len(f)):
+    print(i)
+    #print(f[i][1] + ".log" + " --> " + str(i + 1) + "-" + f[i][0] + ".log")
     os.rename(f[i][1] + ".log", str(i + 1) + "-" + f[i][0] + ".log")
     os.rename(f[i][1] + ".graph", str(i + 1) + "-" + f[i][0] + ".graph")
     os.rename(f[i][1] + ".freq", str(i + 1) + "-" + f[i][0] + ".freq")
