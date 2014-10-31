@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env python3
 
 # Copyright 2013,2014 Marko Dimjašević, Simone Atzeni, Ivo Ugrina, Zvonimir Rakamarić
 #
@@ -17,20 +17,23 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with maline.  If not, see <http://www.gnu.org/licenses/>.
 
+import os
+import sys
 
-dir=$1
-i=1
+logsdir = sys.argv[1]
 
-for file in $(find $dir -name "*.log" | sort); do
-    bname=$(basename $file .log)
-    apkname=$(echo $bname | awk -F"-" '{ print $2 }')
-    appname=$(echo $bname | awk -F"-" '{ print $3 }')
-    if [ -f "$dir/$bname.graph" ]; then
-	mv "$dir/$bname.graph" "$dir/$i-$apkname-$appname.graph"
-    fi
-    if [ -f "$dir/$bname.freq" ]; then
-	mv "$dir/$bname.freq" "$dir/$i-$apkname-$appname.freq"
-    fi
-    mv $file "$dir/$i-$apkname-$appname.log"
-    let i=i+1
-done
+os.chdir(logsdir)
+
+files = os.listdir("./")
+files = [x[:-4] for x in files if x[-4:] == ".log"]
+
+tmp = [(x, x.split("-", -1)) for x in files]
+f = [(x[1][1] + "-" + x[1][2], x[0]) for x in tmp]
+f.sort(key=lambda y: y[0])
+
+for i in range(0, len(f)):
+    print(i)
+    #print(f[i][1] + ".log" + " --> " + str(i + 1) + "-" + f[i][0] + ".log")
+    os.rename(f[i][1] + ".log", str(i + 1) + "-" + f[i][0] + ".log")
+    os.rename(f[i][1] + ".graph", str(i + 1) + "-" + f[i][0] + ".graph")
+    os.rename(f[i][1] + ".freq", str(i + 1) + "-" + f[i][0] + ".freq")
