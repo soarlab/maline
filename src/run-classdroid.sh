@@ -1,4 +1,4 @@
-#!/bin/bash -x
+#!/bin/bash
 
 # Copyright 2013,2014 Marko Dimjašević, Simone Atzeni, Ivo Ugrina, Zvonimir Rakamarić
 #
@@ -87,6 +87,7 @@ file=$1
 export shuff=$2
 transform=$3
 
+PWD=`pwd`
 date=$(date +"%Y%m%d%H%M%S")
 dir="svmresults_$date"
 mkdir $dir
@@ -94,13 +95,10 @@ mkdir $dir
 if [ "$transform" -eq 1 ]; then
     transforms_data $file $dir
 else
-    ln -s $file.sparse $dir/$file.sparse
+    ln -s $PWD/$file.sparse $dir/$file.sparse
 fi
 
 export filename=$dir/$file.sparse
-
-echo $filename
-exit
 
 cat $filename | sort -V > $dir/tmp
 mv $dir/tmp $filename
