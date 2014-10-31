@@ -39,6 +39,49 @@ shuffle()
     mv $dir/tmp.goodware $filename
 }
 
+svm()
+{
+    csvc=$1
+    for ratio in 70 #50% or 90% of training set
+    do 
+	
+	echo "Testing Set $ratio%" >> $results.$csvc
+	echo >> $results.$csvc
+	
+	if [ "$shuff" -eq 1 ]; then
+	    shuffle "$filename"
+	    echo "Random" >> $results.$csvc
+	fi
+	
+	create_datasets $filename $ratio >> $results.$csvc
+	
+	echo "Linear Kernel" >> $results.$csvc
+	
+	svm-train -s $type -t 0 -c $csvc -h 0 $filename.training.$ratio $filename.training.$ratio.model
+	svm-predict $filename.testing.$ratio $filename.training.$ratio.model $filename.$ratio.out >> $results.$csvc
+	
+	echo >> $results.$csvc
+	
+	echo "Confusion Matrix"
+	confusion-matrix.sh $filename $ratio $dir >> $results
+	echo >> $results
+	
+	for deg in 1 2 3 4 5 #polynomial degree
+	do 
+	    echo "Polynomial Kernel - Degree $deg" >> $results
+	    
+	    svm-train -s $type -t 1 -c $csvc -d $deg -h 0 $filename.training.$ratio $filename.training.$ratio.model
+	    svm-predict $filename.testing.$ratio $filename.training.$ratio.model $filename.$ratio.out >> $results
+	    
+	    echo >> $results
+	    
+	    echo "Confusion Matrix"
+	    confusion-matrix.sh $filename $ratio $dir >> $results
+	    echo >> $results
+	done    
+    done
+}
+
 file=$1
 shuff=$2
 
@@ -59,46 +102,9 @@ touch $results
 
 for type in 0 #C-SVC(0) or nu-SVC(1)
 do 
-    for csvc in 256 128 64 32 16 8 4 2 1 0.5 0.25 0.125 0.625 0.03125 0.015625 0.0078125 0.00390625 #C-SVC(0) or nu-SVC(1)
+    for csvc in 4096 2048 1024 256 128 64 32 16 8 4 2 1 0.5 0.25 0.125 0.625 0.03125 0.015625 0.0078125 0.00390625 #C-SVC(0) or nu-SVC(1)
     do 
-       	echo "C-SVC value: $csvc" >> $results
-	for ratio in 70 #50% or 90% of training set
-	do 
-    
-	    echo "Testing Set $ratio%" >> $results
-	    echo >> $results
-	    
-	    if [ "$shuff" -eq 1 ]; then
-		shuffle "$filename"
-		echo "Random" >> $results
-	    fi
-	    
-	    create_datasets $filename $ratio >> $results
-	    
-	    echo "Linear Kernel" >> $results
-	    
-	    svm-train -s $type -t 0 -c $csvc -h 0 $filename.training.$ratio $filename.training.$ratio.model
-	    svm-predict $filename.testing.$ratio $filename.training.$ratio.model $filename.$ratio.out >> $results
-	    
-	    echo >> $results
-	    
-	    echo "Confusion Matrix"
-	    confusion-matrix.sh $filename $ratio $dir >> $results
-	    echo >> $results
-	    
-	    for deg in 1 2 3 4 #polynomial degree
-	    do 
-		echo "Polynomial Kernel - Degree $deg" >> $results
-		
-		svm-train -s $type -t 1 -c $csvc -d $deg -h 0 $filename.training.$ratio $filename.training.$ratio.model
-		svm-predict $filename.testing.$ratio $filename.training.$ratio.model $filename.$ratio.out >> $results
-		
-		echo >> $results
-		
-		echo "Confusion Matrix"
-		confusion-matrix.sh $filename $ratio $dir >> $results
-		echo >> $results
-	    done    
-	done
+       	echo "C-SVC value: $csvc" >> $results.$csvc
+	svm $csvc &
     done
 done
