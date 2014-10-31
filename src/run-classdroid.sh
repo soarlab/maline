@@ -91,13 +91,16 @@ date=$(date +"%Y%m%d%H%M%S")
 dir="svmresults_$date"
 mkdir $dir
 
+file=$(awk -F".sparse" '{ print $1}')
+echo $file
+
 if [ "$transform" -eq 1 ]; then
     transforms_data $file $dir
-    export filename=$dir/$file.sparse
 else
-    ln -s $file $dir/$file
-    export filename=$dir/$file
+    ln -s $file.sparse $dir/$file.sparse
 fi
+
+export filename=$dir/$file.sparse
 
 cat $filename | sort -V > $dir/tmp
 mv $dir/tmp $filename
