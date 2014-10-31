@@ -42,48 +42,49 @@ shuffle()
 svm()
 {
     csvc=$1
-    for ratio in 70 #50% or 90% of training set
+    ratio=$2
+    
+    echo "Testing Set $ratio%" >> $results.$csvc
+    echo >> $results.$csvc
+        
+    echo "Linear Kernel" >> $results.$csvc
+    
+    svm-train -s $type -t 0 -c $csvc -h 0 $filename.training.$ratio $filename.training.$ratio.$csvc.model
+    svm-predict $filename.testing.$ratio $filename.training.$ratio.$csvc.model $filename.$ratio.$csvc.out >> $results.$csvc
+    
+    echo >> $results.$csvc
+    
+    echo "Confusion Matrix"
+    confusion-matrix.sh $filename $ratio $dir $csvc >> $results.$csvc
+    echo >> $results.$csvc
+    
+    echo "RBF - Radial Basis Function" >> $results.$csvc
+    
+    svm-train -s $type -t 2 -c $csvc -h 0 $filename.training.$ratio $filename.training.$ratio.$csvc.model
+    svm-predict $filename.testing.$ratio $filename.training.$ratio.$csvc.model $filename.$ratio.$csvc.out >> $results.$csvc
+    
+    echo "Confusion Matrix"
+    confusion-matrix.sh $filename $ratio $dir $csvc >> $results.$csvc
+    echo >> $results.$csvc
+    
+    
+    for deg in 1 2 3 4 5 #polynomial degree
     do 
+	echo "Polynomial Kernel - Degree $deg" >> $results.$csvc
 	
-	echo "Testing Set $ratio%" >> $results.$csvc
-	echo >> $results.$csvc
-	
-	if [ "$shuff" -eq 1 ]; then
-	    shuffle "$filename"
-	    echo "Random" >> $results.$csvc
-	fi
-	
-	create_datasets $filename $ratio >> $results.$csvc
-	
-	echo "Linear Kernel" >> $results.$csvc
-	
-	svm-train -s $type -t 0 -c $csvc -h 0 $filename.training.$ratio $filename.training.$ratio.model
-	svm-predict $filename.testing.$ratio $filename.training.$ratio.model $filename.$ratio.out >> $results.$csvc
+	svm-train -s $type -t 1 -c $csvc -d $deg -h 0 $filename.training.$ratio. $filename.training.$ratio.$csvc.model
+	svm-predict $filename.testing.$ratio $filename.training.$ratio.$csvc.model $filename.$ratio.$csvc.out >> $results.$csvc
 	
 	echo >> $results.$csvc
 	
 	echo "Confusion Matrix"
-	confusion-matrix.sh $filename $ratio $dir >> $results
-	echo >> $results
-	
-	for deg in 1 2 3 4 5 #polynomial degree
-	do 
-	    echo "Polynomial Kernel - Degree $deg" >> $results
-	    
-	    svm-train -s $type -t 1 -c $csvc -d $deg -h 0 $filename.training.$ratio $filename.training.$ratio.model
-	    svm-predict $filename.testing.$ratio $filename.training.$ratio.model $filename.$ratio.out >> $results
-	    
-	    echo >> $results
-	    
-	    echo "Confusion Matrix"
-	    confusion-matrix.sh $filename $ratio $dir >> $results
-	    echo >> $results
-	done    
-    done
+	confusion-matrix.sh $filename $ratio $dir $csvc >> $results.$csvc
+	echo >> $results.$csvc
+    done    
 }
 
 file=$1
-shuff=$2
+export shuff=$2
 
 date=$(date +"%Y%m%d%H%M%S")
 dir="svmresults_$date"
@@ -91,20 +92,30 @@ mkdir $dir
 
 transforms_data $file $dir
 
-filename=$dir/$file.sparse
+export filename=$dir/$file.sparse
 
 cat $filename | sort -V > $dir/tmp
 mv $dir/tmp $filename
 
 results=$dir/results.dat
 
-touch $results
+#touch $results
 
 for type in 0 #C-SVC(0) or nu-SVC(1)
-do 
+do
+    if [ "$shuff" -eq 1 ]; then
+	shuffle "$filename"
+    fi
+    
+    ratio=70    
+    create_datasets $filename $ratio
+    
     for csvc in 4096 2048 1024 256 128 64 32 16 8 4 2 1 0.5 0.25 0.125 0.625 0.03125 0.015625 0.0078125 0.00390625 #C-SVC(0) or nu-SVC(1)
-    do 
+    do
+	if [ "$shuff" -eq 1 ]; then
+	    echo "Random" >> $results.$csvc
+	fi
        	echo "C-SVC value: $csvc" >> $results.$csvc
-	svm $csvc &
+	svm $csvc $ratio &
     done
 done
