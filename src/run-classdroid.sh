@@ -17,8 +17,8 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with maline.  If not, see <http://www.gnu.org/licenses/>.
 
-if [ "$#" -lt 2 ]; then
-    echo "Usage: run-classdroid.sh FILENAME SHUFFLE"
+if [ "$#" -lt 3 ]; then
+    echo "Usage: run-classdroid.sh FILENAME SHUFFLE TRANSFORM_DATA"
     exit
 fi
 
@@ -85,12 +85,15 @@ svm()
 
 file=$1
 export shuff=$2
+transform=$3
 
 date=$(date +"%Y%m%d%H%M%S")
 dir="svmresults_$date"
 mkdir $dir
 
-transforms_data $file $dir
+if [ "$transform" -eq 1 ]; then
+    transforms_data $file $dir
+fi
 
 export filename=$dir/$file.sparse
 
