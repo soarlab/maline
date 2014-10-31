@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -x
 
 # Copyright 2013,2014 Marko Dimjašević, Simone Atzeni, Ivo Ugrina, Zvonimir Rakamarić
 #
@@ -98,6 +98,9 @@ else
 fi
 
 export filename=$dir/$file.sparse
+
+echo $filename
+exit
 
 cat $filename | sort -V > $dir/tmp
 mv $dir/tmp $filename
