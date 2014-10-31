@@ -93,11 +93,11 @@ mkdir $dir
 
 if [ "$transform" -eq 1 ]; then
     transforms_data $file $dir
+    export filename=$dir/$file.sparse
 else
     ln -s $file $dir/$file
+    export filename=$dir/$file
 fi
-
-export filename=$dir/$file.sparse
 
 cat $filename | sort -V > $dir/tmp
 mv $dir/tmp $filename
