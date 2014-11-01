@@ -49,7 +49,7 @@ svm()
         
     echo "Linear Kernel" >> $results.$csvc
     
-    svm-train -s $type -t 0 -c $csvc -h 0 $filename.training.$ratio $filename.training.$ratio.$csvc.model
+    svm-train -s $type -t 0 -c $csvc -h 1 $filename.training.$ratio $filename.training.$ratio.$csvc.model
     svm-predict $filename.testing.$ratio $filename.training.$ratio.$csvc.model $filename.$ratio.$csvc.out >> $results.$csvc
     
     echo >> $results.$csvc
@@ -60,7 +60,7 @@ svm()
     
     echo "RBF - Radial Basis Function" >> $results.$csvc
     
-    svm-train -s $type -t 2 -c $csvc -h 0 $filename.training.$ratio $filename.training.$ratio.$csvc.model
+    svm-train -s $type -t 2 -c $csvc -h 1 $filename.training.$ratio $filename.training.$ratio.$csvc.model
     svm-predict $filename.testing.$ratio $filename.training.$ratio.$csvc.model $filename.$ratio.$csvc.out >> $results.$csvc
     
     echo "Confusion Matrix"
@@ -72,7 +72,7 @@ svm()
     do 
 	echo "Polynomial Kernel - Degree $deg" >> $results.$csvc
 	
-	svm-train -s $type -t 1 -c $csvc -d $deg -h 0 $filename.training.$ratio. $filename.training.$ratio.$csvc.model
+	svm-train -s $type -t 1 -c $csvc -d $deg -h 1 $filename.training.$ratio. $filename.training.$ratio.$csvc.model
 	svm-predict $filename.testing.$ratio $filename.training.$ratio.$csvc.model $filename.$ratio.$csvc.out >> $results.$csvc
 	
 	echo >> $results.$csvc
