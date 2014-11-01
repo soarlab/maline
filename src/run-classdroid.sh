@@ -68,7 +68,7 @@ svm()
     echo >> $results.$csvc
     
     
-    for deg in 1 2 3 4 5 #polynomial degree
+    for deg in 1 2 3 4 5
     do 
 	echo "Polynomial Kernel - Degree $deg" >> $results.$csvc
 	
@@ -107,7 +107,7 @@ results=$dir/results.dat
 
 #touch $results
 
-for type in 0 #C-SVC(0) or nu-SVC(1)
+for type in 0
 do
     if [ "$shuff" -eq 1 ]; then
 	shuffle "$filename"
@@ -116,7 +116,7 @@ do
     ratio=70    
     create_datasets $filename $ratio
     
-    for csvc in 4096 2048 1024 256 128 64 32 16 8 4 2 1 0.5 0.25 0.125 0.625 0.03125 0.015625 0.0078125 0.00390625 #C-SVC(0) or nu-SVC(1)
+    for csvc in 4096 2048 1024 256 128 64 32 16 8 4 2 1 0.5 0.25 0.125 0.625 0.03125 0.015625 0.0078125 0.00390625
     do
 	if [ "$shuff" -eq 1 ]; then
 	    echo "Random" >> $results.$csvc
