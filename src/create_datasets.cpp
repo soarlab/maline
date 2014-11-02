@@ -83,7 +83,7 @@ int main(int argc, char **argv)
 
   gTrainingSize = (ratio * gSize) / 100;
   gTestingSize =  gSize - gTrainingSize;
-  mTrainingSize = (ratio * mSize) / 100;
+  mTrainingSize = ((100 - ratio) * mSize) / 100;
   mTestingSize =  mSize - mTrainingSize;
 
   printf("# Apps | goodware | malware | total\n");
