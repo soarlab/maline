@@ -86,7 +86,7 @@ int main(int argc, char **argv)
   mTrainingSize = (ratio * mSize) / 100;
   mTestingSize =  mSize - mTrainingSize;
 
-  printf("# Apps | goodware | malware | total\n);"
+  printf("# Apps | goodware | malware | total\n");
   printf("Total | %d | %d | %d\n", gSize, mSize, gSize + mSize);
   printf("Training | %d | %d | %d\n", gTrainingSize, mTrainingSize, gTrainingSize + mTrainingSize);
   printf("Testing | %d | %d | %d\n", gTestingSize, mTrainingSize, gTestingSize + mTestingSize);
