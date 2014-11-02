@@ -17,8 +17,8 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with maline.  If not, see <http://www.gnu.org/licenses/>.
 
-if [ "$#" -lt 3 ]; then
-    echo "Usage: run-classdroid.sh FILENAME SHUFFLE TRANSFORM_DATA"
+if [ "$#" -lt 4 ]; then
+    echo "Usage: run-classdroid.sh FILENAME SHUFFLE TRANSFORM_DATA TYPE(graph,freq)"
     exit
 fi
 
@@ -89,7 +89,7 @@ transform=$3
 
 PWD=`pwd`
 date=$(date +"%Y%m%d%H%M%S")
-dir="svmresults_$date"
+dir="svmresults_$date_$4"
 mkdir $dir
 
 if [ "$transform" -eq 1 ]; then
