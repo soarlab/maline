@@ -89,7 +89,7 @@ transform=$3
 
 PWD=`pwd`
 date=$(date +"%Y%m%d%H%M%S")
-dir="svmresults_$date_$4"
+dir="svmresults_${date}_$4"
 mkdir $dir
 
 if [ "$transform" -eq 1 ]; then
