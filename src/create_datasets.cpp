@@ -83,13 +83,13 @@ int main(int argc, char **argv)
 
   gTrainingSize = (ratio * gSize) / 100;
   gTestingSize =  gSize - gTrainingSize;
-  mTrainingSize = ((100 - ratio) * mSize) / 100;
+  mTrainingSize = (ratio * mSize) / 100;
   mTestingSize =  mSize - mTrainingSize;
 
   printf("# Apps | goodware | malware | total\n");
   printf("Total | %d | %d | %d\n", gSize, mSize, gSize + mSize);
   printf("Training | %d | %d | %d\n", gTrainingSize, mTrainingSize, gTrainingSize + mTrainingSize);
-  printf("Testing | %d | %d | %d\n", gTestingSize, mTrainingSize, gTestingSize + mTestingSize);
+  printf("Testing | %d | %d | %d\n", gTestingSize, mTestingSize, gTestingSize + mTestingSize);
 
   std::ifstream file2(argv[1], std::ios_base::in);
   boost::iostreams::filtering_istream in2;
