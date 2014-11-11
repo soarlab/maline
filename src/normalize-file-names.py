@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env python3
 
 # Copyright 2013,2014 Marko Dimjašević, Simone Atzeni, Ivo Ugrina, Zvonimir Rakamarić
 #
@@ -17,35 +17,23 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with maline.  If not, see <http://www.gnu.org/licenses/>.
 
-if [ "$#" -lt 1 ]; then
-    echo "Usage: find-log-intersection.sh LIST-OF-EXPERIMENTS-LOG-DIRS"
-    exit 1
-fi
+import os
+import sys
 
-explist=$1
-dirint=$(dirname $explist)
+logsdir = sys.argv[1]
 
-while read line
-do
-    dir=$line
-    name=$(echo $dir | awk -F"/android-logs" '{ print $1}' | awk -F/ '{ print $NF}' )
-    find $dir -name "*.log" | awk -F/ '{ print $NF }' | awk -F"-" '{ print $2"-"$3}' | sort | uniq > $dirint/$name.int
-done < $explist
+os.chdir(logsdir)
 
-FILES=$dirint/*.int
-intersection=/tmp/intersection-$(date +"%s").txt
-first=1
-for file in $FILES
-do
-    if [ $first -eq 0 ]; then
-	comm -12 $intersection $file > $intersection.tmp
-	mv $intersection.tmp $intersection
-    else
-	cat $file > $intersection
-	first=0
-    fi
-done
+files = os.listdir("./")
+files = [x[:-4] for x in files if x[-4:] == ".log"]
 
-cat $intersection
-rm -f $intersection
-rm -f $dirint/*.int
+tmp = [(x, x.split("-", -1)) for x in files]
+f = [(x[1][1] + "-" + x[1][2], x[0]) for x in tmp]
+f.sort(key=lambda y: y[0])
+
+for i in range(0, len(f)):
+    print(i)
+    #print(f[i][1] + ".log" + " --> " + str(i + 1) + "-" + f[i][0] + ".log")
+    os.rename(f[i][1] + ".log", str(i + 1) + "-" + f[i][0] + ".log")
+    os.rename(f[i][1] + ".graph", str(i + 1) + "-" + f[i][0] + ".graph")
+    os.rename(f[i][1] + ".freq", str(i + 1) + "-" + f[i][0] + ".freq")

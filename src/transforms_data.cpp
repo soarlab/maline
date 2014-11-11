@@ -80,10 +80,6 @@ int main(int argc, char **argv)
       i++;
     }
     std::string last = *(tokens.end() - 1);
-    if (last.compare("0"))
-      last = "-1";
-    else
-      last = "+1";
     str = last + " " + str;
     //std::cout << last << "\n";
     outfile << str << "\n";

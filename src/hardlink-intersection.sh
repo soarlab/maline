@@ -28,9 +28,19 @@ intersectedlogs=$3
 
 mkdir -p $intersectedlogs
 
+filelist=$(find $androidlogs -name "*.log")
+
 while read line
 do
-    hl=$(ls -1 $androidlogs/*.log | grep $line)
-    name=$(echo $hl | awk -F/ '{ print $NF}')
-    ln $hl $intersectedlogs/$name
+    hl=$(echo "$filelist" | grep --max-count=1 "$line")
+    if [ ! -z "$hl" ]; then
+        bname=$(basename $hl ".log")
+        ln $hl $intersectedlogs/${bname}.log
+        if [ -f "$androidlogs/${bname}.graph" ]; then
+            ln $androidlogs/${bname}.graph $intersectedlogs/${bname}.graph
+        fi
+        if [ -f "$androidlogs/${bname}.freq" ]; then
+            ln $androidlogs/${bname}.freq $intersectedlogs/${bname}.freq
+        fi
+    fi
 done < $intersectionlist

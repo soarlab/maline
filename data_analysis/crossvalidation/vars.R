@@ -3,5 +3,5 @@
 # It is intended to be sourced from other files
 #
 
-features.file <- '/common/WORK/iugrina/data/maline_github/data_analysis/data_sparse2.mm'
-output.data.dir <- '/common/WORK/iugrina/data/maline/test'
+features.file <- 'absolute_path_to_features_file'
+output.data.dir <- 'absolute_path_to_output_dir'
