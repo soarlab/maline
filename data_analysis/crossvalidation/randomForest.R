@@ -14,8 +14,6 @@ library(foreach)
 # gives X (covariates) and Y (outcome)
 source('./data.R')
 
-print(dim(X))
-
 index <- 1:nrow(X)
 
 ##############
@@ -38,7 +36,7 @@ build.and.test.forest <- function(testindex){
 }
 
 # reproducible research
-#set.seed(123)
+set.seed(123)
 
 # 5-fold outer cross-validation
 folds <- createFolds(index, 5)
