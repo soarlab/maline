@@ -1,4 +1,4 @@
-CXXFLAGS = -O2
+CXXFLAGS = -g -O2
 RM = rm -rf
 SRC_DIR=src
 BIN_DIR=bin

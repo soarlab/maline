@@ -40,12 +40,12 @@ int main(int argc, char **argv)
 
   std::string line;
 
-  if(argc < 3) {
+  if(argc < 4) {
     printf("Usage: %s FILENAME INDEXES FOLD\n", argv[0]);
     exit(-1);
   }
 
-  std::istringstream buffer(argv[2]);
+  std::istringstream buffer(argv[3]);
   buffer >> fold;
   fold--;
 
@@ -69,11 +69,11 @@ int main(int argc, char **argv)
     exit(-1);
   }
 
-  std::ifstream indexes(argv[1], std::ios_base::in);
+  std::ifstream indexes(argv[2], std::ios_base::in);
   boost::iostreams::filtering_istream in3;
   in3.push(indexes);
   for(; std::getline(in3, line); ) {
-    //std::cout << "Processed line " << line.size() << "\n";
+    std::cout << "Processed line " << line << "\n";
     std::vector<std::string> tokens;
     split(tokens, line, is_any_of(","));
 
