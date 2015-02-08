@@ -72,7 +72,7 @@ int main(int argc, char **argv)
   boost::iostreams::filtering_istream in3;
   in3.push(indexes);
   for(; std::getline(in3, line); ) {
-    std::cout << "Processed line " << line << "\n";
+    // std::cout << "Processed line " << line << "\n";
     std::vector<std::string> tokens;
     split(tokens, line, is_any_of(","));
 
