@@ -115,7 +115,7 @@ do
     
     for fold in 1 2 3 4 5
     do
-	create_datasets $filename $fold > results_count.dat
+	create_datasets $filename $fold
 	
 	for csvc in 4096 2048 1024 256 128 64 32 16 8 4 2 1 0.5 0.25 0.125 0.625 0.03125 0.015625 0.0078125 0.00390625
 	do
