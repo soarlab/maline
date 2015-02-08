@@ -47,7 +47,6 @@ int main(int argc, char **argv)
 
   std::istringstream buffer(argv[3]);
   buffer >> fold;
-  fold--;
 
   std::string filename1(argv[1]);
   std::stringstream s1;
@@ -78,7 +77,7 @@ int main(int argc, char **argv)
     split(tokens, line, is_any_of(","));
 
     int index;
-    std::istringstream buffer(tokens[fold]);
+    std::istringstream buffer(tokens[fold - 1]);
     buffer >> index;
 
     index_set.insert(index);
