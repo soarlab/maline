@@ -40,7 +40,7 @@ int main(int argc, char **argv)
 
   std::string line;
 
-  if(argc < 2) {
+  if(argc < 3) {
     printf("Usage: %s FILENAME INDEXES FOLD\n", argv[0]);
     exit(-1);
   }
