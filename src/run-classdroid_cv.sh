@@ -17,8 +17,8 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with maline.  If not, see <http://www.gnu.org/licenses/>.
 
-if [ "$#" -lt 4 ]; then
-    echo "Usage: run-classdroid.sh FILENAME SHUFFLE TRANSFORM_DATA TYPE(graph,freq)"
+if [ "$#" -lt 5 ]; then
+    echo "Usage: run-classdroid.sh FILENAME SHUFFLE TRANSFORM_DATA TYPE(graph,freq) INDEX_FILE"
     exit
 fi
 
@@ -44,48 +44,49 @@ svm()
     csvc=$1
     fold=$2
     
-    echo "Testing Set Fold $fold%" >> $results.$csvc
-    echo >> $results.$csvc
+    echo "Testing Set Fold $fold" >> $results.$csvc.$fold
+    echo >> $results.$csvc.$fold
         
-    echo "Linear Kernel" >> $results.$csvc
+    echo "Linear Kernel" >> $results.$csvc.$fold
     
     svm-train -s $type -t 0 -c $csvc -h 0 -b 1 $filename.training.$fold $filename.training.$fold.$csvc.model
-    svm-predict -b 1 $filename.testing.$fold $filename.training.$fold.$csvc.model $filename.$fold.$csvc.out >> $results.$csvc
+    svm-predict -b 1 $filename.testing.$fold $filename.training.$fold.$csvc.model $filename.$fold.$csvc.out >> $results.$csvc.$fold
     
-    echo >> $results.$csvc
+    echo >> $results.$csvc.$fold
     
     echo "Confusion Matrix"
-    confusion-matrix.sh $filename $fold $dir $csvc >> $results.$csvc
-    echo >> $results.$csvc
+    confusion-matrix.sh $filename $fold $dir $csvc >> $results.$csv.$fold
+    echo >> $results.$csvc.$fold
     
-    echo "RBF - Radial Basis Function" >> $results.$csvc
+    echo "RBF - Radial Basis Function" >> $results.$csvc.$fold
     
     svm-train -s $type -t 2 -c $csvc -h 0 -b 1 $filename.training.$fold $filename.training.$fold.$csvc.model
-    svm-predict -b 1 $filename.testing.$fold $filename.training.$fold.$csvc.model $filename.$fold.$csvc.out >> $results.$csvc
+    svm-predict -b 1 $filename.testing.$fold $filename.training.$fold.$csvc.model $filename.$fold.$csvc.out >> $results.$csvc.$fold
     
     echo "Confusion Matrix"
-    confusion-matrix.sh $filename $fold $dir $csvc >> $results.$csvc
-    echo >> $results.$csvc
+    confusion-matrix.sh $filename $fold $dir $csvc >> $results.$csvc.$fold
+    echo >> $results.$csvc.$fold
     
     
     for deg in 1 2 3 4 5
     do 
-	echo "Polynomial Kernel - Degree $deg" >> $results.$csvc
+	echo "Polynomial Kernel - Degree $deg" >> $results.$csvc.$fold
 	
 	svm-train -s $type -t 1 -c $csvc -d $deg -h 0 -b 1 $filename.training.$fold $filename.training.$fold.$csvc.model
-	svm-predict -b 1 $filename.testing.$fold $filename.training.$fold.$csvc.model $filename.$fold.$csvc.out >> $results.$csvc
+	svm-predict -b 1 $filename.testing.$fold $filename.training.$fold.$csvc.model $filename.$fold.$csvc.out >> $results.$csvc.$fold
 	
-	echo >> $results.$csvc
+	echo >> $results.$csvc.$fold
 	
 	echo "Confusion Matrix"
-	confusion-matrix.sh $filename $fold $dir $csvc >> $results.$csvc
-	echo >> $results.$csvc
+	confusion-matrix.sh $filename $fold $dir $csvc >> $results.$csvc.$fold
+	echo >> $results.$csvc.$fold
     done    
 }
 
 file=$1
 export shuff=$2
 transform=$3
+index_file=$5
 
 PWD=`pwd`
 date=$(date +"%Y%m%d%H%M%S")
@@ -100,8 +101,8 @@ fi
 
 export filename=$dir/$file.sparse
 
-cat $filename | sort -V > $dir/tmp
-mv $dir/tmp $filename
+# cat $filename | sort -V > $dir/tmp
+# mv $dir/tmp $filename
 
 results=$dir/results.dat
 
@@ -115,7 +116,7 @@ do
     
     for fold in 1 2 3 4 5
     do
-	create_datasets $filename $fold
+	create_datasets_cv $filename $index_file $fold
 	
 	for csvc in 4096 2048 1024 256 128 64 32 16 8 4 2 1 0.5 0.25 0.125 0.625 0.03125 0.015625 0.0078125 0.00390625
 	do
@@ -123,7 +124,7 @@ do
 		echo "Random" >> $results.$csvc.$fold
 	    fi
        	    echo "C-SVC value: $csvc" >> $results.$csvc.$fold
-	    svm $csvc $fold 
+	    svm $csvc $fold &
 	done
     done
 done
