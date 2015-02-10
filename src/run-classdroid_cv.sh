@@ -119,6 +119,7 @@ do
 	create_datasets_cv $filename $index_file $fold
 	
 	for csvc in 4096 2048 1024 256 128 64 32 16 8 4 2 1 0.5 0.25 0.125 0.625 0.03125 0.015625 0.0078125 0.00390625
+	# for csvc in 256 0.25 32 0.625
 	do
 	    if [ "$shuff" -eq 1 ]; then
 		echo "Random" >> $results.$csvc.$fold
