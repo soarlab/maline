@@ -12,13 +12,13 @@ else:
 
 telnet_workers = []
 ssh_workers = []
-nr_local_worker = 1
+nr_local_worker = 64
 
 class GridOption:
 	def __init__(self, dataset_pathname, options):
 		dirname = os.path.dirname(__file__)
 		if sys.platform != 'win32':
-			self.svmtrain_pathname = os.path.join(dirname, '../svm-train')
+			self.svmtrain_pathname = os.path.join(dirname, 'svm-train')
 			self.gnuplot_pathname = '/usr/bin/gnuplot'
 		else:
 			# example for windows

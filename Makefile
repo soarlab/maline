@@ -19,7 +19,7 @@ create_bin:
 	mkdir -p $(BIN_DIR) -m 775
 
 libsvm:
-	cd $(LIB_DIR) && make && cp svm-train ../../bin && cp svm-predict ../../bin
+	cd $(LIB_DIR) && make && cp svm-train ../../bin && cp svm-predict ../../bin && cp svm-scale ../../bin && cp tools/easy.py ../../bin && cp tools/grid.py ../../bin
 
 scripts:
 	find $(SRC_DIR) -not -name "*.cpp" -type f -print0 | xargs -0 cp -t $(BIN_DIR)

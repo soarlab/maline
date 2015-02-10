@@ -3,6 +3,10 @@
 import sys
 import os
 from subprocess import *
+from distutils.core import setup, Extension, Command
+from distutils.command.build import build
+from distutils.command.build_ext import build_ext
+from distutils.spawn import find_executable
 
 if len(sys.argv) <= 1:
 	print('Usage: {0} training_file [testing_file]'.format(sys.argv[0]))
@@ -12,10 +16,10 @@ if len(sys.argv) <= 1:
 
 is_win32 = (sys.platform == 'win32')
 if not is_win32:
-	svmscale_exe = "../svm-scale"
-	svmtrain_exe = "../svm-train"
-	svmpredict_exe = "../svm-predict"
-	grid_py = "./grid.py"
+	svmscale_exe = find_executable("svm-scale")
+	svmtrain_exe = find_executable("svm-train")
+	svmpredict_exe = find_executable("svm-predict")
+	grid_py = find_executable("grid.py")
 	gnuplot_exe = "/usr/bin/gnuplot"
 else:
         # example for windows

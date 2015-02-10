@@ -17,115 +17,89 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with maline.  If not, see <http://www.gnu.org/licenses/>.
 
-if [ "$#" -lt 5 ]; then
-    echo "Usage: run-classdroid.sh FILENAME SHUFFLE TRANSFORM_DATA TYPE(graph,freq) INDEX_FILE"
-    exit
-fi
-
-shuffle()
-{
-    filename=$1
-
-    gNum=$(cat $filename | awk -F " " '{ print $1 }' | grep 0 | wc -l)
-    mNum=$(cat $filename | awk -F " " '{ print $1 }' | grep 1 | wc -l)
-    
-    head -n $gNum $filename > $dir/goodware.tmp
-    tail -n $mNum $filename > $dir/malware.tmp
-
-    shuf $dir/goodware.tmp > $dir/tmp.goodware
-    shuf $dir/malware.tmp > $dir/tmp.malware
-
-    cat $dir/tmp.malware >> $dir/tmp.goodware
-    mv $dir/tmp.goodware $filename
-}
-
 svm()
 {
     csvc=$1
-    fold=$2
+    gamma=$2
+    fold=$3
     
-    echo "Testing Set Fold $fold" >> $results.$csvc.$fold
-    echo >> $results.$csvc.$fold
+    echo "Testing Set Fold $fold" >> $results.$fold
+    echo >> $results.$fold
         
-    echo "Linear Kernel" >> $results.$csvc.$fold
+    echo "Linear Kernel" >> $results.$fold
     
-    svm-train -s $type -t 0 -c $csvc -h 0 -b 1 $filename.training.$fold $filename.training.$fold.$csvc.model
-    svm-predict -b 1 $filename.testing.$fold $filename.training.$fold.$csvc.model $filename.$fold.$csvc.out >> $results.$csvc.$fold
+    svm-train -s $type -t 0 -c $csvc -g $gamma -h 0 -b 1 $filename.training.$fold $filename.training.$fold.model
+    svm-predict -b 1 $filename.testing.$fold $filename.training.$fold.model $filename.$fold.out >> $results.$fold
     
-    echo >> $results.$csvc.$fold
+    echo >> $results.$fold
     
     echo "Confusion Matrix"
     confusion-matrix_cv.sh $filename $fold $dir $csvc >> $results.$csv.$fold
-    echo >> $results.$csvc.$fold
+    echo >> $results.$fold
     
-    echo "RBF - Radial Basis Function" >> $results.$csvc.$fold
+    echo "RBF - Radial Basis Function" >> $results.$fold
     
-    svm-train -s $type -t 2 -c $csvc -h 0 -b 1 $filename.training.$fold $filename.training.$fold.$csvc.model
-    svm-predict -b 1 $filename.testing.$fold $filename.training.$fold.$csvc.model $filename.$fold.$csvc.out >> $results.$csvc.$fold
+    svm-train -s $type -t 2 -c $csvc -g $gamma -h 0 -b 1 $filename.training.$fold $filename.training.$fold.model
+    svm-predict -b 1 $filename.testing.$fold $filename.training.$fold.model $filename.$fold.out >> $results.$fold
     
     echo "Confusion Matrix"
-    confusion-matrix_cv.sh $filename $fold $dir $csvc >> $results.$csvc.$fold
-    echo >> $results.$csvc.$fold
+    confusion-matrix_cv.sh $filename $fold $dir $csvc >> $results.$fold
+    echo >> $results.$fold
     
     
     for deg in 1 2 3 4 5
     do 
-	echo "Polynomial Kernel - Degree $deg" >> $results.$csvc.$fold
+	echo "Polynomial Kernel - Degree $deg" >> $results.$fold
 	
-	svm-train -s $type -t 1 -c $csvc -d $deg -h 0 -b 1 $filename.training.$fold $filename.training.$fold.$csvc.model
-	svm-predict -b 1 $filename.testing.$fold $filename.training.$fold.$csvc.model $filename.$fold.$csvc.out >> $results.$csvc.$fold
+	svm-train -s $type -t 1 -c $csvc -g $gamma -d $deg -h 0 -b 1 $filename.training.$fold $filename.training.$fold.model
+	svm-predict -b 1 $filename.testing.$fold $filename.training.$fold.model $filename.$fold.out >> $results.$fold
 	
-	echo >> $results.$csvc.$fold
+	echo >> $results.$fold
 	
 	echo "Confusion Matrix"
-	confusion-matrix_cv.sh $filename $fold $dir $csvc >> $results.$csvc.$fold
-	echo >> $results.$csvc.$fold
+	confusion-matrix_cv.sh $filename $fold $dir >> $results.$fold
+	echo >> $results.$fold
     done    
 }
 
+if [ "$#" -lt 7 ]; then
+    echo "Usage: run-classdroid.sh FILENAME TRANSFORM_DATA TYPE(graph,freq) INDEX_FILE CSVC GAMMA SCALE"
+    exit
+fi
+
 file=$1
-export shuff=$2
-transform=$3
-index_file=$5
+transform=$2
+index_file=$4
+csvc=$5
+gamma=$6
+scale=$7
 
 PWD=`pwd`
 date=$(date +"%Y%m%d%H%M%S")
-dir="svmresults_${date}_$4"
+dir="svmresults_${date}_$3"
 mkdir $dir
+
+SCALE=""
+if [ "$scale" -eq 1 ]; then
+    SCALE=".scale"
+fi
 
 if [ "$transform" -eq 1 ]; then
     transforms_data $file $dir
 else
-    ln -s $PWD/$file.sparse $dir/$file.sparse
+    ln -s $PWD/$file.sparse$SCALE $dir/$file.sparse$SCALE
 fi
 
-export filename=$dir/$file.sparse
-
-# cat $filename | sort -V > $dir/tmp
-# mv $dir/tmp $filename
+export filename=$dir/$file.sparse$SCALE
 
 results=$dir/results.dat
 
-#touch $results
-
-for type in 0
+type=0
+for fold in 1 2 3 4 5
 do
-    if [ "$shuff" -eq 1 ]; then
-	shuffle "$filename"
-    fi
+    create_datasets_cv $filename $index_file $fold
     
-    for fold in 1 2 3 4 5
-    do
-	create_datasets_cv $filename $index_file $fold
-	
-	for csvc in 4096 2048 1024 256 128 64 32 16 8 4 2 1 0.5 0.25 0.125 0.625 0.03125 0.015625 0.0078125 0.00390625
-	# for csvc in 256 0.25 32 0.625
-	do
-	    if [ "$shuff" -eq 1 ]; then
-		echo "Random" >> $results.$csvc.$fold
-	    fi
-       	    echo "C-SVC value: $csvc" >> $results.$csvc.$fold
-	    svm $csvc $fold &
-	done
-    done
+    echo "C-SVC value: $csvc" >> $results.$fold
+    echo "GAMMA value: $gamma" >> $results.$fold
+    svm $csvc $gamma $fold &
 done
