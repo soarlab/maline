@@ -28,19 +28,19 @@ svm()
         
     echo "Linear Kernel" >> $results.$fold
     
-    svm-train -s $type -t 0 -c $csvc -g $gamma -h 0 -b 1 $filename.training.$fold $filename.training.$fold.model
-    svm-predict -b 1 $filename.testing.$fold $filename.training.$fold.model $filename.$fold.out >> $results.$fold
+    svm-train -s $type -t 0 -c $csvc -g $gamma -h 0 -b 1 $filename.training.$fold $filename.training.$fold.linear.model
+    svm-predict -b 1 $filename.testing.$fold $filename.training.$fold.linear.model $filename.$fold.linear.out >> $results.$fold
     
     echo >> $results.$fold
     
     echo "Confusion Matrix"
-    confusion-matrix_cv.sh $filename $fold $dir >> $results.$csv.$fold
+    confusion-matrix_cv.sh $filename $fold $dir >> $results.$fold
     echo >> $results.$fold
     
     echo "RBF - Radial Basis Function" >> $results.$fold
     
-    svm-train -s $type -t 2 -c $csvc -g $gamma -h 0 -b 1 $filename.training.$fold $filename.training.$fold.model
-    svm-predict -b 1 $filename.testing.$fold $filename.training.$fold.model $filename.$fold.out >> $results.$fold
+    svm-train -s $type -t 2 -c $csvc -g $gamma -h 0 -b 1 $filename.training.$fold $filename.training.$fold.rbf.model
+    svm-predict -b 1 $filename.testing..$fold $filename.training.$fold.rbf.model $filename.$fold.rbf.out >> $results.$fold
     
     echo "Confusion Matrix"
     confusion-matrix_cv.sh $filename $fold $dir >> $results.$fold
@@ -51,8 +51,8 @@ svm()
     do 
 	echo "Polynomial Kernel - Degree $deg" >> $results.$fold
 	
-	svm-train -s $type -t 1 -c $csvc -g $gamma -d $deg -h 0 -b 1 $filename.training.$fold $filename.training.$fold.model
-	svm-predict -b 1 $filename.testing.$fold $filename.training.$fold.model $filename.$fold.out >> $results.$fold
+	svm-train -s $type -t 1 -c $csvc -g $gamma -d $deg -h 0 -b 1 $filename.training.$fold $filename.training.$fold.k$deg.model
+	svm-predict -b 1 $filename.testing.$fold $filename.training.$fold.k$deg.model $filename.$fold.k$deg.out >> $results.$fold
 	
 	echo >> $results.$fold
 	
