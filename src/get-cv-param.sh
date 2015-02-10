@@ -45,6 +45,6 @@ do
     dir=$line/transformed_data
     mkdir -p $dir
     cd $line
-    classification $graph graph
     classification $freq freq
+    classification $graph graph
 done < $explist
