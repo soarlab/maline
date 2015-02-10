@@ -26,7 +26,7 @@ classification()
     python $easy $item.sparse 
     csvc=$(sort -t= -nr -k3 $item.sparse.scale.out | head -1 | awk -F" " '{ print $1 }' | awk -F"=" '{print $2 }')
     gamma=$(sort -t= -nr -k3 $item.sparse.scale.out | head -1 | awk -F" " '{ print $2 }' | awk -F"=" '{print $2 }')
-    run-classdroid_cv.sh $item 0 $name ../../folds.csv $csvc $gamma 1
+    run-classdroid_cv.sh $item 0 $name ../../folds.csv $csvc $gamma 1 &
 }
 
 if [ "$#" -lt 1 ]; then
@@ -45,6 +45,6 @@ do
     dir=$line/transformed_data
     mkdir -p $dir
     cd $line
-    classification $graph graph &
-    classification $freq freq &
+    classification $graph graph
+    classification $freq freq
 done < $explist

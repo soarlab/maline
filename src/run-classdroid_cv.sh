@@ -34,7 +34,7 @@ svm()
     echo >> $results.$fold
     
     echo "Confusion Matrix"
-    confusion-matrix_cv.sh $filename $fold $dir $csvc >> $results.$csv.$fold
+    confusion-matrix_cv.sh $filename $fold $dir >> $results.$csv.$fold
     echo >> $results.$fold
     
     echo "RBF - Radial Basis Function" >> $results.$fold
@@ -43,7 +43,7 @@ svm()
     svm-predict -b 1 $filename.testing.$fold $filename.training.$fold.model $filename.$fold.out >> $results.$fold
     
     echo "Confusion Matrix"
-    confusion-matrix_cv.sh $filename $fold $dir $csvc >> $results.$fold
+    confusion-matrix_cv.sh $filename $fold $dir >> $results.$fold
     echo >> $results.$fold
     
     
