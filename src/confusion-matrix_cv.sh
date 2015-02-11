@@ -17,23 +17,24 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with maline.  If not, see <http://www.gnu.org/licenses/>.
 
-if [ "$#" -lt 3 ]; then
-    echo "Usage: confusion-matrix.sh FILENAME FOLD DIR"
+if [ "$#" -lt 4 ]; then
+    echo "Usage: confusion-matrix.sh FILENAME FOLD DIR TYPE"
     exit 1
 fi
 
 filename=$1
 fold=$2
 dir=$3
+type=$4
 
 $(cat $filename.testing.$fold | awk -F " " '{ print $1 }' > $dir/orig_label.dat)
-paste $dir/orig_label.dat $filename.$fold.out > $dir/compare.$fold.dat
+paste $dir/orig_label.dat $filename.$fold.$type.out > $dir/compare.$fold.$type.dat
 gNum=$(cat $filename.testing.$fold | awk -F " " '{ print $1 }' | grep "0" | wc -l)
 mNum=$(cat $filename.testing.$fold | awk -F " " '{ print $1 }' | grep "1" | wc -l)
-goodware=$(cat $dir/compare.$fold.dat | awk -F "\t" '{if ($1 == $2 && $1 == "0") print $1 }' | wc -l)
-malware=$(cat $dir/compare.$fold.dat | awk -F "\t" '{if ($1 == $2 && $1 == "1") print $1 }' | wc -l)
-wrongGoodware=$(cat $dir/compare.$fold.dat | awk -F "\t" '{if ($1 != $2 && $1 == "0") print $1 }' | wc -l)
-wrongMalware=$(cat $dir/compare.$fold.dat | awk -F "\t" '{if ($1 != $2 && $1 == "1") print $1 }' | wc -l)
+goodware=$(cat $dir/compare.$fold.$type.dat | awk -F "\t" '{if ($1 == $2 && $1 == "0") print $1 }' | wc -l)
+malware=$(cat $dir/compare.$fold.$type.dat | awk -F "\t" '{if ($1 == $2 && $1 == "1") print $1 }' | wc -l)
+wrongGoodware=$(cat $dir/compare.$fold.$type.dat | awk -F "\t" '{if ($1 != $2 && $1 == "0") print $1 }' | wc -l)
+wrongMalware=$(cat $dir/compare.$fold.$type.dat | awk -F "\t" '{if ($1 != $2 && $1 == "1") print $1 }' | wc -l)
 
 echo "Testing Set"
 echo -e "Number of goodware: "$gNum
@@ -42,4 +43,4 @@ printf "\t\tgoodware\tmalware\n"
 printf "goodware\t%s\t\t%s\n" "$goodware" "$wrongGoodware"
 printf " malware\t%s\t\t%s\n" "$wrongMalware" "$malware"
 
-rm -rf $dir/orig_label.dat $dir/compare.$fold.dat
+rm -rf $dir/orig_label.dat $dir/compare.$fold.$type.dat

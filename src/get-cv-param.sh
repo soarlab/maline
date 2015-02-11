@@ -20,7 +20,8 @@
 classification()
 {
     item=$1
-    name=$2
+    dir=$2
+    name=$3
     transforms_data $item $dir
     cd $dir
     python $easy $item.sparse 
@@ -45,6 +46,6 @@ do
     dir=$line/transformed_data
     mkdir -p $dir
     cd $line
-    classification $freq freq
-    classification $graph graph
+    classification $freq $dir freq
+    classification $graph $dir graph
 done < $explist
