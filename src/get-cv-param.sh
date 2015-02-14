@@ -17,35 +17,31 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with maline.  If not, see <http://www.gnu.org/licenses/>.
 
-classification()
-{
-    item=$1
-    dir=$2
-    name=$3
-    transforms_data $item $dir
-    cd $dir
-    python $easy $item.sparse 
-    csvc=$(sort -t= -nr -k3 $item.sparse.scale.out | head -1 | awk -F" " '{ print $1 }' | awk -F"=" '{print $2 }')
-    gamma=$(sort -t= -nr -k3 $item.sparse.scale.out | head -1 | awk -F" " '{ print $2 }' | awk -F"=" '{print $2 }')
-    run-classdroid_cv.sh $item 0 $name ../../folds.csv $csvc $gamma 1 &
-}
-
 if [ "$#" -lt 1 ]; then
-    echo "Usage: get-cv-params.sh FOLDERS_LIST"
+    echo "Usage: get-cv-params.sh FOLDERS_LIST INDEX_FILE TYPE[freq,graph]"
     exit
 fi
 
 explist=$1
+inde_file=$2
+type=$3
 dirint=$(dirname $explist)
-graph="feature-matrix-graph"
-freq="feature-matrix-freq"
+filename="feature-matrix-"$type
 easy=$(which easy.py)
 
 while read line
 do
+    cd $line
+    for fold in 1 2 3 4 5
+    do
+	create_datasets_cv $filename $index_file $fold
+	transforms_data $filename $dir
+    done
     dir=$line/transformed_data
     mkdir -p $dir
-    cd $line
-    classification $freq $dir freq
-    classification $graph $dir graph
+    cd $dir
+    python $easy $item.sparse 
+    csvc=$(sort -t= -nr -k3 $item.sparse.scale.out | head -1 | awk -F" " '{ print $1 }' | awk -F"=" '{print $2 }')
+    gamma=$(sort -t= -nr -k3 $item.sparse.scale.out | head -1 | awk -F" " '{ print $2 }' | awk -F"=" '{print $2 }')
+    run-classdroid_cv.sh $filename $type ../../folds.csv $csvc $gamma 1 &
 done < $explist

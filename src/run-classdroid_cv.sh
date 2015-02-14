@@ -62,21 +62,20 @@ svm()
     done    
 }
 
-if [ "$#" -lt 7 ]; then
-    echo "Usage: run-classdroid.sh FILENAME TRANSFORM_DATA TYPE(graph,freq) INDEX_FILE CSVC GAMMA SCALE"
+if [ "$#" -lt 6 ]; then
+    echo "Usage: run-classdroid.sh FILENAME TYPE(graph,freq) FOLD CSVC GAMMA SCALE"
     exit
 fi
 
 file=$1
-transform=$2
-index_file=$4
-csvc=$5
-gamma=$6
-scale=$7
+fold=$3
+csvc=$4
+gamma=$5
+scale=$6
 
 PWD=`pwd`
 date=$(date +"%Y%m%d%H%M%S")
-dir="svmresults_${date}_$3"
+dir="svmresults_${date}_$2"
 mkdir $dir
 
 SCALE=""
@@ -84,11 +83,7 @@ if [ "$scale" -eq 1 ]; then
     SCALE=".scale"
 fi
 
-if [ "$transform" -eq 1 ]; then
-    transforms_data $file $dir
-else
-    ln -s $PWD/$file.sparse$SCALE $dir/$file.sparse$SCALE
-fi
+ln -s $PWD/$file.sparse$SCALE $dir/$file.sparse$SCALE
 
 export filename=$dir/$file.sparse$SCALE
 
@@ -97,8 +92,6 @@ results=$dir/results.dat
 type=0
 for fold in 1 2 3 4 5
 do
-    create_datasets_cv $filename $index_file $fold
-    
     echo "C-SVC value: $csvc" >> $results.$fold
     echo "GAMMA value: $gamma" >> $results.$fold
     svm $csvc $gamma $fold &
