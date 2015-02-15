@@ -1,0 +1,23 @@
+This README summarizes artifacts for our USENIX Security Symposium 2015 paper
+submission.
+
+# Installed software
+
+We used [a script](../../env/emulab/prepare-node.sh) to install software packages. A list of all system-wide
+packages installed with the script, including their versions, is in
+[system-packages-installed](./system-packages-installed).
+
+Furthermore, we used Libsvm 3.17 and R 3.11, which were compiled from
+sources. The Android SDK was built from sources too. The exact versions of all
+more than four hundred Git repository dependencies for the SDK can be found in
+[repo-snapshot-2014-05-22.xml](../repo-snapshot-2014-05-22.xml).
+
+# List of applications
+
+We keep a list of applications analyzed. It consists of one line per
+application. For malware it is composed of a hash file name and the package
+name of the application. For goodware it is composed of the package name
+only. The list can be found in [list-of-apps.txt](./list-of-apps.txt). Malware apps were obtained
+from the Drebin dataset, which its authors created by collecting apps from
+August 2010 to October 2012. The goodware apps were crawled from Google Play
+in February 2014.
