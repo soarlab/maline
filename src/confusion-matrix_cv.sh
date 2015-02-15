@@ -18,18 +18,19 @@
 # along with maline.  If not, see <http://www.gnu.org/licenses/>.
 
 if [ "$#" -lt 3 ]; then
-    echo "Usage: confusion-matrix.sh FILENAME FOLD TYPE"
+    echo "Usage: confusion-matrix.sh FILENAME FOLD ALG"
     exit 1
 fi
 
 testing_file=$1
 fold=$2
-type=$3
 dir=`pwd`
+alg=$3
 
 $(cat $dir/../$testing_file | awk -F " " '{ print $1 }' > $dir/orig_label.dat)
+
 paste orig_label.dat $dir/../$testing_file > $dir/compare.$fold.dat
-gNum=$(cat $dir/../$testing_file | awk -F " " '{ print $1 }' | grep "0" | wc -l)
+gNum=$(cat $dir/../$testing_file.$alg.out | awk -F " " '{ print $1 }' | grep "0" | wc -l)
 mNum=$(cat $dir/../$testing_file | awk -F " " '{ print $1 }' | grep "1" | wc -l)
 goodware=$(cat $dir/compare.$fold.dat | awk -F "\t" '{if ($1 == $2 && $1 == "0") print $1 }' | wc -l)
 malware=$(cat $dir/compare.$fold.dat | awk -F "\t" '{if ($1 == $2 && $1 == "1") print $1 }' | wc -l)

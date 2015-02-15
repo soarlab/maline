@@ -17,7 +17,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with maline.  If not, see <http://www.gnu.org/licenses/>.
 
-if [ "$#" -lt 4 ]; then
+if [ "$#" -lt 5 ]; then
     echo "Usage: confusion-matrix.sh FILENAME RATIO DIR CSVC"
     exit 1
 fi

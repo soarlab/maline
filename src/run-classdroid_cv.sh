@@ -30,7 +30,7 @@ svm()
     echo >> $results
     
     echo "Confusion Matrix"
-    confusion-matrix_cv.sh $testing_file $fold $type >> $results
+    confusion-matrix_cv.sh $testing_file $fold linear >> $results
     echo >> $results
     
     echo "RBF - Radial Basis Function" >> $results
@@ -39,7 +39,7 @@ svm()
     svm-predict -b 1 $current/$testing_file $training_file.rbf.model $testing_file.rbf.out >> $results
     
     echo "Confusion Matrix"
-    confusion-matrix_cv.sh $testing_file $fold $type >> $results
+    confusion-matrix_cv.sh $testing_file $fold rbf >> $results
     echo >> $results
     
     
@@ -53,7 +53,7 @@ svm()
 	echo >> $results
 	
 	echo "Confusion Matrix"
-	confusion-matrix_cv.sh $testing_file $fold $type >> $results
+	confusion-matrix_cv.sh $testing_file $fold k$deg >> $results
 	echo >> $results
     done    
 }
@@ -81,7 +81,7 @@ if [ "$scale" -eq 1 ]; then
     SCALE=".scale"
 fi
 
-results="feature-matrix-"$type.$fold.result
+results="feature-matrix-"$name.$fold.result
 
 type=0
 echo "C-SVC value: $csvc" >> $results
