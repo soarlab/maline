@@ -69,7 +69,7 @@ int main(int argc, char **argv)
 
     std::string str;
     str.reserve(line.size() * 2);  
-    int i = 0;
+    int i = 1;
     for(std::vector<std::string>::const_iterator iter = tokens.begin(); iter + 1 != tokens.end(); ++iter) {
       if ((*iter).compare("0.000000") != 0) {
 	//std::cout << *iter << '\n';

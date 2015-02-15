@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -x
 
 # Copyright 2013,2014 Marko Dimjašević, Simone Atzeni, Ivo Ugrina, Zvonimir Rakamarić
 #
@@ -19,63 +19,61 @@
 
 svm()
 {
-    csvc=$1
-    gamma=$2
-    fold=$3
-    
-    echo "Testing Set Fold $fold" >> $results.$fold
-    echo >> $results.$fold
+    echo "Testing Set Fold $fold" >> $results
+    echo >> $results
         
-    echo "Linear Kernel" >> $results.$fold
+    echo "Linear Kernel" >> $results
     
-    svm-train -s $type -t 0 -c $csvc -g $gamma -h 0 -b 1 $filename.training.$fold $filename.training.$fold.linear.model
-    svm-predict -b 1 $filename.testing.$fold $filename.training.$fold.linear.model $filename.$fold.linear.out >> $results.$fold
+    svm-train -s $type -t 0 -c $csvc -g $gamma -h 0 -b 1 $current/$training_file $training_file.linear.model
+    svm-predict -b 1 $current/$testing_file $training_file.linear.model $testing_file.linear.out >> $results
     
-    echo >> $results.$fold
-    
-    echo "Confusion Matrix"
-    confusion-matrix_cv.sh $filename $fold $dir >> $results.$fold
-    echo >> $results.$fold
-    
-    echo "RBF - Radial Basis Function" >> $results.$fold
-    
-    svm-train -s $type -t 2 -c $csvc -g $gamma -h 0 -b 1 $filename.training.$fold $filename.training.$fold.rbf.model
-    svm-predict -b 1 $filename.testing.$fold $filename.training.$fold.rbf.model $filename.$fold.rbf.out >> $results.$fold
+    echo >> $results
     
     echo "Confusion Matrix"
-    confusion-matrix_cv.sh $filename $fold $dir >> $results.$fold
-    echo >> $results.$fold
+    confusion-matrix_cv.sh $testing_file $fold $type >> $results
+    echo >> $results
+    
+    echo "RBF - Radial Basis Function" >> $results
+    
+    svm-train -s $type -t 2 -c $csvc -g $gamma -h 0 -b 1 $current/$training_file $training_file.rbf.model
+    svm-predict -b 1 $current/$testing_file $training_file.rbf.model $testing_file.rbf.out >> $results
+    
+    echo "Confusion Matrix"
+    confusion-matrix_cv.sh $testing_file $fold $type >> $results
+    echo >> $results
     
     
     for deg in 1 2 3 4 5
     do 
-	echo "Polynomial Kernel - Degree $deg" >> $results.$fold
+	echo "Polynomial Kernel - Degree $deg" >> $results
 	
-	svm-train -s $type -t 1 -c $csvc -g $gamma -d $deg -h 0 -b 1 $filename.training.$fold $filename.training.$fold.k$deg.model
-	svm-predict -b 1 $filename.testing.$fold $filename.training.$fold.k$deg.model $filename.$fold.k$deg.out >> $results.$fold
+	svm-train -s $type -t 1 -c $csvc -g $gamma -d $deg -h 0 -b 1 $current/$training_file $training_file.k$deg.model
+	svm-predict -b 1 $current/$testing_file $training_file.k$deg.model $testing_file.k$deg.out >> $results
 	
-	echo >> $results.$fold
+	echo >> $results
 	
 	echo "Confusion Matrix"
-	confusion-matrix_cv.sh $filename $fold $dir >> $results.$fold
-	echo >> $results.$fold
+	confusion-matrix_cv.sh $testing_file $fold $type >> $results
+	echo >> $results
     done    
 }
 
-if [ "$#" -lt 6 ]; then
-    echo "Usage: run-classdroid.sh FILENAME TYPE(graph,freq) FOLD CSVC GAMMA SCALE"
+if [ "$#" -lt 7 ]; then
+    echo "Usage: run-classdroid.sh TRAINING_FILE TESTING_FILE FOLD TYPE(graph,freq) CSVC GAMMA SCALE"
     exit
 fi
 
-file=$1
+training_file=$1
+testing_file=$2
 fold=$3
-csvc=$4
-gamma=$5
-scale=$6
+name=$4
+csvc=$5
+gamma=$6
+scale=$7
 
-PWD=`pwd`
+current=`pwd`
 date=$(date +"%Y%m%d%H%M%S")
-dir="svmresults_${date}_$2"
+dir="svmresults_${date}_$name"
 mkdir $dir
 
 SCALE=""
@@ -83,16 +81,10 @@ if [ "$scale" -eq 1 ]; then
     SCALE=".scale"
 fi
 
-ln -s $PWD/$file.sparse$SCALE $dir/$file.sparse$SCALE
-
-export filename=$dir/$file.sparse$SCALE
-
-results=$dir/results.dat
+results="feature-matrix-"$type.$fold.result
 
 type=0
-for fold in 1 2 3 4 5
-do
-    echo "C-SVC value: $csvc" >> $results.$fold
-    echo "GAMMA value: $gamma" >> $results.$fold
-    svm $csvc $gamma $fold &
-done
+echo "C-SVC value: $csvc" >> $results
+echo "GAMMA value: $gamma" >> $results
+cd $dir
+svm

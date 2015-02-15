@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -x
 
 # Copyright 2013,2014 Marko Dimjašević, Simone Atzeni, Ivo Ugrina, Zvonimir Rakamarić
 #
@@ -17,13 +17,13 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with maline.  If not, see <http://www.gnu.org/licenses/>.
 
-if [ "$#" -lt 1 ]; then
+if [ "$#" -lt 3 ]; then
     echo "Usage: get-cv-params.sh FOLDERS_LIST INDEX_FILE TYPE[freq,graph]"
     exit
 fi
 
 explist=$1
-inde_file=$2
+index_file=$2
 type=$3
 dirint=$(dirname $explist)
 filename="feature-matrix-"$type
@@ -32,16 +32,17 @@ easy=$(which easy.py)
 while read line
 do
     cd $line
-    for fold in 1 2 3 4 5
-    do
-	create_datasets_cv $filename $index_file $fold
-	transforms_data $filename $dir
-    done
     dir=$line/transformed_data
     mkdir -p $dir
+    transforms_data $filename $dir
     cd $dir
-    python $easy $item.sparse 
-    csvc=$(sort -t= -nr -k3 $item.sparse.scale.out | head -1 | awk -F" " '{ print $1 }' | awk -F"=" '{print $2 }')
-    gamma=$(sort -t= -nr -k3 $item.sparse.scale.out | head -1 | awk -F" " '{ print $2 }' | awk -F"=" '{print $2 }')
-    run-classdroid_cv.sh $filename $type ../../folds.csv $csvc $gamma 1 &
+    for fold in 1 2 3 4 5
+    do
+	create_datasets_cv $filename.sparse ../../$index_file $fold
+	python $easy $filename.sparse.training.$fold 
+	svm-scale $filename.sparse.testing.$fold > $filename.sparse.testing.$fold.scale
+	csvc=$(sort -t= -nr -k3 $filename.sparse.training.$fold.scale.out | head -1 | awk -F" " '{ print $1 }' | awk -F"=" '{print $2 }')
+	gamma=$(sort -t= -nr -k3 $filename.sparse.training.$fold.scale.out | head -1 | awk -F" " '{ print $2 }' | awk -F"=" '{print $2 }')
+	run-classdroid_cv.sh $filename.sparse.training.$fold.scale $filename.sparse.testing.$fold.scale $fold $type $csvc $gamma 1 &
+    done
 done < $explist
