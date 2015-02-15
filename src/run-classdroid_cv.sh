@@ -73,7 +73,7 @@ scale=$7
 
 current=`pwd`
 date=$(date +"%Y%m%d%H%M%S")
-dir="svmresults_${date}_$name"
+dir="svmresults_${date}_$name_fold$fold"
 mkdir $dir
 
 SCALE=""
