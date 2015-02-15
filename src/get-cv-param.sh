@@ -28,6 +28,7 @@ type=$3
 dirint=$(dirname $explist)
 filename="feature-matrix-"$type
 easy=$(which easy.py)
+grid=$(which grid.py)
 
 while read line
 do
@@ -39,11 +40,12 @@ do
     for fold in 1 2 3 4 5
     do
 	create_datasets_cv $filename.sparse ../../$index_file $fold
-	python $easy $filename.sparse.training.$fold 
+	svm-scale $filename.sparse.training.$fold > $filename.sparse.training.$fold.scale
 	svm-scale $filename.sparse.testing.$fold > $filename.sparse.testing.$fold.scale
+	python $grid $filename.sparse.training.$fold 
 	acc=$(cat $filename.sparse.training.$fold.scale.out | awk -F" " '{print $3}' | awk -F"=" '{ print $2 }' | sort -nr | head -1)
 	csvc=$(cat $filename.sparse.training.$fold.scale.out | grep $acc | head -1 | awk -F" " '{ print $1 }' | awk -F"=" '{print $2 }')
 	gamma=$(cat $filename.sparse.training.$fold.scale.out | grep $acc | head -1 | awk -F" " '{ print $2 }' | awk -F"=" '{print $2 }')
-	run-classdroid_cv.sh $filename.sparse.training.$fold.scale $filename.sparse.testing.$fold.scale $fold $type $((2**$csvc)) $((2**$gamma)) 1 &
+	run-classdroid_cv.sh $filename.sparse.training.$fold.scale $filename.sparse.testing.$fold.scale $fold $type $((2**$csvc)) $((2**$gamma)) 1
     done
 done < $explist
