@@ -32,7 +32,8 @@ build.and.test.forest <- function(testindex){
 		set.seed(testindex[y])
    		rf <- randomForest(X[trainindex,], Y[trainindex], ntree=50, norm.votes=FALSE) #, do.trace=TRUE)
 	}
-	list(ff, confusionMatrix(Y[testindex], predict(ff,  newdata=X[testindex,])) )
+	list(ff, confusionMatrix(Y[testindex], predict(ff,  newdata=X[testindex,])),
+	data.frame(predict(ff,  newdata=X[testindex,], type="prob"), truth=Y[testindex]) )
 }
 
 # reproducible research

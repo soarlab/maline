@@ -24,3 +24,27 @@ print(table(Y))
 # delete all features that bare no information
 zeros <- (apply(X, 2, max) == 0)
 X <- X[, !zeros]
+
+if(dsample == TRUE){
+	library(caret)
+	index <- 1:nrow(X)
+	if(do.seed == TRUE) set.seed(451)
+	ds <- downSample(index, Y)
+	X <- X[ds$x,]
+	Y <- Y[ds$x]
+}
+
+if(usample == TRUE){
+	library(caret)
+	index <- 1:nrow(X)
+	if(do.seed == TRUE) set.seed(451)
+	ds <- upSample(index, Y)
+	X <- X[ds$x,]
+	Y <- Y[ds$x]
+}
+
+print(table(Y))
+
+if(do.ones == TRUE) {
+	X[X!=0] <- 1
+}
