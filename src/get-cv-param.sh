@@ -40,6 +40,7 @@ do
     svm-scale $filename.sparse > $filename.sparse.scale
     for fold in 1 2 3 4 5
     do
+	cd $dir
 	create_datasets_cv $filename.sparse.scale ../../$index_file $fold
 	run-classdroid_cv.sh $filename.sparse.scale.training.$fold $filename.sparse.scale.testing.$fold $fold $type 1
     done

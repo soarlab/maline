@@ -29,8 +29,9 @@ alg=$3
 
 $(cat $dir/../$testing_file | awk -F " " '{ print $1 }' > $dir/orig_label.dat)
 
-paste orig_label.dat $dir/../$testing_file > $dir/compare.$fold.dat
-gNum=$(cat $dir/../$testing_file.$alg.out | awk -F " " '{ print $1 }' | grep "0" | wc -l)
+cat $dir/$testing_file.$alg.out | grep -v labels | awk -F " " '{ print $1 }' > tmp.dat
+paste orig_label.dat tmp.dat  > $dir/compare.$fold.dat
+gNum=$(cat $dir/../$testing_file | awk -F " " '{ print $1 }' | grep "0" | wc -l)
 mNum=$(cat $dir/../$testing_file | awk -F " " '{ print $1 }' | grep "1" | wc -l)
 goodware=$(cat $dir/compare.$fold.dat | awk -F "\t" '{if ($1 == $2 && $1 == "0") print $1 }' | wc -l)
 malware=$(cat $dir/compare.$fold.dat | awk -F "\t" '{if ($1 == $2 && $1 == "1") print $1 }' | wc -l)
@@ -40,8 +41,8 @@ wrongMalware=$(cat $dir/compare.$fold.dat | awk -F "\t" '{if ($1 != $2 && $1 == 
 echo "Testing Set"
 echo -e "Number of goodware: "$gNum
 echo -e "Number of malware: "$mNum
-printf "\t\tgoodware\tmalware\n"
-printf "goodware\t%s\t\t%s\n" "$goodware" "$wrongGoodware"
-printf " malware\t%s\t\t%s\n" "$wrongMalware" "$malware"
+echo "\t\tgoodware\tmalware\n"
+echo "goodware\t%s\t\t%s\n" "$goodware" "$wrongGoodware"
+echo " malware\t%s\t\t%s\n" "$wrongMalware" "$malware"
 
-rm -rf $dir/orig_label.dat $dir/compare.$fold.dat
+rm -rf $dir/orig_label.dat $dir/compare.$fold.dat $dir/tmp.dat

@@ -34,10 +34,10 @@ svm()
     echo "GAMMA value: $gamma" >> $results
     svm-train -s 0 -t 0 -c $csvc -b 1 -h 0 $current/$training_file $training_file.linear.model
     svm-predict -b 1 $current/$testing_file $training_file.linear.model $testing_file.linear.out >> $results
-    
     echo >> $results
     
     echo "Confusion Matrix"
+    echo $testing_file
     confusion-matrix_cv.sh $testing_file $fold linear >> $results
     echo >> $results
     
