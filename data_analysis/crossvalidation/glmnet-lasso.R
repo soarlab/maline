@@ -27,7 +27,8 @@ inner.cv <- function(testindex){
 	registerDoMC(cores=inner.cores)
 	trainindex <- index[-testindex]
 	lasso.mod <- cv.glmnet(X[trainindex,], Y[trainindex], alpha=1, family="binomial", type.measure="class", parallel=TRUE)
-	list(lasso.mod, confusionMatrix(Y[testindex], predict(lasso.mod, s="lambda.min", newx=X[testindex,], type="class")) )
+	list(lasso.mod, confusionMatrix(predict(lasso.mod, s="lambda.min", newx=X[testindex,], type="class"), Y[testindex]),
+	data.frame(malware=predict(lasso.mod, s="lambda.min", newx=X[testindex,], type="response"), truth=Y[testindex]) )
 }
 
 # reproducible research

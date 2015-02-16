@@ -26,7 +26,8 @@ inner.cv <- function(testindex){
 	registerDoMC(cores=inner.cores)
 	trainindex <- index[-testindex]
 	ridge.mod <- cv.glmnet(X[trainindex,], Y[trainindex], alpha=0, family="binomial", type.measure="class", parallel=TRUE)
-	list(ridge.mod, confusionMatrix(Y[testindex], predict(ridge.mod, s="lambda.min", newx=X[testindex,], type="class")) )
+	list(ridge.mod, confusionMatrix(predict(ridge.mod, s="lambda.min", newx=X[testindex,], type="class"), Y[testindex]),
+	data.frame(malware=predict(ridge.mod, s="lambda.min", newx=X[testindex,], type="response"), truth=Y[testindex]) )
 }
 
 # reproducible research
