@@ -36,8 +36,8 @@ do
     dir=$line/transformed_data
     mkdir -p $dir
     transforms_data $filename $dir
-    svm-scale $filename.sparse > $filename.sparse.scale
     cd $dir
+    svm-scale $filename.sparse > $filename.sparse.scale
     for fold in 1 2 3 4 5
     do
 	create_datasets_cv $filename.sparse.scale ../../$index_file $fold
