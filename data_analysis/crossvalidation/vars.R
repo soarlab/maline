@@ -3,6 +3,9 @@
 # and run time. It is intended to be sourced from other files.
 #
 
+# name of the experiment
+exp.name <- 'small'
+
 # explore structure effect
 do.ones <- FALSE
 
