@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -x
 
 # Copyright 2013,2014 Marko Dimjašević, Simone Atzeni, Ivo Ugrina, Zvonimir Rakamarić
 #
@@ -29,10 +29,10 @@ svm()
     csvc=$(cat $training_file.out | grep $acc | head -1 | awk -F" " '{ print $1 }' | awk -F"=" '{print $2 }')
     gamma=$(cat $training_file.out | grep $acc | head -1 | awk -F" " '{ print $2 }' | awk -F"=" '{print $2 }')
     mv $training_file.out $training_file.linear.out
-    cscv=$(awk -v VAR="$cscv" 'BEGIN{print 2^VAR}')
+    csvc=$(echo "2 ^ $csvc" | bc)
     echo "C-SVC value: $csvc" >> $results
     echo "GAMMA value: $gamma" >> $results
-    svm-train -s 0 -t 0 -c $cscv  -b 1 -h 0 $current/$training_file $training_file.linear.model
+    svm-train -s 0 -t 0 -c $csvc -b 1 -h 0 $current/$training_file $training_file.linear.model
     svm-predict -b 1 $current/$testing_file $training_file.linear.model $testing_file.linear.out >> $results
     
     echo >> $results
@@ -46,12 +46,12 @@ svm()
     acc=$(cat $training_file.out | awk -F" " '{print $3}' | awk -F"=" '{ print $2 }' | sort -nr | head -1)
     csvc=$(cat $training_file.out | grep $acc | head -1 | awk -F" " '{ print $1 }' | awk -F"=" '{print $2 }')
     gamma=$(cat $training_file.out | grep $acc | head -1 | awk -F" " '{ print $2 }' | awk -F"=" '{print $2 }')
-    cscv=$(awk -v VAR="$cscv" 'BEGIN{print 2^VAR}')
-    gamma=$(awk -v VAR="$gamma" 'BEGIN{print 2^VAR}')
+    csvc=$(echo "2 ^ $csvc" | bc)
+    gamma=$(echo "2 ^ $gamma" | bc)
     mv $training_file.out $training_file.rbf.out
     echo "C-SVC value: $csvc" >> $results
     echo "GAMMA value: $gamma" >> $results
-    svm-train -s 0 -t 2 -c $csvc -g $gamma  -b 1 -h 0 $current/$training_file $training_file.rbf.model
+    svm-train -s 0 -t 2 -c $csvc -g $gamma -b 1 -h 0 $current/$training_file $training_file.rbf.model
     svm-predict -b 1 $current/$testing_file $training_file.rbf.model $testing_file.rbf.out >> $results
     
     echo "Confusion Matrix"
@@ -62,8 +62,8 @@ svm()
     acc=$(cat $training_file.out | awk -F" " '{print $3}' | awk -F"=" '{ print $2 }' | sort -nr | head -1)
     csvc=$(cat $training_file.out | grep $acc | head -1 | awk -F" " '{ print $1 }' | awk -F"=" '{print $2 }')
     gamma=$(cat $training_file.out | grep $acc | head -1 | awk -F" " '{ print $2 }' | awk -F"=" '{print $2 }')
-    cscv=$(awk -v VAR="$cscv" 'BEGIN{print 2^VAR}')
-    gamma=$(awk -v VAR="$gamma" 'BEGIN{print 2^VAR}')
+    csvc=$(echo "2 ^ $csvc" | bc)
+    gamma=$(echo "2 ^ $gamma" | bc)
     mv $training_file.out $training_file.poly.out
     echo "C-SVC value: $csvc" >> $results
     echo "GAMMA value: $gamma" >> $results
