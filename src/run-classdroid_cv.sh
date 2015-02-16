@@ -29,11 +29,9 @@ svm()
     csvc=$(cat $training_file.out | grep $acc | head -1 | awk -F" " '{ print $1 }' | awk -F"=" '{print $2 }')
     gamma=$(cat $training_file.out | grep $acc | head -1 | awk -F" " '{ print $2 }' | awk -F"=" '{print $2 }')
     mv $training_file.out $training_file.linear.out
-    csvc=$((2**$csvc)) 
-    gamma=$((2**$gamma))
     echo "C-SVC value: $csvc" >> $results
     echo "GAMMA value: $gamma" >> $results
-    svm-train -s 0 -t 0 -c $csvc -b 1 -h 0 $current/$training_file $training_file.linear.model
+    svm-train -s 0 -t 0 -c $((2**$csvc)) -b 1 -h 0 $current/$training_file $training_file.linear.model
     svm-predict -b 1 $current/$testing_file $training_file.linear.model $testing_file.linear.out >> $results
     
     echo >> $results
@@ -48,11 +46,9 @@ svm()
     csvc=$(cat $training_file.out | grep $acc | head -1 | awk -F" " '{ print $1 }' | awk -F"=" '{print $2 }')
     gamma=$(cat $training_file.out | grep $acc | head -1 | awk -F" " '{ print $2 }' | awk -F"=" '{print $2 }')
     mv $training_file.out $training_file.rbf.out
-    csvc=$((2**$csvc)) 
-    gamma=$((2**$gamma))
     echo "C-SVC value: $csvc" >> $results
     echo "GAMMA value: $gamma" >> $results
-    svm-train -s 0 -t 2 -c $csvc -g $gamma -b 1 -h 0 $current/$training_file $training_file.rbf.model
+    svm-train -s 0 -t 2 -c $((2**$csvc)) -g $((2**$gamms))  -b 1 -h 0 $current/$training_file $training_file.rbf.model
     svm-predict -b 1 $current/$testing_file $training_file.rbf.model $testing_file.rbf.out >> $results
     
     echo "Confusion Matrix"
@@ -64,15 +60,13 @@ svm()
     csvc=$(cat $training_file.out | grep $acc | head -1 | awk -F" " '{ print $1 }' | awk -F"=" '{print $2 }')
     gamma=$(cat $training_file.out | grep $acc | head -1 | awk -F" " '{ print $2 }' | awk -F"=" '{print $2 }')
     mv $training_file.out $training_file.poly.out
-    csvc=$((2**$csvc)) 
-    gamma=$((2**$gamma))
     echo "C-SVC value: $csvc" >> $results
     echo "GAMMA value: $gamma" >> $results
     for deg in 1 2 3 4 5
     do 
 	echo "Polynomial Kernel - Degree $deg" >> $results
 	
-	svm-train -s 0 -t 1 -c $csvc -g $gamma -d $deg -h 0 -b 1 -h 0 $current/$training_file $training_file.k$deg.model
+	svm-train -s 0 -t 1 -c $((2**$csvc)) -g $((2**$gamma))  -d $deg -h 0 -b 1 -h 0 $current/$training_file $training_file.k$deg.model
 	svm-predict -b 1 $current/$testing_file $training_file.k$deg.model $testing_file.k$deg.out >> $results
 	
 	echo >> $results
