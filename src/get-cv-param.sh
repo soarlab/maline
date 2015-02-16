@@ -36,16 +36,11 @@ do
     dir=$line/transformed_data
     mkdir -p $dir
     transforms_data $filename $dir
+    svm-scale $filename.sparse > $filename.sparse.scale
     cd $dir
     for fold in 1 2 3 4 5
     do
-	create_datasets_cv $filename.sparse ../../$index_file $fold
-	svm-scale $filename.sparse.training.$fold > $filename.sparse.training.$fold.scale
-	svm-scale $filename.sparse.testing.$fold > $filename.sparse.testing.$fold.scale
-	python $grid $filename.sparse.training.$fold 
-	acc=$(cat $filename.sparse.training.$fold.scale.out | awk -F" " '{print $3}' | awk -F"=" '{ print $2 }' | sort -nr | head -1)
-	csvc=$(cat $filename.sparse.training.$fold.scale.out | grep $acc | head -1 | awk -F" " '{ print $1 }' | awk -F"=" '{print $2 }')
-	gamma=$(cat $filename.sparse.training.$fold.scale.out | grep $acc | head -1 | awk -F" " '{ print $2 }' | awk -F"=" '{print $2 }')
-	run-classdroid_cv.sh $filename.sparse.training.$fold.scale $filename.sparse.testing.$fold.scale $fold $type $((2**$csvc)) $((2**$gamma)) 1
+	create_datasets_cv $filename.sparse.scale ../../$index_file $fold
+	run-classdroid_cv.sh $filename.sparse.scale.training.$fold $filename.sparse.scale.testing.$fold $fold $type 1
     done
 done < $explist
