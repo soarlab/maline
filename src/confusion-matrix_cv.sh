@@ -41,8 +41,8 @@ wrongMalware=$(cat $dir/compare.$fold.dat | awk -F "\t" '{if ($1 != $2 && $1 == 
 echo "Testing Set"
 echo -e "Number of goodware: "$gNum
 echo -e "Number of malware: "$mNum
-echo "\t\tgoodware\tmalware\n"
-echo "goodware\t%s\t\t%s\n" "$goodware" "$wrongGoodware"
-echo " malware\t%s\t\t%s\n" "$wrongMalware" "$malware"
+printf "\t\tgoodware\tmalware\n"
+printf "goodware\t%s\t\t%s\n" "$goodware" "$wrongGoodware"
+printf " malware\t%s\t\t%s\n" "$wrongMalware" "$malware"
 
 rm -rf $dir/orig_label.dat $dir/compare.$fold.dat $dir/tmp.dat
