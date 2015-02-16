@@ -35,7 +35,7 @@ build.and.test.svm <- function(testindex){
 	ctrl <- trainControl(number = 5,
 			     method = "cv")
 #			     method = "repeatedcv", repeats = 5)
-	if(do.seed = TRUE) set.seed(667)
+	if(do.seed == TRUE) set.seed(667)
 	mod <- train(X[trainindex,], Y[trainindex], method = "svmLinear",
      	     trControl = ctrl,
 #     	     preProc = c("center", "scale"),
