@@ -47,7 +47,7 @@ build.and.test.svm <- function(testindex){
 }
 
 # reproducible research
-set.seed(123)
+if(do.seed == TRUE) set.seed(123)
 
 # 5-fold outer cross-validation
 folds <- createFolds(index, 5)
