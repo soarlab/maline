@@ -62,5 +62,5 @@ print(rowMeans(sapply(l, function(x){ x[[2]]$overall })))
 print(rowMeans(sapply(l, function(x){ x[[2]]$byClass })))
 
 # if you would like to save the results uncomment the following line
-save(l, file=paste0(output.data.dir, "/svmLinear.list.Rdata"))
+save(l, file=paste0(output.data.dir, "/svmrbf.list.Rdata"))
 
