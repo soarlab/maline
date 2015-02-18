@@ -1,10 +1,10 @@
 #!/bin/bash
 
-create_datasets_cv feature-matrix-graph.sparse.scale ../../../folds.csv 1
-create_datasets_cv feature-matrix-graph.sparse.scale ../../../folds.csv 2
-create_datasets_cv feature-matrix-graph.sparse.scale ../../../folds.csv 3
-create_datasets_cv feature-matrix-graph.sparse.scale ../../../folds.csv 4
-create_datasets_cv feature-matrix-graph.sparse.scale ../../../folds.csv 5
+create_datasets_cv feature-matrix-graph.sparse.scale ../../folds.csv 1
+create_datasets_cv feature-matrix-graph.sparse.scale ../../folds.csv 2
+create_datasets_cv feature-matrix-graph.sparse.scale ../../folds.csv 3
+create_datasets_cv feature-matrix-graph.sparse.scale ../../folds.csv 4
+create_datasets_cv feature-matrix-graph.sparse.scale ../../folds.csv 5
 
 # Fold 1
 svm-train -s 0 -t 2 -c 256 -g 0.03125 -b 1 -h 0 feature-matrix-graph.sparse.scale.training.1 feature-matrix-graph.sparse.scale.training.1.rbf.model && svm-predict -b 1 feature-matrix-graph.sparse.scale.testing.1 feature-matrix-graph.sparse.scale.training.1.rbf.model feature-matrix-graph.sparse.scale.testing.1.out >> feature-matrix-graph.sparse.scale.1.out &
