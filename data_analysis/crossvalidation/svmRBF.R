@@ -27,7 +27,7 @@ index <- 1:nrow(X)
 inner.cores <- 8
 outer.cores <- 5
 
-# svmLinear
+# svmRadial
 
 build.and.test.svm <- function(testindex){
 	registerDoMC(cores = inner.cores )
@@ -36,10 +36,11 @@ build.and.test.svm <- function(testindex){
 			     method = "cv")
 #			     method = "repeatedcv", repeats = 5)
 	if(do.seed == TRUE) set.seed(667)
-	mod <- train(X[trainindex,], Y[trainindex], method = "svmLinear",
+	tgrid <- expand.grid(C=2^seq(-5,15,by=3), sigma=2^seq(-15,3,by=3))
+	mod <- train(X[trainindex,], Y[trainindex], method = "svmRadial",
      	     trControl = ctrl,
 #     	     preProc = c("center", "scale"),
-             tuneGrid =data.frame(C=2^seq(-5,15,by=2)),
+             tuneGrid = tgrid,
  	     allowParallel=TRUE,
 	     prob.model=TRUE)
 	list(mod, confusionMatrix(Y[testindex], predict(mod$finalModel,  newdata=X[testindex,])),
@@ -61,5 +62,5 @@ print(rowMeans(sapply(l, function(x){ x[[2]]$overall })))
 print(rowMeans(sapply(l, function(x){ x[[2]]$byClass })))
 
 # if you would like to save the results uncomment the following line
-save(l, file=paste0(output.data.dir, "/svmLinear.list.Rdata"))
+save(l, file=paste0(output.data.dir, "/svmrbf.list.Rdata"))
 

@@ -29,7 +29,7 @@ build.and.test.forest <- function(testindex){
 	registerDoMC(inner.cores) 
 	trainindex <- index[-testindex]
 	ff <- foreach(y=seq(inner.cores), .combine=combine ) %dopar% {
-		set.seed(testindex[y])
+		if(do.seed == TRUE) set.seed(testindex[y])
    		rf <- randomForest(X[trainindex,], Y[trainindex], ntree=50, norm.votes=FALSE) #, do.trace=TRUE)
 	}
 	list(ff, confusionMatrix(Y[testindex], predict(ff,  newdata=X[testindex,])),
@@ -37,7 +37,7 @@ build.and.test.forest <- function(testindex){
 }
 
 # reproducible research
-set.seed(123)
+if(do.seed == TRUE) set.seed(123)
 
 # 5-fold outer cross-validation
 folds <- createFolds(index, 5)
