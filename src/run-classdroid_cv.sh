@@ -24,7 +24,7 @@ svm()
         
     echo "Linear Kernel" >> $results    
 
-    python $grid -log2c -15,15,1 -log2g 1,1,1 -t 0 $current/$training_file
+    python $grid -log2c 0,15,1 -log2g 1,1,1 -t 0 $current/$training_file
     acc=$(cat $training_file.out | awk -F" " '{print $3}' | awk -F"=" '{ print $2 }' | sort -nr | head -1)
     csvc=$(cat $training_file.out | grep $acc | head -1 | awk -F" " '{ print $1 }' | awk -F"=" '{print $2 }')
     gamma=$(cat $training_file.out | grep $acc | head -1 | awk -F" " '{ print $2 }' | awk -F"=" '{print $2 }')
@@ -42,7 +42,7 @@ svm()
     echo >> $results
     
     echo "RBF - Radial Basis Function" >> $results
-    python $grid $current/$training_file
+    python $grid -log2c 0,15,1 $current/$training_file
     acc=$(cat $training_file.out | awk -F" " '{print $3}' | awk -F"=" '{ print $2 }' | sort -nr | head -1)
     csvc=$(cat $training_file.out | grep $acc | head -1 | awk -F" " '{ print $1 }' | awk -F"=" '{print $2 }')
     gamma=$(cat $training_file.out | grep $acc | head -1 | awk -F" " '{ print $2 }' | awk -F"=" '{print $2 }')
@@ -58,7 +58,7 @@ svm()
     confusion-matrix_cv.sh $testing_file $fold rbf >> $results
     echo >> $results
     
-    python $grid -log2c -15,15,1 -log2g 3,-15,-2 -t 1 $current/$training_file
+    python $grid -log2c 0,15,1 -log2g 3,-15,-2 -t 1 $current/$training_file
     acc=$(cat $training_file.out | awk -F" " '{print $3}' | awk -F"=" '{ print $2 }' | sort -nr | head -1)
     csvc=$(cat $training_file.out | grep $acc | head -1 | awk -F" " '{ print $1 }' | awk -F"=" '{print $2 }')
     gamma=$(cat $training_file.out | grep $acc | head -1 | awk -F" " '{ print $2 }' | awk -F"=" '{print $2 }')
