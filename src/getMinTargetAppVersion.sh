@@ -24,7 +24,7 @@ declare -a MINVERARR
 declare -a TGTVERARR
 for i in `find $APPS_FOLDER -name "*.apk"`
 do
-    res=$(./getAppVersion.sh $i)
+    res=$(getAppVersion.sh $i)
     min=$(echo $res | awk -F "," '{ print $1 }')
     tgt=$(echo $res | awk -F "," '{ print $2 }')
     if [[ " ${MINVERARR[*]} " != *" $min "* ]]; then
