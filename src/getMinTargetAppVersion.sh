@@ -21,15 +21,17 @@ CURR_PID=$$
 APPS_FOLDER=$1
 
 declare -a MINVERARR
-declare -a TGTVERARR
+declare -a TGTVERARR 
 for i in `find $APPS_FOLDER -name "*.apk"`
 do
     res=$(getAppVersion.sh $i)
     min=$(echo $res | awk -F "," '{ print $1 }')
     tgt=$(echo $res | awk -F "," '{ print $2 }')
+    echo $i - $min >> minVersion.txt
     if [[ " ${MINVERARR[*]} " != *" $min "* ]]; then
 	MINVERARR+=($min)
     fi
+    echo $i - $tgt >> tgtVersion.txt
     if [[ " ${TGTVERARR[*]} " != *" $tgt "* ]]; then
 	TGTVERARR+=($tgt)
     fi
@@ -37,5 +39,5 @@ done
 
 minSorted=($(printf '%s\n' "${MINVERARR[@]}"|sort -n))
 tgtSorted=($(printf '%s\n' "${TGTVERARR[@]}"|sort -n))
-echo "Minimum Versions: "${minSorted[@]}
-echo " Target Versions: "${tgtSorted[@]}
+echo "Minimum Versions: "${minSorted[@]} > output.txt
+echo " Target Versions: "${tgtSorted[@]} >> output.txt
