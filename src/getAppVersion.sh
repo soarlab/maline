@@ -23,8 +23,9 @@ $MALINE/lib/apktool/apktool decode $1 -o $TMP_DIR 1>/dev/null 2>/dev/null
 filename=$TMP_DIR/apktool.yml
 minSdkVersion=$(grep -e "minSdkVersion" $filename | awk -F ": " '{ print $2 }' | awk -F "'" '{ print $2 }')
 targetSdkVersion=$(grep -e "targetSdkVersion" $filename | awk -F ": " '{ print $2 }' | awk -F "'" '{ print $2 }')
-status=$?
-if [ $status -eq 0 ]; then
-    rm -rf $TMP_DIR
-fi
+# status=$?
+# if [ $status -eq 0 ]; then
+#     rm -rf $TMP_DIR
+# fi
+rm -rf $TMP_DIR
 echo $minSdkVersion,$targetSdkVersion
