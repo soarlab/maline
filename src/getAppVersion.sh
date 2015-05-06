@@ -28,4 +28,4 @@ targetSdkVersion=$(grep -e "targetSdkVersion" $filename | awk -F ": " '{ print $
 #     rm -rf $TMP_DIR
 # fi
 rm -rf $TMP_DIR
-echo $minSdkVersion,$targetSdkVersion
+echo $minSdkVersion $targetSdkVersion
