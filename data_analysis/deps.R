@@ -9,5 +9,6 @@ install.packages(c("caret",
                    "randomForest",
                    "rpart",
                    "rpart.plot",
-                   "RRF"),
+                   "RRF",
+                   "dplyr"),
 		 repos="http://cran.us.r-project.org")

@@ -24,6 +24,7 @@ its packages data analysis was done with R 3.1.1. Packages used are:
 - rpart (version 4.1-8)
 - rpart.plot (version 1.4-4)
 - RRF (version 1.6)
+- dplyr (version >= 0.2)
 
 # Installation
 
