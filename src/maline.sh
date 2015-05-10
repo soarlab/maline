@@ -285,7 +285,7 @@ TIMESTAMP=`date +"%Y-%m-%d-%H-%M-%S"`
 
 # A timeout in seconds for app testing
 DEFAULT_EVENT_NUM=1000
-TIMEOUT=$(echo "1020 * $EVENT_NUM / $DEFAULT_EVENT_NUM" | bc)
+TIMEOUT=300
 
 # Emulator status file
 STATUS_FILE=$MALINE/.emulator-$ADB_PORT

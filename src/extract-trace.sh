@@ -128,7 +128,7 @@ if [ $SPOOF -eq 1 ]; then
     SMS_PID=$!
 fi
 
-COUNT_PER_ITER=100
+COUNT_PER_ITER=1
 ITERATIONS=$(($EVENT_NUM/$COUNT_PER_ITER))
 
 echo "Testing the app..."
