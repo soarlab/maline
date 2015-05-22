@@ -151,7 +151,8 @@ from the logs for the graph-dependency model. More correctly,
 an un(b)zipped file *data_sparse2.mm* contains the
 feature matrix and the labels (malware/goodware) in a
 sparse matrix format. The last column of this (sparse) matrix
-contains the labels.
+contains the labels. This is the format expected in all
+the (classification) scripts in the *crossvalidation* directory.
 
 To evaluate the predictive power of classification
 through cross validation with random forest model the
