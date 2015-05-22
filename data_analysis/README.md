@@ -134,6 +134,52 @@ directories in *cv-run/rundir* will contain all the scripts from
 To execute an experiment now it is just needed to traverse to the appropriate
 *cv-run/results* directory and start a script for classification.
 
+After all experiments are over the results can be combined
+to a data frame (as a results.csv file) using the *cv-run/combine_results.R*
+ script.
+
 ***IMPORTANT***: Some scripts contain variables (*inner.cores/outer.cores*)
 describing the amount of parallelization intended and should be adjusted
 before the start of an experiment.
+
+
+#### An example of usage
+
+MALINE repo contains a file named *data_sparse2.mm.tar.bz2*.
+This is a compressed example of a feature matrix obtained
+from the logs for the graph-dependency model. More correctly,
+an un(b)zipped file *data_sparse2.mm* contains the
+feature matrix and the labels (malware/goodware) in a
+sparse matrix format. The last column of this (sparse) matrix
+contains the labels.
+
+To evaluate the predictive power of classification
+through cross validation with random forest model the
+following steps can be used:
+
+```bash
+# copy the file *crossvalidation/vars.R* file to 
+# directory *cv-run/vars/*:
+$ cp crossvalidation/vars.R cv-run/vars/basicexample.R
+
+# edit the copied file and adjust variables
+$ cd cv-run
+$ editor_of_choice vars/basicexample.R
+
+# execute the *cv-setup.sh* script
+$ ./cv-setup.sh
+
+# enter the newly generated directory
+$ cd rundir/basicexample/
+
+# use the random forest model
+$ ${MALINE}/opt/R-3.1.1/bin/R CMD BATCH --no-restore --no-save randomForest.R
+
+# export the results
+$ cd ../../
+$ ${MALINE}/opt/R-3.1.1/bin/R CMD BATCH --no-restore --no-save combine_results.R
+```
+
+After this the results of the classification should be in the
+newly generated file *results.csv*.
+
