@@ -158,6 +158,9 @@ through cross validation with random forest model the
 following steps can be used:
 
 ```bash
+# prepare the feature matrix
+$ tar -xvf data_sparse2.mm.tar.bz2
+
 # copy the file *crossvalidation/vars.R* file to 
 # directory *cv-run/vars/*:
 $ cp crossvalidation/vars.R cv-run/vars/basicexample.R
