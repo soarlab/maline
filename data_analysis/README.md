@@ -5,10 +5,10 @@ Most of the data analysis used in this project is conducted with
 Data analysis was mostly done as a classification task trying to classify
 Android applications either to malware or goodware. Classifiers that
 are used are:
-- Support Vector Machines (ref.)
-- Random Forest (ref.)
-- LASSO (ref.)
-- Ridge (ref.)
+- [Support Vector Machines](http://www.support-vector-machines.org/)
+- [Random Forest](https://www.stat.berkeley.edu/~breiman/RandomForests/)
+- [LASSO](https://web.stanford.edu/~hastie/glmnet/glmnet_alpha.html)
+- [Ridge](https://web.stanford.edu/~hastie/glmnet/glmnet_alpha.html)
 
 # Dependencies
 
