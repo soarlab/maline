@@ -94,11 +94,11 @@ $ ${MALINE}/opt/R-3.1.1/bin/R CMD BATCH --no-save --no-restore ${MALINE}/data_an
 
 ## Concepts
 
-Using the feature matrix generated from logs and previously
+Using feature matrices generated from logs and previously
 obtained labels denoting malware/goodware for
 applications the classification (data analysis) part can start.
-The classification is either performed in R (for ran-
-dom forest, LASSO, and ridge regression), or using an
+The classification is either performed in R (for random
+forest, LASSO, and ridge regression), or using an
 off-the-shelf library called libSVM. 
 
 R scripts are provided in this directory.
