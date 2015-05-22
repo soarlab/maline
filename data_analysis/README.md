@@ -38,15 +38,15 @@ and installed appropriate R packages should be installed.
 Packages needed to build R-3.1.1 from source can be obtained as follows:
 
 ```bash
-$ sudo apt-get install build-essential fort77 libreadline-dev
+$ sudo apt-get install build-essential fort77 libreadline-dev gfortran
 ```
 
 ## R
 
 If everything went ok in the previous step we can now try to build and install
 R from source. As a first task we need to download the source code.
-We shall download the source code and install it into our MALINE folder.
-Therefore, MALINE environment variable should be set the the path of the
+We shall download the source code and install it into our MALINE directory.
+Therefore, MALINE environment variable should be set to the path of the
 maline installation.
 
 ```bash
@@ -94,4 +94,46 @@ $ ${MALINE}/opt/R-3.1.1/bin/R CMD BATCH --no-save --no-restore ${MALINE}/data_an
 
 ## Concepts
 
+Using the feature matrix generated from logs and previously
+obtained labels denoting malware/goodware for
+applications the classification (data analysis) part can start.
+The classification is either performed in R (for ran-
+dom forest, LASSO, and ridge regression), or using an
+off-the-shelf library called libSVM. 
+
+R scripts are provided in this directory.
+The scripts are heavily parallelized and adjusted to be run on
+clusters or "supercomputers". For example, running a random
+forest model on a feature matrix from a system call dependency
+graph sample takes at least 32 GB of RAM in
+one instance of 5-fold cross-validation.
+
 ## Running
+
+### Cross-validation
+
+Scripts to build cross-validated classifiers are given in the
+directory *crossvalidation*. File *crossvalidation/vars.R* is of utter
+importance since this is the file containing basic information
+about the structure of an experiment (classification) that is
+to be conducted.
+
+Directory *cv-run* contains scripts to ease model building and validation.
+The idea is to copy *vars.R* file from the *crossvalidation* directory
+to directory *cv-run/vars/* and appropriately adjust it. Ideally,
+the copied file should be renamed to a meaningful name
+(e.g. representing the experiment intended to be run).
+This can be repeated multiple times to describe multiple experiments.
+
+Executing the *cv-run/cv-setup.sh* will then copy directory *crossvalidation*
+to directory *cv-run/rundir/* and adjust the variables as described
+in files from *cv-run/vars/* directory. Therefore,
+directories in *cv-run/rundir* will contain all the scripts from
+*crossvalidation* directory and will be self-sustained.
+
+To execute an experiment now it is just needed to traverse to the appropriate
+*cv-run/results* directory and start a script for classification.
+
+***IMPORTANT***: Some scripts contain variables (*inner.cores/outer.cores*)
+describing the amount of parallelization intended and should be adjusted
+before the start of an experiment.
