@@ -1,5 +1,7 @@
 #!/bin/bash
 
+[ "$USER" == "vagrant" ] && MALINE=/vagrant
+
 cd ${MALINE}
 mkdir tmp opt
 cd tmp

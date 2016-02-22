@@ -31,6 +31,19 @@ will work under other POSIX systems too (GNU/Linux and Mac alike). The Android
 version we tested *maline* with is Android 4.4.3 (API version 19), which is
 assumed throughout the readme.
 
+To make it easier to start using *maline*, we created a Vagrant configuration
+file that sets up a virtual machine and install *maline* in it. If you want to
+run *maline* in such a way, you can simply run the following command in the
+root of this project:
+
+#+BEGIN_SRC sh :exports code
+  vagrant up
+#+END_SRC
+
+and skip the rest of this section on dependencies and installing
+them. However, you will need to install an Android Virtual Device, as
+described below.
+
 ** Dependencies
 To use *maline*, you need the following:
 

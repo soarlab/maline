@@ -1,9 +1,21 @@
-# Prerequisites
+<div id="table-of-contents">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents">
+<ul>
+<li><a href="#sec-1">1. Prerequisites</a></li>
+<li><a href="#sec-2">2. Preparation</a></li>
+<li><a href="#sec-3">3. Running an experiment</a></li>
+</ul>
+</div>
+</div>
+
+
+# Prerequisites<a id="sec-1" name="sec-1"></a>
 
 To run an experiment on an Emulab machine, use a clean installation of Ubuntu
 12.04.4 LTS.
 
-# Preparation
+# Preparation<a id="sec-2" name="sec-2"></a>
 
 The first script that needs to be executed on a pristine operating system
 installation is `prepare-node.sh`, with root permissions, e.g.:
@@ -27,13 +39,7 @@ Finally, to set up various environment variables needed by **maline**, run:
 
     source set_android_env.sh
 
-If data analysis will be performed on emulab it is necessary to install
-additional Ubuntu packages and build R with appropriate libraries.
-
-    sudo prepare-dataanalysis-deps.sh
-    source prepare-dataanalysis.sh
-
-# Running an experiment
+# Running an experiment<a id="sec-3" name="sec-3"></a>
 
 To start running the first phase of the analysis in **maline**, start an
 experiment with optionally multiple instances of **maline** running in
