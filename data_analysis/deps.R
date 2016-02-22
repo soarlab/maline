@@ -1,3 +1,5 @@
+options(echo=FALSE)
+
 # dependencies needed to do the data analysis
 
 install.packages(c("caret",

@@ -8,7 +8,7 @@ SRCS = $(SRC_DIR)/parse-strace-log.cpp $(SRC_DIR)/sparsify.cpp $(SRC_DIR)/create
 _OBJS = $(subst .cpp,,$(SRCS))
 OBJS = $(patsubst $(SRC_DIR)%,$(BIN_DIR)%,$(_OBJS))
 
-all: maline libsvm
+all: maline libsvm R
 
 maline: $(OBJS) scripts
 
@@ -24,6 +24,10 @@ libsvm:
 scripts:
 	find $(SRC_DIR) -not -name "*.cpp" -type f -print0 | xargs -0 cp -t $(BIN_DIR)
 
+R:
+	env/emulab/prepare-dataanalysis.sh
+
 clean:
 	$(RM) $(BIN_DIR)
+	$(RM) tmp opt
 	cd $(LIB_DIR) && make clean
