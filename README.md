@@ -51,7 +51,7 @@ root of this project:
 
 and skip the rest of this section on dependencies and installing
 them. However, you will need to install an Android Virtual Device, as
-described below.
+described [below](https://github.com/soarlab/maline#sec-3-3).
 
 ## Dependencies<a id="sec-2-1" name="sec-2-1"></a>
 
