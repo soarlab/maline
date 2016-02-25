@@ -22,7 +22,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   end
   
   config.vm.provider :virtualbox do |domain|
-    domain.disk_bus = "virtio"
     domain.memory = 2048
   end
 
