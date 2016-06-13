@@ -37,6 +37,10 @@ reproducible research environment.
 
 # Installation<a id="sec-2" name="sec-2"></a>
 
+\*NOTE: We are in the process of debugging instructions for running maline in a
+virtual machine as there are some issues with that. Us, authors, got it
+successfully working on physical machines only.\*
+
 **maline** has been developed under Ubuntu 12.04.3 LTS. It is very likely it
 will work under other POSIX systems too (GNU/Linux and Mac alike). The Android
 version we tested **maline** with is Android 4.4.3 (API version 19), which is
