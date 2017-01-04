@@ -1,6 +1,5 @@
 #!/usr/bin/expect -f
 set cport [lindex $argv 0]
-set name [lindex $argv 1]
 spawn telnet localhost $cport
 expect "OK"
 send "kill"
